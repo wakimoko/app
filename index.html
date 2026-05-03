@@ -2,86 +2,143 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Supabase App</title>
+  <title>出荷管理</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .tabs button {
+      margin: 5px;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      background: #ddd;
+    }
+
+    .active {
+      background: #8b5e3c;
+      color: white;
+    }
+
+    .box {
+      margin-top: 20px;
+      padding: 20px;
+      background: white;
+      border-radius: 15px;
+    }
+
+    input {
+      padding: 8px;
+      margin-right: 5px;
+    }
+
+    .item {
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+    }
+  </style>
 </head>
+
 <body>
-  <h1>お知らせ</h1>
 
-  <input id="textInput" placeholder="文章を入力">
+<h1>出荷管理</h1>
+
+<!-- カテゴリ -->
+<div class="tabs" id="categoryTabs">
+  <button onclick="selectCategory('注意事項')">注意事項</button>
+  <button onclick="selectCategory('出荷予定')">出荷予定</button>
+  <button onclick="selectCategory('当日確認')">当日確認</button>
+  <button onclick="selectCategory('管理')">管理</button>
+</div>
+
+<!-- 日付 -->
+<div class="tabs" id="dateTabs">
+  <button onclick="selectDate('4/19')">4/19</button>
+  <button onclick="selectDate('4/20')">4/20</button>
+  <button onclick="selectDate('4/21')">4/21</button>
+  <button onclick="selectDate('4/22')">4/22</button>
+</div>
+
+<!-- 投稿 -->
+<div class="box">
+  <input id="textInput" placeholder="内容入力">
   <button onclick="addData()">投稿</button>
+</div>
 
-  <hr>
+<!-- 表示 -->
+<div class="box" id="list">
+  読み込み中...
+</div>
 
-  <div id="output">読み込み中...</div>
+<script>
+const supabase = window.supabase.createClient(
+  "https://YOUR_URL.supabase.co",
+  "YOUR_ANON_KEY"
+);
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const client = supabase.createClient(
-      "https://bylottznuwuizncgfltd.supabase.co",
-      "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
-    );
+let selectedDate = "4/20";
+let selectedCategory = "注意事項";
 
-    async function loadData() {
-      const output = document.getElementById("output");
-      output.innerHTML = "";
+async function loadData() {
+  const { data, error } = await supabase
+    .from("shipments")
+    .select("*")
+    .eq("date", selectedDate)
+    .eq("category", selectedCategory);
 
-      const { data, error } = await client
-        .from("notices2")
-        .select("*")
-        .order("id", { ascending: false });
+  const list = document.getElementById("list");
+  list.innerHTML = "";
 
-      if (error) {
-        output.textContent = "エラー：" + error.message;
-        return;
-      }
+  if (data.length === 0) {
+    list.innerHTML = "データなし";
+    return;
+  }
 
-      data.forEach(item => {
-        const div = document.createElement("div");
-        div.textContent = item.text;
-        output.appendChild(div);
-      });
+  data.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "item";
+    div.textContent = item.content;
+    list.appendChild(div);
+  });
+}
+
+async function addData() {
+  const input = document.getElementById("textInput");
+
+  await supabase.from("shipments").insert([
+    {
+      date: selectedDate,
+      category: selectedCategory,
+      content: input.value,
+      done: false
     }
+  ]);
 
-    async function addData() {
-      const input = document.getElementById("textInput");
-      const text = input.value;
+  input.value = "";
+  loadData();
+}
 
-      if (!text) return;
+function selectDate(date) {
+  selectedDate = date;
+  loadData();
+}
 
-      const { error } = await client
-        .from("notices2")
-        .insert({ text: text });
+function selectCategory(cat) {
+  selectedCategory = cat;
+  loadData();
+}
 
-      if (error) {
-        alert("エラー：" + error.message);
-        return;
-      }
+loadData();
+</script>
 
-      input.value = "";
-      loadData();
-    }
-
-    loadData();
-  </script>
 </body>
 </html>
-<style>
-body {
-  font-family: sans-serif;
-  padding: 20px;
-}
-
-input {
-  padding: 8px;
-}
-
-button {
-  padding: 8px 12px;
-  margin-left: 5px;
-}
-
-.post {
-  border-bottom: 1px solid #ccc;
-  padding: 10px 0;
-}
-</style>
