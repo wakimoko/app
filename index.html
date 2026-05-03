@@ -29,12 +29,17 @@ const supabase = window.supabase.createClient(
   "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
 );
 
-// 一覧表示
+// データ読み込み
 async function loadData() {
   const { data, error } = await supabase
     .from('shipments')
     .select('*')
     .order('id', { ascending: false });
+
+  if (error) {
+    console.log(error);
+    return;
+  }
 
   const list = document.getElementById('list');
   list.innerHTML = '';
@@ -55,7 +60,7 @@ async function loadData() {
   });
 }
 
-// 追加
+// データ追加
 async function addData() {
   const title = document.getElementById('title').value;
   const content = document.getElementById('content').value;
@@ -64,11 +69,7 @@ async function addData() {
   const { error } = await supabase
     .from('shipments')
     .insert([
-      {
-        title: title,
-        content: content,
-        status: status
-      }
+      { title, content, status }
     ]);
 
   if (error) {
@@ -76,7 +77,7 @@ async function addData() {
     return;
   }
 
-  // 入力リセット
+  // 入力クリア
   document.getElementById('title').value = '';
   document.getElementById('content').value = '';
 
