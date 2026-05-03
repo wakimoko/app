@@ -3,81 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <title>出荷管理</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-      background: #f5f5f5;
-    }
-
-    h1 {
-      margin-bottom: 20px;
-    }
-
-    .tabs button {
-      margin: 5px;
-      padding: 10px;
-      border-radius: 10px;
-      border: none;
-      background: #ddd;
-    }
-
-    .active {
-      background: #8b5e3c;
-      color: white;
-    }
-
-    .box {
-      margin-top: 20px;
-      padding: 20px;
-      background: white;
-      border-radius: 15px;
-    }
-
-    input {
-      padding: 8px;
-      margin-right: 5px;
-    }
-
-    .item {
-      padding: 10px;
-      border-bottom: 1px solid #ccc;
-    }
-  </style>
 </head>
-
 <body>
 
 <h1>出荷管理</h1>
 
-<!-- カテゴリ -->
-<div class="tabs" id="categoryTabs">
-  <button onclick="selectCategory('注意事項')">注意事項</button>
-  <button onclick="selectCategory('出荷予定')">出荷予定</button>
-  <button onclick="selectCategory('当日確認')">当日確認</button>
-  <button onclick="selectCategory('管理')">管理</button>
-</div>
+<input id="input" placeholder="注意事項を入力">
+<button onclick="addData()">追加</button>
 
-<!-- 日付 -->
-<div class="tabs" id="dateTabs">
-  <button onclick="selectDate('4/19')">4/19</button>
-  <button onclick="selectDate('4/20')">4/20</button>
-  <button onclick="selectDate('4/21')">4/21</button>
-  <button onclick="selectDate('4/22')">4/22</button>
-</div>
+<div id="list"></div>
 
-<!-- 投稿 -->
-<div class="box">
-  <input id="textInput" placeholder="内容入力">
-  <button onclick="addData()">投稿</button>
-</div>
-
-<!-- 表示 -->
-<div class="box" id="list">
-  読み込み中...
-</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
 const supabase = window.supabase.createClient(
@@ -85,58 +21,39 @@ const supabase = window.supabase.createClient(
   "YOUR_ANON_KEY"
 );
 
-let selectedDate = "4/20";
-let selectedCategory = "注意事項";
-
+// 一覧表示
 async function loadData() {
   const { data, error } = await supabase
-    .from("shipments")
-    .select("*")
-    .eq("date", selectedDate)
-    .eq("category", selectedCategory);
+    .from('shipments')
+    .select('*')
+    .order('id', { ascending: false });
 
   const list = document.getElementById("list");
   list.innerHTML = "";
 
-  if (data.length === 0) {
-    list.innerHTML = "データなし";
-    return;
-  }
-
   data.forEach(item => {
     const div = document.createElement("div");
-    div.className = "item";
-    div.textContent = item.content;
+    div.textContent = item.text;
     list.appendChild(div);
   });
 }
 
+// 追加
 async function addData() {
-  const input = document.getElementById("textInput");
+  const input = document.getElementById("input");
+  const text = input.value;
 
-  await supabase.from("shipments").insert([
-    {
-      date: selectedDate,
-      category: selectedCategory,
-      content: input.value,
-      done: false
-    }
+  if (!text) return;
+
+  await supabase.from('shipments').insert([
+    { text: text }
   ]);
 
   input.value = "";
   loadData();
 }
 
-function selectDate(date) {
-  selectedDate = date;
-  loadData();
-}
-
-function selectCategory(cat) {
-  selectedCategory = cat;
-  loadData();
-}
-
+// 初回読み込み
 loadData();
 </script>
 
