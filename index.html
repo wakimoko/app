@@ -2,40 +2,63 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Supabase Test</title>
+  <title>Supabase App</title>
 </head>
 <body>
-  <h1>Supabaseデータ</h1>
-  <pre id="output">開始...</pre>
+  <h1>お知らせ</h1>
+
+  <input id="textInput" placeholder="文章を入力">
+  <button onclick="addData()">投稿</button>
+
+  <hr>
+
+  <div id="output">読み込み中...</div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const output = document.getElementById("output");
-
-    window.onerror = function(message) {
-      output.textContent = "JSエラー: " + message;
-    };
+    const client = supabase.createClient(
+      "https://bylottznuwuizncgfltd.supabase.co",
+      "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
+    );
 
     async function loadData() {
-      output.textContent = "Supabase接続中...";
-
-      const client = window.supabase.createClient(
-        "https://bylottznuwuizncgfltd.supabase.co",
-        "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
-      );
-
-      output.textContent = "データ取得中...";
+      const output = document.getElementById("output");
+      output.innerHTML = "";
 
       const { data, error } = await client
         .from("notices2")
-        .select("*");
+        .select("*")
+        .order("id", { ascending: false });
 
       if (error) {
-        output.textContent = "Supabaseエラー: " + error.message;
+        output.textContent = "エラー：" + error.message;
         return;
       }
 
-      output.textContent = JSON.stringify(data, null, 2);
+      data.forEach(item => {
+        const div = document.createElement("div");
+        div.textContent = item.text;
+        output.appendChild(div);
+      });
+    }
+
+    async function addData() {
+      const input = document.getElementById("textInput");
+      const text = input.value;
+
+      if (!text) return;
+
+      const { error } = await client
+        .from("notices2")
+        .insert({ text: text });
+
+      if (error) {
+        alert("エラー：" + error.message);
+        return;
+      }
+
+      input.value = "";
+      loadData();
     }
 
     loadData();
