@@ -1,29 +1,20 @@
-<html>
-<head>
-  <title>Supabase Test</title>
-</head>
-<body>
-
-<h1>Supabaseデータ</h1>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script>
-const supabase = window.supabase.createClient(
-  "https://bylottznuwuizncgfltd.supabase.co",
-   "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
-);
-
 async function loadData() {
   const { data, error } = await supabase
     .from('notices2')
     .select('*');
 
+  if (error) {
+    console.error(error);
+    document.body.innerHTML += "エラー：" + error.message;
+    return;
+  }
+
   console.log(data);
-  document.body.innerHTML += JSON.stringify(data);
+
+  /
+  data.forEach(item => {
+    const div = document.createElement("div");
+    div.textContent = item.文章;
+    document.body.appendChild(div);
+  });
 }
-
-loadData();
-</script>
-
-</body>
-</html>
