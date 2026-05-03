@@ -8,29 +8,31 @@
   <h1>Supabaseデータ</h1>
   <div id="output">読み込み中...</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const supabase = window.supabase.createClient(
+    const client = supabase.createClient(
       "https://bylottznuwuizncgfltd.supabase.co",
       "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
     );
 
     async function loadData() {
-      const { data, error } = await supabase
-        .from('notices2')
-        .select('*');
+      const { data, error } = await client
+        .from("notices2")
+        .select("*");
+
+      const output = document.getElementById("output");
 
       if (error) {
-        document.getElementById("output").textContent = "エラー：" + error.message;
+        output.textContent = "エラー：" + error.message;
         return;
       }
 
-      document.getElementById("output").innerHTML = "";
+      output.innerHTML = "";
 
       data.forEach(item => {
         const div = document.createElement("div");
         div.textContent = item.文章;
-        document.getElementById("output").appendChild(div);
+        output.appendChild(div);
       });
     }
 
