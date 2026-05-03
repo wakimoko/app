@@ -1,9 +1,12 @@
+<!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>Supabase Test</title>
 </head>
 <body>
   <h1>Supabaseデータ</h1>
+  <div id="output">読み込み中...</div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script>
@@ -18,15 +21,16 @@
         .select('*');
 
       if (error) {
-        console.error(error);
-        document.body.innerHTML += "エラー：" + error.message;
+        document.getElementById("output").textContent = "エラー：" + error.message;
         return;
       }
+
+      document.getElementById("output").innerHTML = "";
 
       data.forEach(item => {
         const div = document.createElement("div");
         div.textContent = item.文章;
-        document.body.appendChild(div);
+        document.getElementById("output").appendChild(div);
       });
     }
 
