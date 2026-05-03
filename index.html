@@ -17,8 +17,8 @@
 
 <script>
 const supabase = window.supabase.createClient(
-  "https://YOUR_URL.supabase.co",
-  "YOUR_ANON_KEY"
+  "https://bylottznwuizncgfltd.supabase.co",
+  "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
 );
 
 // 一覧表示
@@ -27,6 +27,11 @@ async function loadData() {
     .from('shipments')
     .select('*')
     .order('id', { ascending: false });
+
+  if (error) {
+    console.error(error);
+    return;
+  }
 
   const list = document.getElementById("list");
   list.innerHTML = "";
@@ -45,9 +50,15 @@ async function addData() {
 
   if (!text) return;
 
-  await supabase.from('shipments').insert([
-    { text: text }
-  ]);
+  const { error } = await supabase
+    .from('shipments')
+    .insert([{ text }]);
+
+  if (error) {
+    console.error(error);
+    alert("保存エラー");
+    return;
+  }
 
   input.value = "";
   loadData();
