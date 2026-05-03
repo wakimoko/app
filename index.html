@@ -15,7 +15,7 @@ const supabase = window.supabase.createClient(
 
 async function loadData() {
   const { data, error } = await supabase
-    .from('notices')
+    .from('notices2')
     .select('*');
 
   console.log(data);
