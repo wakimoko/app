@@ -1,57 +1,89 @@
-<script>
-const supabase = window.supabase.createClient(
-  "https://bylottznwuizncgfltd.supabase.co",
-  "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
-);
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>出荷管理</title>
+</head>
+<body>
+  <h1>出荷管理</h1>
 
-// データ読み込み
-async function loadData() {
-  const { data, error } = await supabase
-    .from('shipments')
-    .select('*')
-    .order('id', { ascending: false });
+  <input id="title" placeholder="タイトル"><br><br>
+  <input id="content" placeholder="内容"><br><br>
 
-  if (error) {
-    console.log(error);
-    return;
-  }
+  <select id="status">
+    <option value="通常">通常</option>
+    <option value="重要">重要</option>
+  </select><br><br>
 
-  const list = document.getElementById('list');
-  list.innerHTML = '';
+  <button onclick="addData()">追加する</button>
 
-  data.forEach(item => {
-    const div = document.createElement('div');
-    div.innerHTML = `
-      <hr>
-      <b>${item.title}</b><br>
-      ${item.content}<br>
-      ${item.status}
-    `;
-    list.appendChild(div);
-  });
-}
+  <hr>
+  <div id="message"></div>
+  <div id="list">読み込み中...</div>
 
-// 追加
-async function addData() {
-  const title = document.getElementById('title').value;
-  const content = document.getElementById('content').value;
-  const status = document.getElementById('status').value;
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const client = window.supabase.createClient(
+      "https://bylottznuwuizncgfltd.supabase.co",
+      "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
+    );
 
-  const { error } = await supabase
-    .from('shipments')
-    .insert([
-      { title, content, status }
-    ]);
+    async function loadData() {
+      const list = document.getElementById("list");
+      const message = document.getElementById("message");
 
-  if (error) {
-    alert("追加エラー: " + error.message);
-    return;
-  }
+      const { data, error } = await client
+        .from("shipments")
+        .select("*")
+        .order("id", { ascending: false });
 
-  alert("追加した！");
-  loadData();
-}
+      if (error) {
+        message.textContent = "読み込みエラー: " + error.message;
+        return;
+      }
 
-// 初回読み込み
-loadData();
-</script>
+      list.innerHTML = "";
+
+      data.forEach(item => {
+        const div = document.createElement("div");
+        div.style.border = "1px solid #ccc";
+        div.style.padding = "10px";
+        div.style.margin = "10px";
+
+        div.innerHTML = `
+          <b>${item.title || ""}</b><br>
+          ${item.content || ""}<br>
+          ${item.status || ""}
+        `;
+
+        list.appendChild(div);
+      });
+    }
+
+    async function addData() {
+      const title = document.getElementById("title").value;
+      const content = document.getElementById("content").value;
+      const status = document.getElementById("status").value;
+      const message = document.getElementById("message");
+
+      message.textContent = "追加中...";
+
+      const { error } = await client
+        .from("shipments")
+        .insert([{ title, content, status }]);
+
+      if (error) {
+        message.textContent = "追加エラー: " + error.message;
+        return;
+      }
+
+      message.textContent = "追加しました";
+      document.getElementById("title").value = "";
+      document.getElementById("content").value = "";
+      loadData();
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
