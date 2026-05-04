@@ -6,73 +6,49 @@
 <title>出荷管理</title>
 
 <style>
-body {
-  font-family: sans-serif;
-  background: #f3eee8;
-  padding: 20px;
-  color: #000;
-  font-size: 18px;
+body{
+  font-family:sans-serif;
+  background:#f5efe9;
+  padding:20px;
+  color:#000;
+  font-size:20px;
 }
 
-h1 {
-  font-size: 28px;
+h1{font-size:28px}
+
+button{
+  padding:10px 16px;
+  border-radius:12px;
+  border:none;
+  margin:4px;
+  font-size:18px;
 }
 
-.tabs button {
-  padding: 10px 16px;
-  border-radius: 12px;
-  border: none;
-  margin-right: 6px;
-  background: #ddd;
-  font-size: 16px;
+.tab{background:#ddd;color:#007bff}
+.active{background:#a9744f;color:#fff}
+
+.date{background:#ddd;color:#007bff}
+.date-active{background:#a9744f;color:#fff}
+
+.card{
+  background:#fff;
+  padding:16px;
+  border-radius:14px;
+  margin-top:12px;
 }
 
-.active {
-  background: #a9744f !important;
-  color: #fff;
+.important{color:red}
+
+.like{
+  margin-top:10px;
+  padding:6px 12px;
+  border-radius:20px;
+  background:#eee;
 }
 
-.date-btn {
-  padding: 10px 14px;
-  margin: 4px;
-  border-radius: 10px;
-  border: none;
-  background: #ddd;
-  font-size: 16px;
-}
+.like.active{background:#d8c2a8}
 
-.date-active {
-  background: #a9744f !important;
-  color: #fff;
-}
-
-.card {
-  background: #fff;
-  padding: 16px;
-  border-radius: 14px;
-  margin-top: 12px;
-}
-
-.important {
-  color: red;
-}
-
-.like {
-  margin-top: 10px;
-  background: #eee;
-  padding: 6px 12px;
-  border-radius: 20px;
-  display: inline-block;
-  cursor: pointer;
-}
-
-.like.active {
-  background: #d8c2a8;
-}
-
-.hidden {
-  display: none;
-}
+.hidden{display:none}
 </style>
 </head>
 
@@ -80,99 +56,161 @@ h1 {
 
 <h1>出荷管理</h1>
 
-<div class="tabs">
-  <button onclick="changeTab('notice')" id="tab-notice">注意事項</button>
-  <button onclick="changeTab('shipping')" id="tab-shipping">出荷予定</button>
-  <button onclick="changeTab('manage')" id="tab-manage">管理</button>
+<div>
+  <button id="tab_notice" class="tab" onclick="changeTab('notice')">注意事項</button>
+  <button id="tab_ship" class="tab" onclick="changeTab('ship')">出荷予定</button>
+  <button id="tab_manage" class="tab" onclick="changeTab('manage')">管理</button>
 </div>
 
-<br>
-
-<div id="dateArea">
-  <button class="date-btn" onclick="changeDate('5/4')">5/4</button>
-  <button class="date-btn" onclick="changeDate('5/5')">5/5</button>
-  <button class="date-btn" onclick="changeDate('5/6')">5/6</button>
-  <button class="date-btn" onclick="changeDate('5/7')">5/7</button>
-  <button class="date-btn" onclick="changeDate('5/8')">5/8</button>
-</div>
+<div id="dateArea"></div>
 
 <div id="content"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-let currentTab = "notice";
-let selectedDate = "5/4";
+const supabase = window.supabase.createClient(
+  "https://bylottznuwuizncgfltd.supabase.co",
+  "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
+);
 
-const data = [
-  { date:"5/8", title:"三重クレーム", content:"要検品", important:true, likes:0 },
-  { date:"5/8", title:"クレーム", content:"要検品", important:true, likes:0 }
-];
+let currentTab="notice";
+let currentDate="5/4";
 
-// タブ切替
-function changeTab(tab){
-  currentTab = tab;
+// 日付生成
+function renderDates(){
+  const box=document.getElementById("dateArea");
+  box.innerHTML="";
 
-  document.querySelectorAll(".tabs button").forEach(btn=>btn.classList.remove("active"));
-  document.getElementById("tab-"+tab).classList.add("active");
+  if(currentTab==="manage"){
+    box.classList.add("hidden");
+    return;
+  }else{
+    box.classList.remove("hidden");
+  }
 
-  // 管理の時は日付非表示
-  document.getElementById("dateArea").classList.toggle("hidden", tab==="manage");
+  ["5/4","5/5","5/6","5/7","5/8"].forEach(d=>{
+    const btn=document.createElement("button");
+    btn.innerText=d;
+    btn.className="date";
+    if(d===currentDate) btn.classList.add("date-active");
 
-  render();
+    btn.onclick=()=>{
+      currentDate=d;
+      renderDates();
+      render();
+    };
+
+    box.appendChild(btn);
+  });
 }
 
-// 日付変更
-function changeDate(date){
-  selectedDate = date;
+// タブ
+function changeTab(tab){
+  currentTab=tab;
 
-  document.querySelectorAll(".date-btn").forEach(btn=>{
-    btn.classList.remove("date-active");
-    if(btn.innerText === date) btn.classList.add("date-active");
-  });
+  document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+  document.getElementById("tab_"+tab).classList.add("active");
 
+  renderDates();
   render();
 }
 
 // 表示
-function render(){
-  const container = document.getElementById("content");
-  container.innerHTML = "";
+async function render(){
+  const box=document.getElementById("content");
+  box.innerHTML="";
 
-  if(currentTab === "notice"){
-    const list = data.filter(d => d.date === selectedDate);
+  if(currentTab==="notice"){
 
-    if(list.length === 0){
-      container.innerHTML = "<div class='card'>注意事項はありません</div>";
+    const {data,error}=await supabase
+      .from("shipments")
+      .select("*")
+      .eq("date", currentDate)
+      .eq("category","notice");
+
+    if(error){
+      box.innerHTML=error.message;
       return;
     }
 
-    list.forEach((item, index)=>{
-      const div = document.createElement("div");
-      div.className = "card";
+    if(!data || data.length===0){
+      box.innerHTML="<div class='card'>注意事項はありません</div>";
+      return;
+    }
 
-      div.innerHTML = `
-        <div class="${item.important ? 'important' : ''}">${item.title}</div>
-        <div>${item.content}</div>
-        <div class="like" onclick="like(${index}, this)">
-          👍 ×${item.likes}
+    data.forEach(item=>{
+      box.innerHTML+=`
+        <div class="card">
+          <div class="${item.status==="重要"?"important":""}">
+            <b>${item.title||""}</b>
+          </div>
+          <div>${item.content||""}</div>
+          <div class="like" onclick="like(${item.id},${item.likes||0},${item.liked})">
+            👍 ×${item.likes||0}
+          </div>
         </div>
       `;
-
-      container.appendChild(div);
     });
+  }
+
+  if(currentTab==="ship"){
+    box.innerHTML="<div class='card'>出荷予定（後で追加）</div>";
+  }
+
+  if(currentTab==="manage"){
+    box.innerHTML=`
+      <div class="card">
+        <h3>管理</h3>
+
+        <input id="date" value="${currentDate}">
+        <input id="title" placeholder="タイトル">
+        <textarea id="contentText" placeholder="内容"></textarea>
+
+        <select id="status">
+          <option>通常</option>
+          <option>重要</option>
+        </select>
+
+        <button class="active" onclick="addData()">追加</button>
+      </div>
+    `;
   }
 }
 
-// 👍
-function like(index, el){
-  data[index].likes++;
+// 追加（重要）
+async function addData(){
+  const date=document.getElementById("date").value;
 
-  el.classList.add("active");
-  el.innerHTML = `👍 ×${data[index].likes}`;
+  await supabase.from("shipments").insert({
+    date:date,
+    category:"notice",
+    title:document.getElementById("title").value,
+    content:document.getElementById("contentText").value,
+    status:document.getElementById("status").value,
+    likes:0,
+    liked:false
+  });
+
+  alert("追加したよ");
+  currentDate=date;
+  changeTab("notice");
 }
 
-// 初期表示
+// 👍
+async function like(id,likes,liked){
+  await supabase.from("shipments")
+    .update({
+      likes: liked?likes-1:likes+1,
+      liked: !liked
+    })
+    .eq("id",id);
+
+  render();
+}
+
+// 初期
 changeTab("notice");
-changeDate("5/4");
 </script>
 
 </body>
