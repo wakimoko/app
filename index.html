@@ -1,34 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>出荷管理</title>
-  <style>
-    body { margin:0; padding:24px; font-family:sans-serif; background:#f7f2ec; color:#3b2a22; }
-    h1 { font-size:32px; }
-    .tabs, .week { display:flex; gap:10px; overflow-x:auto; margin:14px 0; }
-    button { border:none; border-radius:18px; padding:14px 24px; font-size:18px; font-weight:bold; background:#e8dfd6; color:#3b2a22; white-space:nowrap; }
-    button.active, .add-btn { background:#9a663e; color:white; }
-    .card { background:white; border:2px solid #e2d6ca; border-radius:24px; padding:22px; margin-top:16px; font-size:18px; }
-    input, textarea, select { width:100%; box-sizing:border-box; border:2px solid #e2d6ca; border-radius:14px; padding:14px; font-size:18px; margin-bottom:12px; }
-    textarea { height:90px; }
-    .item { border-bottom:1px solid #e2d6ca; padding:14px 0; }
-    .title { font-weight:bold; font-size:22px; }
-    .important { color:#d22; font-weight:bold; }
-    .done { opacity:.55; text-decoration:line-through; }
-    .like { margin-top:8px; padding:8px 14px; font-size:16px; }
-    .empty { text-align:center; color:#7b6252; padding:28px; }
-  </style>
+<meta charset="UTF-8">
+<title>出荷管理</title>
+<style>
+body{margin:0;padding:24px;font-family:sans-serif;background:#f7f2ec;color:#3b2a22}
+h1{font-size:28px}
+.tabs,.week{display:flex;gap:10px;overflow-x:auto;margin:14px 0}
+button{border:none;border-radius:16px;padding:14px 22px;font-weight:bold;background:#e8dfd6;color:#3b2a22;white-space:nowrap}
+button.active,.brown{background:#9a663e;color:white}
+.card{background:white;border:2px solid #e2d6ca;border-radius:22px;padding:22px;margin-top:16px}
+.item{border-bottom:1px solid #e2d6ca;padding:14px 0}
+.important{color:red;font-weight:bold}
+.done{opacity:.55;text-decoration:line-through}
+input,textarea,select{width:100%;box-sizing:border-box;border:2px solid #e2d6ca;border-radius:14px;padding:12px;margin-bottom:10px}
+.schedule-row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2d6ca;padding:14px 0}
+.yes{background:#9a663e;color:white}
+.no{background:#e8dfd6;color:#3b2a22}
+</style>
 </head>
 <body>
 
 <h1>出荷管理</h1>
 
 <div class="tabs">
-  <button class="tab active" onclick="selectCategory('注意事項', this)">注意事項</button>
-  <button class="tab" onclick="selectCategory('出荷予定', this)">出荷予定</button>
-  <button class="tab" onclick="selectCategory('当日確認', this)">当日確認</button>
-  <button class="tab" onclick="selectCategory('管理', this)">管理</button>
+  <button class="tab active" onclick="selectCategory('注意事項',this)">注意事項</button>
+  <button class="tab" onclick="selectCategory('出荷予定',this)">出荷予定</button>
+  <button class="tab" onclick="selectCategory('当日確認',this)">当日確認</button>
+  <button class="tab" onclick="selectCategory('管理',this)">管理</button>
 </div>
 
 <div class="week">
@@ -47,7 +46,7 @@
     <option value="通常">通常</option>
     <option value="重要">重要</option>
   </select>
-  <button class="add-btn" onclick="addData()">追加する</button>
+  <button class="brown" onclick="addData()">追加する</button>
   <div id="message"></div>
 </div>
 
@@ -58,160 +57,165 @@ const client = window.supabase.createClient(
   "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
 );
 
-let selectedCategory = "注意事項";
-let weekOffset = 0;
-let selectedDate = "";
+let selectedCategory="注意事項";
+let weekOffset=0;
+let selectedDate="";
 
-function formatDate(d) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
+const schedules=[
+  {company:"佐川急便",place:"2F"},
+  {company:"福山通運",place:"2F"},
+  {company:"福山通運",place:"梱包場"},
+  {company:"福山通運",place:"MJ倉庫"}
+];
+
+function formatDate(d){
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
-
-function labelDate(d) {
-  const m = d.getMonth() + 1;
-  const day = d.getDate();
-  const names = ["日","月","火","水","木","金","土"];
-  return `${m}/${day}(${names[d.getDay()]})`;
+function labelDate(d){
+  const w=["日","月","火","水","木","金","土"];
+  return `${d.getMonth()+1}/${d.getDate()}(${w[d.getDay()]})`;
 }
-
-function getMonday(base) {
-  const d = new Date(base);
-  const day = d.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-  d.setDate(d.getDate() + diff + weekOffset * 7);
+function monday(){
+  const d=new Date();
+  const day=d.getDay();
+  d.setDate(d.getDate()+(day===0?-6:1-day)+weekOffset*7);
   return d;
 }
-
-function generateWeekButtons() {
-  const box = document.getElementById("weekTabs");
-  box.innerHTML = "";
-
-  const monday = getMonday(new Date());
-
-  for (let i = 0; i < 5; i++) {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
-
-    const dateStr = formatDate(d);
-    const btn = document.createElement("button");
-    btn.textContent = labelDate(d);
-
-    if (i === 0 && !selectedDate) {
-      selectedDate = dateStr;
-      btn.classList.add("active");
-    }
-
-    if (dateStr === selectedDate) {
-      btn.classList.add("active");
-    }
-
-    btn.onclick = () => {
-      selectedDate = dateStr;
-      generateWeekButtons();
-      loadData();
-    };
-
+function generateWeek(){
+  const box=document.getElementById("weekTabs");
+  box.innerHTML="";
+  const mon=monday();
+  for(let i=0;i<5;i++){
+    const d=new Date(mon);
+    d.setDate(mon.getDate()+i);
+    const dateStr=formatDate(d);
+    const btn=document.createElement("button");
+    btn.textContent=labelDate(d);
+    if(!selectedDate&&i===0)selectedDate=dateStr;
+    if(selectedDate===dateStr)btn.classList.add("active");
+    btn.onclick=()=>{selectedDate=dateStr;generateWeek();loadData();};
     box.appendChild(btn);
   }
 }
-
-function changeWeek(num) {
-  weekOffset += num;
-  selectedDate = "";
-  generateWeekButtons();
+function changeWeek(n){
+  weekOffset+=n;
+  selectedDate="";
+  generateWeek();
+  loadData();
+}
+function selectCategory(cat,btn){
+  selectedCategory=cat;
+  document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById("adminBox").style.display=cat==="管理"?"block":"none";
   loadData();
 }
 
-function selectCategory(category, button) {
-  selectedCategory = category;
-  document.querySelectorAll(".tab").forEach(btn => btn.classList.remove("active"));
-  button.classList.add("active");
+async function loadData(){
+  if(selectedCategory==="出荷予定"){
+    loadSchedule();
+    return;
+  }
 
-  document.getElementById("adminBox").style.display =
-    category === "管理" ? "block" : "none";
-
-  loadData();
-}
-
-async function loadData() {
-  const list = document.getElementById("list");
-
-  const { data, error } = await client
-    .from("shipments")
+  const list=document.getElementById("list");
+  const {data,error}=await client.from("shipments")
     .select("*")
-    .eq("date", selectedDate)
-    .eq("category", selectedCategory)
-    .order("id", { ascending: false });
+    .eq("date",selectedDate)
+    .eq("category",selectedCategory)
+    .order("id",{ascending:false});
 
-  if (error) {
-    list.textContent = "読み込みエラー：" + error.message;
+  if(error){list.textContent="読み込みエラー："+error.message;return;}
+
+  if(!data.length){
+    list.innerHTML=`<div style="text-align:center;padding:30px">${selectedCategory}はありません</div>`;
     return;
   }
 
-  list.innerHTML = "";
-
-  if (!data || data.length === 0) {
-    list.innerHTML = `<div class="empty">${selectedCategory}はありません</div>`;
-    return;
-  }
-
-  data.forEach(item => {
-    const div = document.createElement("div");
-    div.className = "item" + (item.done ? " done" : "");
-
-    const statusClass = item.status === "重要" ? "important" : "";
-
-    div.innerHTML = `
-      <div class="title ${statusClass}">${item.title || ""}</div>
-      <div>${item.content || ""}</div>
-      <div class="${statusClass}">${item.status || ""}</div>
-      <button class="like" onclick="confirmItem(${item.id})">
-        ${item.done ? "確認済み 👍" : "確認した 👍"}
-      </button>
+  list.innerHTML="";
+  data.forEach(item=>{
+    const div=document.createElement("div");
+    div.className="item"+(item.done?" done":"");
+    const imp=item.status==="重要"?"important":"";
+    div.innerHTML=`
+      <div class="${imp}" style="font-weight:bold;font-size:22px">${item.title||""}</div>
+      <div>${item.content||""}</div>
+      <div class="${imp}">${item.status||""}</div>
+      <button onclick="confirmItem(${item.id})">${item.done?"確認済み 👍":"確認した 👍"}</button>
     `;
-
     list.appendChild(div);
   });
 }
 
-async function addData() {
-  const title = document.getElementById("title").value;
-  const content = document.getElementById("content").value;
-  const status = document.getElementById("status").value;
-  const message = document.getElementById("message");
+async function loadSchedule(){
+  const list=document.getElementById("list");
+  const {data,error}=await client.from("shipping_schedule")
+    .select("*")
+    .eq("date",selectedDate);
 
-  const { error } = await client.from("shipments").insert([{
-    date: selectedDate,
-    category: "管理",
+  if(error){list.textContent="読み込みエラー："+error.message;return;}
+
+  list.innerHTML="<h2>出荷予定</h2>";
+
+  schedules.forEach(s=>{
+    const found=data.find(x=>x.company===s.company&&x.place===s.place);
+    const status=found?found.status:"なし";
+    const div=document.createElement("div");
+    div.className="schedule-row";
+    div.innerHTML=`
+      <div><b>${s.company}</b><br>${s.place}</div>
+      <div>
+        <button class="${status==="あり"?"yes":"no"}" onclick="setSchedule('${s.company}','${s.place}','あり')">あり</button>
+        <button class="${status==="なし"?"yes":"no"}" onclick="setSchedule('${s.company}','${s.place}','なし')">なし</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+async function setSchedule(company,place,status){
+  const {data}=await client.from("shipping_schedule")
+    .select("*")
+    .eq("date",selectedDate)
+    .eq("company",company)
+    .eq("place",place)
+    .maybeSingle();
+
+  if(data){
+    await client.from("shipping_schedule").update({status}).eq("id",data.id);
+  }else{
+    await client.from("shipping_schedule").insert([{date:selectedDate,company,place,status}]);
+  }
+  loadSchedule();
+}
+
+async function addData(){
+  const title=document.getElementById("title").value;
+  const content=document.getElementById("content").value;
+  const status=document.getElementById("status").value;
+  const message=document.getElementById("message");
+
+  const {error}=await client.from("shipments").insert([{
+    date:selectedDate,
+    category:"管理",
     title,
     content,
     status,
-    done: false
+    done:false
   }]);
 
-  if (error) {
-    message.textContent = "追加エラー：" + error.message;
-    return;
-  }
-
-  message.textContent = "追加しました";
-  document.getElementById("title").value = "";
-  document.getElementById("content").value = "";
+  if(error){message.textContent="追加エラー："+error.message;return;}
+  message.textContent="追加しました";
+  document.getElementById("title").value="";
+  document.getElementById("content").value="";
   loadData();
 }
 
-async function confirmItem(id) {
-  await client
-    .from("shipments")
-    .update({ done: true })
-    .eq("id", id);
-
+async function confirmItem(id){
+  await client.from("shipments").update({done:true}).eq("id",id);
   loadData();
 }
 
-generateWeekButtons();
+generateWeek();
 loadData();
 </script>
 
