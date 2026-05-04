@@ -3,105 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <title>出荷管理</title>
-</head>
-<body>
-  <h1>出荷管理</h1>
-
-  日付：
-  <input type="date" id="datePicker"><br><br>
-
-  <input id="title" placeholder="タイトル"><br><br>
-  <input id="content" placeholder="内容"><br><br>
-
-  <select id="status">
-    <option value="通常">通常</option>
-    <option value="重要">重要</option>
-  </select><br><br>
-
-  <button onclick="addData()">追加する</button>
-
-  <hr>
-  <div id="message"></div>
-  <div id="list">読み込み中...</div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const client = window.supabase.createClient(
-      "https://bylottznuwuizncgfltd.supabase.co",
-      "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
-    );
-
-    // 今日の日付セット
-    const today = new Date().toISOString().split('T')[0];
-    const datePicker = document.getElementById("datePicker");
-    datePicker.value = today;
-
-    datePicker.addEventListener("change", loadData);
-
-    async function loadData() {
-      const selectedDate = datePicker.value;
-      const list = document.getElementById("list");
-      const message = document.getElementById("message");
-
-      const { data, error } = await client
-        .from("shipments")
-        .select("*")
-        .eq("date", selectedDate)
-        .order("id", { ascending: false });
-
-      if (error) {
-        message.textContent = "読み込みエラー: " + error.message;
-        return;
-      }
-
-      list.innerHTML = "";
-
-      if (data.length === 0) {
-        list.textContent = "この日のデータはありません";
-        return;
-      }
-
-      data.forEach(item => {
-        const div = document.createElement("div");
-        div.style.border = "1px solid #ccc";
-        div.style.padding = "10px";
-        div.style.margin = "10px";
-
-        div.innerHTML = `
-          <b>${item.title}</b><br>
-          ${item.content}<br>
-          ${item.status}
-        `;
-
-        list.appendChild(div);
-      });
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: sans-serif;
+      background: #f7f2ec;
+      color: #3b2a22;
     }
 
-    async function addData() {
-      const title = document.getElementById("title").value;
-      const content = document.getElementById("content").value;
-      const status = document.getElementById("status").value;
-      const selectedDate = datePicker.value;
-      const message = document.getElementById("message");
-
-      const { error } = await client
-        .from("shipments")
-        .insert([
-          { date: selectedDate, title, content, status, done: false }
-        ]);
-
-      if (error) {
-        message.textContent = "追加エラー: " + error.message;
-        return;
-      }
-
-      message.textContent = "追加しました";
-      document.getElementById("title").value = "";
-      document.getElementById("content").value = "";
-      loadData();
+    h1 {
+      font-size: 32px;
+      margin-bottom: 24px;
     }
 
-    loadData();
-  </script>
-</body>
-</html>
+    .tabs, .dates {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      margin-bottom: 16px;
+    }
+
+    button {
+      border: none;
+      border-radius: 18px;
+      padding: 18px 34px;
+      font-size: 22px;
+      font-weight: bold;
+      background: #e8dfd6;
+      color: #3b2a22;
+      white-space: nowrap;
+    }
+
+    button.active {
+      background: #9a663e;
+      color: white;
+    }
+
+    .date-btn {
+      padding: 14px 28px;
+      font-size: 22px;
+    }
+
+    .card {
+      background: white;
+      border: 2px solid #e2d6ca;
+      border-radius: 24px;
+      padding: 28px;
+      margin-top: 18px;
+      min-height: 90px;
+      font-size: 22px;
+      color: #7b6252;
+    }
+
+    .item {
+      border-bottom: 1px solid #e2d6ca;
+      padding: 14px 0;
+    }
+
+    .item-title {
+      font-weight: bold;
+      color: #3b2a22;
+      font-size: 
