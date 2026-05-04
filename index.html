@@ -1,31 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>出荷管理</title>
-</head>
-<body>
-
-<h1>出荷管理</h1>
-
-<input id="title" placeholder="タイトル"><br><br>
-<input id="content" placeholder="内容"><br><br>
-
-<select id="status">
-  <option value="通常">通常</option>
-  <option value="重要">重要</option>
-</select><br><br>
-
-<button onclick="addData()">追加する</button>
-
-<hr>
-
-<div id="list"></div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
 const supabase = window.supabase.createClient(
-  "https://bylottznuwuizncgfltd.supabase.co",
+  "https://bylottznwuizncgfltd.supabase.co",
   "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
 );
 
@@ -46,21 +21,17 @@ async function loadData() {
 
   data.forEach(item => {
     const div = document.createElement('div');
-    div.style.border = '1px solid #ccc';
-    div.style.padding = '10px';
-    div.style.margin = '10px';
-
     div.innerHTML = `
+      <hr>
       <b>${item.title}</b><br>
       ${item.content}<br>
       ${item.status}
     `;
-
     list.appendChild(div);
   });
 }
 
-// データ追加
+// 追加
 async function addData() {
   const title = document.getElementById('title').value;
   const content = document.getElementById('content').value;
@@ -73,22 +44,14 @@ async function addData() {
     ]);
 
   if (error) {
-    alert("エラー：" + error.message);
+    alert("追加エラー: " + error.message);
     return;
   }
 
-  // 入力クリア
-  document.getElementById('title').value = '';
-  document.getElementById('content').value = '';
-
-  // 再読み込み
+  alert("追加した！");
   loadData();
 }
 
 // 初回読み込み
 loadData();
-
 </script>
-
-</body>
-</html>
