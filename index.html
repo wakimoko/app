@@ -3,107 +3,133 @@
 <head>
   <meta charset="UTF-8">
   <title>出荷管理</title>
+  <style>
+    body { margin:0; padding:24px; font-family:sans-serif; background:#f7f2ec; color:#3b2a22; }
+    h1 { font-size:32px; margin-bottom:24px; }
+    .tabs { display:flex; gap:12px; overflow-x:auto; margin-bottom:16px; }
+    button { border:none; border-radius:18px; padding:16px 28px; font-size:20px; font-weight:bold; background:#e8dfd6; color:#3b2a22; white-space:nowrap; }
+    button.active, .add-btn { background:#9a663e; color:white; }
+    .card { background:white; border:2px solid #e2d6ca; border-radius:24px; padding:24px; margin-top:18px; font-size:20px; }
+    input, textarea, select { width:100%; box-sizing:border-box; border:2px solid #e2d6ca; border-radius:14px; padding:14px; font-size:18px; margin-bottom:12px; }
+    textarea { height:100px; }
+    .item { border-bottom:1px solid #e2d6ca; padding:14px 0; }
+    .item-title { font-weight:bold; font-size:22px; }
+    .empty { text-align:center; color:#7b6252; padding:28px; }
+  </style>
 </head>
 <body>
-  <h1>出荷管理</h1>
 
-  <p>日付</p>
-  <input type="date" id="datePicker">
+<h1>出荷管理</h1>
 
-  <p>タイトル</p>
+<div class="tabs">
+  <button class="tab active" onclick="selectCategory('注意事項', this)">注意事項</button>
+  <button class="tab" onclick="selectCategory('出荷予定', this)">出荷予定</button>
+  <button class="tab" onclick="selectCategory('当日確認', this)">当日確認</button>
+  <button class="tab" onclick="selectCategory('管理', this)">管理</button>
+</div>
+
+<input type="date" id="datePicker">
+
+<div class="card" id="list">読み込み中...</div>
+
+<div class="card" id="adminBox" style="display:none;">
+  <h2 id="adminTitle">管理</h2>
   <input id="title" placeholder="タイトル">
-
-  <p>内容</p>
-  <input id="content" placeholder="内容">
-
-  <p>状態</p>
+  <textarea id="content" placeholder="内容"></textarea>
   <select id="status">
     <option value="通常">通常</option>
     <option value="重要">重要</option>
   </select>
-
-  <br><br>
-  <button onclick="addData()">追加する</button>
-
-  <hr>
+  <button class="add-btn" onclick="addData()">追加する</button>
   <div id="message"></div>
-  <div id="list">読み込み中...</div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const client = window.supabase.createClient(
-      "https://bylottznuwuizncgfltd.supabase.co",
-      "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
-    );
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const client = window.supabase.createClient(
+  "https://bylottznuwuizncgfltd.supabase.co",
+  "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
+);
 
-    const datePicker = document.getElementById("datePicker");
-    datePicker.value = new Date().toISOString().split("T")[0];
-    datePicker.addEventListener("change", loadData);
+let selectedCategory = "注意事項";
+const datePicker = document.getElementById("datePicker");
+datePicker.value = new Date().toISOString().split("T")[0];
+datePicker.addEventListener("change", loadData);
 
-    async function loadData() {
-      const selectedDate = datePicker.value;
-      const list = document.getElementById("list");
-      const message = document.getElementById("message");
-      message.textContent = "";
+function selectCategory(category, button) {
+  selectedCategory = category;
+  document.querySelectorAll(".tab").forEach(btn => btn.classList.remove("active"));
+  button.classList.add("active");
 
-      const { data, error } = await client
-        .from("shipments")
-        .select("*")
-        .eq("date", selectedDate)
-        .order("id", { ascending: false });
+  document.getElementById("adminBox").style.display =
+    category === "管理" ? "block" : "none";
 
-      if (error) {
-        message.textContent = "読み込みエラー：" + error.message;
-        return;
-      }
+  loadData();
+}
 
-      list.innerHTML = "";
+async function loadData() {
+  const selectedDate = datePicker.value;
+  const list = document.getElementById("list");
 
-      if (!data || data.length === 0) {
-        list.textContent = "この日のデータはありません";
-        return;
-      }
+  const { data, error } = await client
+    .from("shipments")
+    .select("*")
+    .eq("date", selectedDate)
+    .eq("category", selectedCategory)
+    .order("id", { ascending: false });
 
-      data.forEach(item => {
-        const div = document.createElement("div");
-        div.style.border = "1px solid #ccc";
-        div.style.padding = "10px";
-        div.style.margin = "10px";
+  if (error) {
+    list.textContent = "読み込みエラー：" + error.message;
+    return;
+  }
 
-        div.innerHTML =
-          "<b>" + (item.title || "") + "</b><br>" +
-          (item.content || "") + "<br>" +
-          (item.status || "");
+  list.innerHTML = "";
 
-        list.appendChild(div);
-      });
-    }
+  if (!data || data.length === 0) {
+    list.innerHTML = `<div class="empty">${selectedCategory}はありません</div>`;
+    return;
+  }
 
-    async function addData() {
-      const selectedDate = datePicker.value;
-      const title = document.getElementById("title").value;
-      const content = document.getElementById("content").value;
-      const status = document.getElementById("status").value;
-      const message = document.getElementById("message");
+  data.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `
+      <div class="item-title">${item.title || ""}</div>
+      <div>${item.content || ""}</div>
+      <div>${item.status || ""}</div>
+    `;
+    list.appendChild(div);
+  });
+}
 
-      message.textContent = "追加中...";
+async function addData() {
+  const selectedDate = datePicker.value;
+  const title = document.getElementById("title").value;
+  const content = document.getElementById("content").value;
+  const status = document.getElementById("status").value;
+  const message = document.getElementById("message");
 
-      const { error } = await client
-        .from("shipments")
-        .insert([{ date: selectedDate, title: title, content: content, status: status, done: false }]);
+  const { error } = await client.from("shipments").insert([{
+    date: selectedDate,
+    category: "管理",
+    title,
+    content,
+    status,
+    done: false
+  }]);
 
-      if (error) {
-        message.textContent = "追加エラー：" + error.message;
-        return;
-      }
+  if (error) {
+    message.textContent = "追加エラー：" + error.message;
+    return;
+  }
 
-      message.textContent = "追加しました";
-      document.getElementById("title").value = "";
-      document.getElementById("content").value = "";
-      loadData();
-    }
+  message.textContent = "追加しました";
+  document.getElementById("title").value = "";
+  document.getElementById("content").value = "";
+  loadData();
+}
 
-    loadData();
-  </script>
+loadData();
+</script>
 </body>
 </html>
