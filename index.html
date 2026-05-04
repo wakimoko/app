@@ -5,15 +5,18 @@
   <title>出荷管理</title>
   <style>
     body { margin:0; padding:24px; font-family:sans-serif; background:#f7f2ec; color:#3b2a22; }
-    h1 { font-size:32px; margin-bottom:24px; }
-    .tabs { display:flex; gap:12px; overflow-x:auto; margin-bottom:16px; }
-    button { border:none; border-radius:18px; padding:16px 28px; font-size:20px; font-weight:bold; background:#e8dfd6; color:#3b2a22; white-space:nowrap; }
+    h1 { font-size:32px; }
+    .tabs, .week { display:flex; gap:10px; overflow-x:auto; margin:14px 0; }
+    button { border:none; border-radius:18px; padding:14px 24px; font-size:18px; font-weight:bold; background:#e8dfd6; color:#3b2a22; white-space:nowrap; }
     button.active, .add-btn { background:#9a663e; color:white; }
-    .card { background:white; border:2px solid #e2d6ca; border-radius:24px; padding:24px; margin-top:18px; font-size:20px; }
+    .card { background:white; border:2px solid #e2d6ca; border-radius:24px; padding:22px; margin-top:16px; font-size:18px; }
     input, textarea, select { width:100%; box-sizing:border-box; border:2px solid #e2d6ca; border-radius:14px; padding:14px; font-size:18px; margin-bottom:12px; }
-    textarea { height:100px; }
+    textarea { height:90px; }
     .item { border-bottom:1px solid #e2d6ca; padding:14px 0; }
-    .item-title { font-weight:bold; font-size:22px; }
+    .title { font-weight:bold; font-size:22px; }
+    .important { color:#d22; font-weight:bold; }
+    .done { opacity:.55; text-decoration:line-through; }
+    .like { margin-top:8px; padding:8px 14px; font-size:16px; }
     .empty { text-align:center; color:#7b6252; padding:28px; }
   </style>
 </head>
@@ -28,12 +31,16 @@
   <button class="tab" onclick="selectCategory('管理', this)">管理</button>
 </div>
 
-<input type="date" id="datePicker">
+<div class="week">
+  <button onclick="changeWeek(-1)">前週</button>
+  <div id="weekTabs" class="week"></div>
+  <button onclick="changeWeek(1)">来週</button>
+</div>
 
 <div class="card" id="list">読み込み中...</div>
 
 <div class="card" id="adminBox" style="display:none;">
-  <h2 id="adminTitle">管理</h2>
+  <h2>管理</h2>
   <input id="title" placeholder="タイトル">
   <textarea id="content" placeholder="内容"></textarea>
   <select id="status">
@@ -52,9 +59,70 @@ const client = window.supabase.createClient(
 );
 
 let selectedCategory = "注意事項";
-const datePicker = document.getElementById("datePicker");
-datePicker.value = new Date().toISOString().split("T")[0];
-datePicker.addEventListener("change", loadData);
+let weekOffset = 0;
+let selectedDate = "";
+
+function formatDate(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function labelDate(d) {
+  const m = d.getMonth() + 1;
+  const day = d.getDate();
+  const names = ["日","月","火","水","木","金","土"];
+  return `${m}/${day}(${names[d.getDay()]})`;
+}
+
+function getMonday(base) {
+  const d = new Date(base);
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff + weekOffset * 7);
+  return d;
+}
+
+function generateWeekButtons() {
+  const box = document.getElementById("weekTabs");
+  box.innerHTML = "";
+
+  const monday = getMonday(new Date());
+
+  for (let i = 0; i < 5; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+
+    const dateStr = formatDate(d);
+    const btn = document.createElement("button");
+    btn.textContent = labelDate(d);
+
+    if (i === 0 && !selectedDate) {
+      selectedDate = dateStr;
+      btn.classList.add("active");
+    }
+
+    if (dateStr === selectedDate) {
+      btn.classList.add("active");
+    }
+
+    btn.onclick = () => {
+      selectedDate = dateStr;
+      generateWeekButtons();
+      loadData();
+    };
+
+    box.appendChild(btn);
+  }
+}
+
+function changeWeek(num) {
+  weekOffset += num;
+  selectedDate = "";
+  generateWeekButtons();
+  loadData();
+}
 
 function selectCategory(category, button) {
   selectedCategory = category;
@@ -68,7 +136,6 @@ function selectCategory(category, button) {
 }
 
 async function loadData() {
-  const selectedDate = datePicker.value;
   const list = document.getElementById("list");
 
   const { data, error } = await client
@@ -92,18 +159,24 @@ async function loadData() {
 
   data.forEach(item => {
     const div = document.createElement("div");
-    div.className = "item";
+    div.className = "item" + (item.done ? " done" : "");
+
+    const statusClass = item.status === "重要" ? "important" : "";
+
     div.innerHTML = `
-      <div class="item-title">${item.title || ""}</div>
+      <div class="title ${statusClass}">${item.title || ""}</div>
       <div>${item.content || ""}</div>
-      <div>${item.status || ""}</div>
+      <div class="${statusClass}">${item.status || ""}</div>
+      <button class="like" onclick="confirmItem(${item.id})">
+        ${item.done ? "確認済み 👍" : "確認した 👍"}
+      </button>
     `;
+
     list.appendChild(div);
   });
 }
 
 async function addData() {
-  const selectedDate = datePicker.value;
   const title = document.getElementById("title").value;
   const content = document.getElementById("content").value;
   const status = document.getElementById("status").value;
@@ -129,7 +202,18 @@ async function addData() {
   loadData();
 }
 
+async function confirmItem(id) {
+  await client
+    .from("shipments")
+    .update({ done: true })
+    .eq("id", id);
+
+  loadData();
+}
+
+generateWeekButtons();
 loadData();
 </script>
+
 </body>
 </html>
