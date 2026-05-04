@@ -64,4 +64,192 @@
     .item-title {
       font-weight: bold;
       color: #3b2a22;
-      font-size: 
+      font-size: 22px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 30px;
+      color: #7b6252;
+    }
+
+    .admin {
+      margin-top: 18px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      box-sizing: border-box;
+      border: 2px solid #e2d6ca;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+
+    textarea {
+      height: 110px;
+    }
+
+    .add-btn {
+      width: 100%;
+      background: #9a663e;
+      color: white;
+      margin-top: 8px;
+    }
+
+    .note {
+      margin-top: 14px;
+      color: #8a6f5f;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>出荷管理</h1>
+
+  <div class="tabs">
+    <button class="tab active" onclick="selectCategory('注意事項', this)">注意事項</button>
+    <button class="tab" onclick="selectCategory('出荷予定', this)">出荷予定</button>
+    <button class="tab" onclick="selectCategory('当日確認', this)">当日確認</button>
+    <button class="tab" onclick="selectCategory('管理', this)">管理</button>
+  </div>
+
+  <div class="dates">
+    <button class="date-btn" onclick="selectDate('4/19', this)">4/19</button>
+    <button class="date-btn active" onclick="selectDate('4/20', this)">4/20</button>
+    <button class="date-btn" onclick="selectDate('4/21', this)">4/21</button>
+    <button class="date-btn" onclick="selectDate('4/22', this)">4/22</button>
+    <button class="date-btn" onclick="selectDate('4/23', this)">4/23</button>
+    <button class="date-btn" onclick="selectDate('4/24', this)">4/24</button>
+  </div>
+
+  <div class="card" id="list">読み込み中...</div>
+
+  <div class="card admin" id="adminBox" style="display:none;">
+    <h2 id="adminTitle">管理（4/20）</h2>
+
+    <input id="title" placeholder="タイトル">
+    <textarea id="content" placeholder="内容"></textarea>
+
+    <select id="status">
+      <option value="通常">通常</option>
+      <option value="重要">重要</option>
+    </select>
+
+    <button class="add-btn" onclick="addData()">追加する</button>
+    <div class="note">この追加内容は全員に反映されます</div>
+    <div id="message"></div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const client = window.supabase.createClient(
+  "https://bylottznuwuizncgfltd.supabase.co",
+  "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
+);
+
+let selectedCategory = "注意事項";
+let selectedDate = "4/20";
+
+function selectCategory(category, button) {
+  selectedCategory = category;
+
+  document.querySelectorAll(".tab").forEach(btn => btn.classList.remove("active"));
+  button.classList.add("active");
+
+  document.getElementById("adminBox").style.display =
+    category === "管理" ? "block" : "none";
+
+  document.getElementById("adminTitle").textContent =
+    `管理（${selectedDate}）`;
+
+  loadData();
+}
+
+function selectDate(date, button) {
+  selectedDate = date;
+
+  document.querySelectorAll(".date-btn").forEach(btn => btn.classList.remove("active"));
+  button.classList.add("active");
+
+  document.getElementById("adminTitle").textContent =
+    `管理（${selectedDate}）`;
+
+  loadData();
+}
+
+async function loadData() {
+  const list = document.getElementById("list");
+
+  const { data, error } = await client
+    .from("shipments")
+    .select("*")
+    .eq("date", selectedDate)
+    .eq("category", selectedCategory)
+    .order("id", { ascending: false });
+
+  if (error) {
+    list.textContent = "読み込みエラー：" + error.message;
+    return;
+  }
+
+  list.innerHTML = "";
+
+  if (!data || data.length === 0) {
+    list.innerHTML = `<div class="empty">${selectedCategory}はありません</div>`;
+    return;
+  }
+
+  data.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `
+      <div class="item-title">${item.title || ""}</div>
+      <div>${item.content || ""}</div>
+      <div>${item.status || ""}</div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+async function addData() {
+  const title = document.getElementById("title").value;
+  const content = document.getElementById("content").value;
+  const status = document.getElementById("status").value;
+  const message = document.getElementById("message");
+
+  if (!title && !content) {
+    message.textContent = "タイトルか内容を入力して";
+    return;
+  }
+
+  const { error } = await client
+    .from("shipments")
+    .insert([{
+      date: selectedDate,
+      category: "管理",
+      title,
+      content,
+      status,
+      done: false
+    }]);
+
+  if (error) {
+    message.textContent = "追加エラー：" + error.message;
+    return;
+  }
+
+  message.textContent = "追加しました";
+  document.getElementById("title").value = "";
+  document.getElementById("content").value = "";
+
+  loadData();
+}
+
+loadData();
+</script>
+
+</body>
+</html>
