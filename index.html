@@ -13,57 +13,52 @@ body{
   font-family:sans-serif;
   background:#f7f2ec;
   color:#000 !important;
-  overflow-x:hidden;
 }
-body,div,p,h1,h2,h3,span,b{color:#000 !important}
-h2{font-size:24px;margin-bottom:18px}
 
-.tabs,.dates{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px}
-button{
-  border:none;
-  border-radius:12px;
-  padding:10px 14px;
+/* タブ */
+.tabs{display:flex;gap:8px;margin-bottom:10px}
+.tabs button{
   background:#e6ddd4;
-  font-weight:bold;
+  color:#000 !important;
 }
-.active,.date-active{
+.active{
   background:#a9744f !important;
   color:#fff !important;
 }
 
+/* 日付 */
+.dates{display:flex;gap:8px;margin-bottom:12px}
+.dates button{
+  background:#e6ddd4;
+  color:#000 !important;
+}
+.date-active{
+  background:#a9744f !important;
+  color:#fff !important;
+}
+
+/* 管理時は非表示 */
+.hide{display:none}
+
+/* カード */
 .card{
   background:#fff;
-  width:100%;
   border-radius:14px;
-  padding:18px;
-  margin-top:14px;
-  box-shadow:0 2px 6px rgba(0,0,0,.06);
+  padding:16px;
+  margin-top:12px;
 }
-.item{border-bottom:1px solid #e6ddd4;padding:14px 0}
-.title{font-size:22px;font-weight:bold}
-.important{color:#d00 !important;font-weight:bold}
 
+/* 重要 */
+.important{color:red;font-weight:bold}
+
+/* 👍 */
 .like{
   margin-top:10px;
+  padding:6px 12px;
   border-radius:20px;
-  padding:7px 14px;
-  transition:all .15s ease;
 }
-.like-on{background:#c8a98a;transform:scale(1.08)}
+.like-on{background:#c8a98a}
 .like-off{background:#eee}
-
-input,select,textarea{
-  width:100%;
-  padding:12px;
-  margin:8px 0;
-  border:1px solid #e2d6ca;
-  border-radius:10px;
-  font-size:16px;
-}
-textarea{height:90px}
-.row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e6ddd4;padding:14px 0}
-.on{background:#a9744f;color:white!important}
-.off{background:#eee}
 </style>
 </head>
 
@@ -74,16 +69,16 @@ textarea{height:90px}
 <div class="tabs">
   <button id="tab_notice" onclick="setTab('notice')">注意事項</button>
   <button id="tab_ship" onclick="setTab('ship')">出荷予定</button>
-  <button id="tab_today" onclick="setTab('today')">当日確認</button>
   <button id="tab_manage" onclick="setTab('manage')">管理</button>
 </div>
 
-<div class="dates" id="dates"></div>
+<div id="dates" class="dates"></div>
 
 <div id="view"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+
 const client = window.supabase.createClient(
   "https://bylottznuwuizncgfltd.supabase.co",
   "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
@@ -93,10 +88,15 @@ let currentTab="notice";
 let currentDate="";
 let weekOffset=0;
 
+/* 日付フォーマット（/に統一） */
 function formatDate(d){
-  return d.toISOString().slice(0,10);
+  const y=d.getFullYear();
+  const m=String(d.getMonth()+1).padStart(2,"0");
+  const day=String(d.getDate()).padStart(2,"0");
+  return `${y}/${m}/${day}`;
 }
 
+/* 日付生成 */
 function loadDates(){
   const box=document.getElementById("dates");
   box.innerHTML="";
@@ -106,140 +106,147 @@ function loadDates(){
   const day=today.getDay();
   monday.setDate(today.getDate()+(day===0?-6:1-day)+weekOffset*7);
 
-  const prev=document.createElement("button");
-  prev.textContent="前週";
-  prev.onclick=()=>{weekOffset--;currentDate="";loadDates();render();}
-  box.appendChild(prev);
-
   for(let i=0;i<5;i++){
     const d=new Date(monday);
     d.setDate(monday.getDate()+i);
+
     const val=formatDate(d);
+
     if(!currentDate && i===0) currentDate=val;
 
     const btn=document.createElement("button");
     btn.textContent=(d.getMonth()+1)+"/"+d.getDate();
-    if(val===currentDate) btn.classList.add("date-active");
-    btn.onclick=()=>{currentDate=val;loadDates();render();}
+
+    if(val===currentDate){
+      btn.classList.add("date-active");
+    }
+
+    btn.onclick=()=>{
+      currentDate=val;
+      loadDates();
+      render();
+    };
+
     box.appendChild(btn);
   }
-
-  const next=document.createElement("button");
-  next.textContent="来週";
-  next.onclick=()=>{weekOffset++;currentDate="";loadDates();render();}
-  box.appendChild(next);
 }
 
+/* タブ */
 function setTab(tab){
   currentTab=tab;
+
   document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
   document.getElementById("tab_"+tab).classList.add("active");
+
   render();
 }
 
+/* 表示 */
 async function render(){
-  const view=document.getElementById("view");
 
-  if(currentTab==="notice" || currentTab==="today"){
-    const {data,error}=await client
+  const view=document.getElementById("view");
+  const dates=document.getElementById("dates");
+
+  /* 管理のとき日付消す */
+  if(currentTab==="manage"){
+    dates.classList.add("hide");
+  }else{
+    dates.classList.remove("hide");
+  }
+
+  /* 注意事項 */
+  if(currentTab==="notice"){
+
+    const {data}=await client
       .from("shipments")
       .select("*")
       .eq("date",currentDate);
 
-    if(error){view.innerHTML="<div class='card'>"+error.message+"</div>";return;}
-
     view.innerHTML="";
+
     if(!data || data.length===0){
-      view.innerHTML="<div class='card'>"+(currentTab==="notice"?"注意事項":"当日確認")+"はありません</div>";
+      view.innerHTML="<div class='card'>注意事項はありません</div>";
       return;
     }
 
     data.forEach(item=>{
       view.innerHTML+=`
-      <div class="card">
-        <div class="title ${item.status==="重要"?"important":""}">${item.title||""}</div>
-        <div>${item.content||""}</div>
-        <button class="like ${item.liked?"like-on":"like-off"}"
-          onclick="toggleLike(${item.id},${item.likes||0},${item.liked})">
-          👍 ×${item.likes||0}
-        </button>
-      </div>`;
+        <div class="card">
+          <div class="${item.status==="重要"?"important":""}">
+            ${item.title||""}
+          </div>
+          <div>${item.content||""}</div>
+
+          <button class="like ${item.liked?"like-on":"like-off"}"
+            onclick="toggleLike(${item.id},${item.likes||0},${item.liked})">
+            👍 ×${item.likes||0}
+          </button>
+        </div>
+      `;
     });
   }
 
-  if(currentTab==="ship"){
-    view.innerHTML=`
-    <div class="card">
-      <h3>出荷予定</h3>
-      ${scheduleRow("佐川急便","2F")}
-      <h3>福山通運</h3>
-      ${scheduleRow("福山通運","2F")}
-      ${scheduleRow("福山通運","梱包場")}
-      ${scheduleRow("福山通運","MJ倉庫")}
-    </div>`;
-  }
-
+  /* 管理 */
   if(currentTab==="manage"){
     view.innerHTML=`
-    <div class="card">
-      <h3>管理</h3>
-      <label>追加する日付</label>
-      <input type="date" id="dateSelect" value="${currentDate}">
-      <input id="title" placeholder="タイトル">
-      <textarea id="content" placeholder="内容"></textarea>
-      <select id="status">
-        <option>通常</option>
-        <option>重要</option>
-      </select>
-      <button class="active" onclick="add()">追加する</button>
-    </div>`;
+      <div class="card">
+        <h3>管理</h3>
+
+        <input type="date" id="dateSelect"><br>
+
+        <input id="title" placeholder="タイトル"><br>
+        <input id="content" placeholder="内容"><br>
+
+        <select id="status">
+          <option>通常</option>
+          <option>重要</option>
+        </select><br>
+
+        <button onclick="add()">追加する</button>
+      </div>
+    `;
   }
 }
 
-function scheduleRow(company,place){
-  return `
-  <div class="row">
-    <div><b>${place}</b></div>
-    <div>
-      <button class="off" onclick="setSchedule('${company}','${place}','あり')">あり</button>
-      <button class="on" onclick="setSchedule('${company}','${place}','なし')">なし</button>
-    </div>
-  </div>`;
-}
-
-async function setSchedule(company,place,status){
-  await client.from("shipping_schedule").insert({
-    date:currentDate,
-    company,
-    place,
-    status
-  });
-  alert(company+" "+place+" を "+status+" にしました");
-}
-
+/* 👍 */
 async function toggleLike(id,likes,liked){
-  const newLikes=liked ? Math.max(0,likes-1) : likes+1;
+  const newLikes = liked ? Math.max(0,likes-1) : likes+1;
+
   await client.from("shipments")
-    .update({likes:newLikes,liked:!liked})
+    .update({
+      likes:newLikes,
+      liked:!liked
+    })
     .eq("id",id);
+
   render();
 }
 
+/* 追加 */
 async function add(){
+
+  const raw=document.getElementById("dateSelect").value;
+
+  // ←ここ重要：/形式に変換
+  const date=raw.replaceAll("-","/");
+
   await client.from("shipments").insert({
-    date:document.getElementById("dateSelect").value,
+    date:date,
     title:document.getElementById("title").value,
     content:document.getElementById("content").value,
     status:document.getElementById("status").value,
     likes:0,
     liked:false
   });
-  alert("追加しました");
+
+  alert("追加した！");
   render();
 }
 
+/* 初期 */
 loadDates();
 setTab("notice");
+
 </script>
 
 </body>
