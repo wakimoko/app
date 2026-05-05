@@ -94,37 +94,40 @@ function renderDates(){
     render();
   };
 
-  const calWrap=document.createElement("div");
-  calWrap.style.position="relative";
+  const calWrap = document.createElement("div");
+  calWrap.style.position = "relative";
 
-  const calBtn=document.createElement("button");
-  calBtn.textContent="📅";
-  calBtn.style.width="100%";
+  const cal = document.createElement("input");
+  cal.type = "date";
+  cal.style.width = "100%";
+  cal.style.height = "44px";
+  cal.style.border = "none";
+  cal.style.borderRadius = "18px";
+  cal.style.background = "#e6ddd4";
+  cal.style.color = "transparent";
+  cal.style.fontSize = "16px";
 
-  const cal=document.createElement("input");
-  cal.type="date";
-  cal.style.position="absolute";
-  cal.style.left="0";
-  cal.style.top="0";
-  cal.style.opacity="0";
-  cal.style.width="100%";
-  cal.style.height="100%";
+  const label = document.createElement("div");
+  label.textContent = "🗓️";
+  label.style.position = "absolute";
+  label.style.inset = "0";
+  label.style.display = "flex";
+  label.style.alignItems = "center";
+  label.style.justifyContent = "center";
+  label.style.pointerEvents = "none";
+  label.style.fontSize = "20px";
 
-  calBtn.onclick=()=>{
-    if(cal.showPicker){ cal.showPicker(); }
-    else{ cal.click(); }
-  };
-
-  cal.onchange=()=>{
-    const selected=new Date(cal.value);
-    weekStart=getMonday(selected);
-    currentDate=formatDate(selected);
+  cal.onchange = () => {
+    if (!cal.value) return;
+    const selected = new Date(cal.value + "T00:00:00");
+    weekStart = getMonday(selected);
+    currentDate = formatDate(selected);
     renderDates();
     render();
   };
 
-  calWrap.appendChild(calBtn);
   calWrap.appendChild(cal);
+  calWrap.appendChild(label);
 
   const next=document.createElement("button");
   next.textContent="次週";
