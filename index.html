@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -6,34 +7,162 @@
 <title>出荷管理</title>
 
 <style>
-body{margin:0;padding:20px;background:#f6efe6;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;color:#111}
-h1{font-size:28px}
-button{margin:4px;padding:10px 14px;border:none;border-radius:16px;background:#e6ddd4;color:#111;font-weight:bold;font-size:15px}
-.active{background:#b88a5a!important;color:#fff!important}
-.card{background:#fff;padding:20px;border-radius:20px;margin-top:15px;position:relative}
-.item-title{font-size:22px;font-weight:800;margin-bottom:8px}
-.item-content{font-size:18px;margin-bottom:45px}
-.important{color:red}
-input,textarea,select{width:100%;padding:12px;margin-top:12px;border-radius:12px;border:1px solid #ddd;font-size:16px}
-textarea{height:100px}
-.icon-btn{position:absolute;bottom:10px;width:32px;height:32px;border-radius:50%;padding:0}
-.edit-btn{right:50px;background:#e6ddd4}
-.delete-btn{right:10px;background:#f3d6d6}
+body{
+  margin:0;
+  padding:20px;
+  background:#f6efe6;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;
+  color:#111;
+}
 
-#weekControls{display:grid;grid-template-columns:1fr 0.8fr 1fr;gap:8px;margin-top:12px}
-#dates{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}
-#weekControls button,#dates button{width:100%;margin:0;padding:10px 0}
+h1{
+  font-size:28px;
+  margin-bottom:25px;
+}
+
+button{
+  border:none;
+  border-radius:18px;
+  background:#e6ddd4;
+  color:#111;
+  font-weight:bold;
+  font-size:15px;
+}
+
+.active{
+  background:#b88a5a!important;
+  color:#fff!important;
+}
+
+.top-tabs{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-bottom:14px;
+}
+
+.top-tabs button{
+  width:100%;
+  padding:16px 0;
+}
+
+#weekControls{
+  display:grid;
+  grid-template-columns:1fr 0.8fr 1fr;
+  gap:8px;
+  margin-bottom:10px;
+}
+
+#weekControls button{
+  width:100%;
+  padding:12px 0;
+}
+
+#dates{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+  margin-bottom:15px;
+}
+
+#dates button{
+  width:100%;
+  padding:14px 0;
+}
+
+.card{
+  background:#fff;
+  border-radius:24px;
+  padding:24px;
+  margin-top:10px;
+  position:relative;
+}
+
+.item-title{
+  font-size:24px;
+  font-weight:800;
+  margin-bottom:10px;
+}
+
+.item-content{
+  font-size:18px;
+  white-space:pre-wrap;
+  margin-bottom:50px;
+}
+
+.important{
+  color:red;
+}
+
+.icon-btn{
+  position:absolute;
+  bottom:14px;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  padding:0;
+  font-size:18px;
+}
+
+.edit-btn{
+  right:60px;
+  background:#e6ddd4;
+}
+
+.delete-btn{
+  right:14px;
+  background:#f3d6d6;
+}
+
+input,textarea,select{
+  width:100%;
+  box-sizing:border-box;
+  padding:12px;
+  margin-top:12px;
+  border-radius:14px;
+  border:1px solid #ddd;
+  font-size:16px;
+}
+
+textarea{
+  height:110px;
+}
+
+.manage-save{
+  width:100%;
+  padding:14px 0;
+  margin-top:14px;
+  background:#b88a5a;
+  color:#fff;
+  font-size:16px;
+}
 
 #calendarBox{
   display:none;
   background:#fff;
-  border-radius:18px;
-  padding:14px;
-  margin-top:10px;
+  border-radius:22px;
+  padding:16px;
+  margin-bottom:14px;
 }
-.cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.cal-grid button{padding:8px 0;font-size:14px;border-radius:12px}
+
+.cal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.cal-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:6px;
+}
+
+.cal-grid button{
+  padding:10px 0;
+  border-radius:12px;
+  font-size:14px;
+}
 </style>
 </head>
 
@@ -41,10 +170,12 @@ textarea{height:100px}
 
 <h1>出荷管理</h1>
 
-<button id="tab_notice" onclick="setTab('notice')">注意事項</button>
-<button id="tab_ship" onclick="setTab('ship')">出荷予定</button>
-<button id="tab_today" onclick="setTab('today')">当日出荷</button>
-<button id="tab_manage" onclick="setTab('manage')">管理</button>
+<div class="top-tabs">
+  <button id="tab_notice" onclick="setTab('notice')">注意事項</button>
+  <button id="tab_ship" onclick="setTab('ship')">出荷予定</button>
+  <button id="tab_today" onclick="setTab('today')">当日出荷</button>
+  <button id="tab_manage" onclick="setTab('manage')">管理</button>
+</div>
 
 <div id="weekControls"></div>
 <div id="calendarBox"></div>
@@ -52,23 +183,24 @@ textarea{height:100px}
 <div id="view"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 const client = supabase.createClient(
   "https://bylottznuwuizncgfltd.supabase.co",
-  "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
+  "YOUR_SUPABASE_KEY"
 );
 
-let currentTab="notice";
-let currentDate="";
-let weekStart=getMonday(new Date());
-let editId=null;
-let calendarMonth=new Date();
+let currentTab = "notice";
+let currentDate = "";
+let weekStart = getMonday(new Date());
+let calendarMonth = new Date();
+let editId = null;
 
 function getMonday(date){
-  const d=new Date(date);
-  const day=d.getDay();
-  const diff=day===0 ? -6 : 1-day;
-  d.setDate(d.getDate()+diff);
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
   return d;
 }
 
@@ -77,237 +209,293 @@ function formatDate(d){
 }
 
 function setTab(tab){
-  currentTab=tab;
-  document.querySelectorAll("[id^='tab_']").forEach(b=>b.classList.remove("active"));
+  currentTab = tab;
+
+  document.querySelectorAll(".top-tabs button")
+    .forEach(btn => btn.classList.remove("active"));
+
   document.getElementById("tab_"+tab).classList.add("active");
-  document.getElementById("calendarBox").style.display="none";
+
   renderDates();
   render();
 }
 
 function renderDates(){
-  const controls=document.getElementById("weekControls");
-  const box=document.getElementById("dates");
+  const controls = document.getElementById("weekControls");
+  const dates = document.getElementById("dates");
 
-  controls.innerHTML="";
-  box.innerHTML="";
-
-  if(currentTab==="manage"){
-    controls.style.display="none";
-    box.style.display="none";
+  if(currentTab === "manage"){
+    controls.style.display = "none";
+    dates.style.display = "none";
     return;
   }
 
-  controls.style.display="grid";
-  box.style.display="grid";
+  controls.style.display = "grid";
+  dates.style.display = "grid";
 
-  const prev=document.createElement("button");
-  prev.textContent="前週";
-  prev.onclick=()=>{
-    weekStart.setDate(weekStart.getDate()-7);
-    currentDate="";
-    renderDates();
-    render();
-  };
+  controls.innerHTML =     <button onclick="moveWeek(-1)">前週</button>     <button onclick="toggleCalendar()">🗓️</button>     <button onclick="moveWeek(1)">次週</button>  ;
 
-  const calBtn=document.createElement("button");
-  calBtn.textContent="🗓️";
-  calBtn.onclick=()=>{
-    const cal=document.getElementById("calendarBox");
-    cal.style.display = cal.style.display==="block" ? "none" : "block";
-    renderCalendar();
-  };
-
-  const next=document.createElement("button");
-  next.textContent="次週";
-  next.onclick=()=>{
-    weekStart.setDate(weekStart.getDate()+7);
-    currentDate="";
-    renderDates();
-    render();
-  };
-
-  controls.appendChild(prev);
-  controls.appendChild(calBtn);
-  controls.appendChild(next);
+  dates.innerHTML = "";
 
   for(let i=0;i<5;i++){
-    const d=new Date(weekStart);
-    d.setDate(weekStart.getDate()+i);
-    const text=formatDate(d);
+    const d = new Date(weekStart);
+    d.setDate(d.getDate()+i);
 
-    if(!currentDate && i===0) currentDate=text;
+    const text = formatDate(d);
 
-    const btn=document.createElement("button");
-    btn.textContent=text;
-    if(text===currentDate) btn.classList.add("active");
+    if(!currentDate && i===0){
+      currentDate = text;
+    }
 
-    btn.onclick=()=>{
-      currentDate=text;
-      document.getElementById("calendarBox").style.display="none";
+    const btn = document.createElement("button");
+    btn.textContent = text;
+
+    if(text===currentDate){
+      btn.classList.add("active");
+    }
+
+    btn.onclick = ()=>{
+      currentDate = text;
       renderDates();
       render();
     };
 
-    box.appendChild(btn);
+    dates.appendChild(btn);
   }
+}
+
+function moveWeek(n){
+  weekStart.setDate(weekStart.getDate() + (7n));
+  currentDate = "";
+  renderDates();
+  render();
+}
+
+function toggleCalendar(){
+  const box = document.getElementById("calendarBox");
+
+  if(box.style.display === "block"){
+    box.style.display = "none";
+    return;
+  }
+
+  box.style.display = "block";
+  renderCalendar();
 }
 
 function renderCalendar(){
-  const box=document.getElementById("calendarBox");
-  const y=calendarMonth.getFullYear();
-  const m=calendarMonth.getMonth();
+  const box = document.getElementById("calendarBox");
 
-  const first=new Date(y,m,1);
-  const last=new Date(y,m+1,0);
-  const startDay=first.getDay();
+  const y = calendarMonth.getFullYear();
+  const m = calendarMonth.getMonth();
 
-  let html=`
+  const first = new Date(y,m,1);
+  const last = new Date(y,m+1,0);
+
+  let html = `
     <div class="cal-head">
-      <button onclick="moveMonth(-1)">前月</button>
-      <b>${y}/${m+1}</b>
-      <button onclick="moveMonth(1)">次月</button>
+      <button onclick="changeMonth(-1)">←</button>
+      <b>${y} / ${m+1}</b>
+      <button onclick="changeMonth(1)">→</button>
     </div>
     <div class="cal-grid">
-      <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
   `;
 
-  for(let i=0;i<startDay;i++) html += `<div></div>`;
+  for(let i=0;i<first.getDay();i++){
+    html += `<div></div>`;
+  }
 
-  for(let day=1;day<=last.getDate();day++){
-    html += `<button onclick="pickDate(${y},${m},${day})">${day}</button>`;
+  for(let d=1; d<=last.getDate(); d++){
+    html += `
+      <button onclick="selectCalendarDate(${y},${m},${d})">
+        ${d}
+      </button>
+    `;
   }
 
   html += `</div>`;
-  box.innerHTML=html;
+
+  box.innerHTML = html;
 }
 
-function moveMonth(n){
+function changeMonth(n){
   calendarMonth.setMonth(calendarMonth.getMonth()+n);
   renderCalendar();
 }
 
-function pickDate(y,m,day){
-  const selected=new Date(y,m,day);
-  weekStart=getMonday(selected);
-  currentDate=formatDate(selected);
-  document.getElementById("calendarBox").style.display="none";
+function selectCalendarDate(y,m,d){
+  const selected = new Date(y,m,d);
+
+  weekStart = getMonday(selected);
+  currentDate = formatDate(selected);
+
+  document.getElementById("calendarBox").style.display = "none";
+
   renderDates();
   render();
 }
 
 async function render(){
-  const view=document.getElementById("view");
-  view.innerHTML="";
+  const view = document.getElementById("view");
+  view.innerHTML = "";
 
   if(currentTab==="ship"){
-    view.innerHTML=`
+    view.innerHTML = `
       <div class="card">
-        <h3>出荷予定</h3>
-        佐川急便 2F<br><br>
-        福山通運 2F / 梱包場 / MJ倉庫
-      </div>`;
+        <div class="item-title">出荷予定</div>
+        <div class="item-content">
+佐川急便
+2F
+
+福山通運
+2F / 梱包場 / MJ倉庫
+        </div>
+      </div>
+    `;
     return;
   }
 
   if(currentTab==="today"){
-    view.innerHTML=`
+    view.innerHTML = `
       <div class="card">
-        <h3>当日出荷</h3>
-        2F：あり / なし<br>
-        2Fテーブル：あり / なし<br>
-        梱包場：あり / なし<br>
-        MJ倉庫：あり / なし
-      </div>`;
+        <div class="item-title">当日出荷</div>
+        <div class="item-content">
+2F：あり / なし
+2Fテーブル：あり / なし
+梱包場：あり / なし
+MJ倉庫：あり / なし
+        </div>
+      </div>
+    `;
     return;
   }
 
   if(currentTab==="notice"){
-    const {data,error}=await client
+    const {data,error} = await client
       .from("shipments")
-      .select("*")
+      .select("")
       .eq("date",currentDate)
       .eq("category","notice")
       .order("id",{ascending:false});
 
-    if(error){view.innerHTML=`<div class="card">${error.message}</div>`;return;}
-    if(!data || data.length===0){view.innerHTML=`<div class="card">データなし</div>`;return;}
+    if(error){
+      view.innerHTML = `<div class="card">${error.message}</div>`;
+      return;
+    }
+
+    if(!data || data.length===0){
+      view.innerHTML = `<div class="card">データなし</div>`;
+      return;
+    }
 
     data.forEach(item=>{
-      view.innerHTML+=`
+      view.innerHTML += `
         <div class="card">
-          <div class="item-title ${item.status==="重要"?"important":""}">${item.title||""}</div>
-          <div class="item-content">${item.content||""}</div>
-          <button class="icon-btn edit-btn" onclick='startEdit(${JSON.stringify(item)})'>✏️</button>
-          <button class="icon-btn delete-btn" onclick="deleteItem(${item.id})">🗑️</button>
-        </div>`;
+          <div class="item-title ${item.status==="重要" ? "important" : ""}">
+            ${item.title || ""}
+          </div>
+
+          <div class="item-content">
+            ${item.content || ""}
+          </div>
+
+          <button class="icon-btn edit-btn"
+            onclick='startEdit(${JSON.stringify(item)})'>
+            ✏️
+          </button>
+
+          <button class="icon-btn delete-btn"
+            onclick="deleteItem(${item.id})">
+            🗑️
+          </button>
+        </div>
+      `;
     });
   }
 
   if(currentTab==="manage"){
-    view.innerHTML=`
+    view.innerHTML = `
       <div class="card">
+
         <select id="dateInput"></select>
+
         <input id="title" placeholder="タイトル">
+
         <textarea id="content" placeholder="内容"></textarea>
+
         <select id="status">
           <option value="通常">通常</option>
           <option value="重要">重要</option>
         </select>
-        <button class="active" onclick="${editId ? "saveEdit()" : "addData()"}">
+
+        <button class="manage-save"
+          onclick="${editId ? "saveEdit()" : "addData()"}">
           ${editId ? "保存" : "追加"}
         </button>
-        ${editId ? `<button onclick="cancelEdit()">キャンセル</button>` : ""}
-      </div>`;
 
-    const select=document.getElementById("dateInput");
+      </div>
+    `;
+
+    const select = document.getElementById("dateInput");
+
     for(let i=0;i<5;i++){
-      const d=new Date(weekStart);
-      d.setDate(weekStart.getDate()+i);
-      const text=formatDate(d);
-      select.innerHTML+=`<option>${text}</option>`;
+      const d = new Date(weekStart);
+      d.setDate(d.getDate()+i);
+
+      const text = formatDate(d);
+
+      select.innerHTML += `<option>${text}</option>`;
     }
-    select.value=currentDate;
+
+    select.value = currentDate;
   }
 }
 
 async function addData(){
-  const title=document.getElementById("title").value.trim();
-  const content=document.getElementById("content").value.trim();
+  const title = document.getElementById("title").value.trim();
+  const content = document.getElementById("content").value.trim();
 
   if(!title || !content){
-    alert("タイトルと内容を入力してください");
+    alert("入力してください");
     return;
   }
 
-  const {error}=await client.from("shipments").insert({
-    date:document.getElementById("dateInput").value,
-    category:"notice",
-    title,
-    content,
-    status:document.getElementById("status").value
-  });
+  const {error} = await client
+    .from("shipments")
+    .insert({
+      date:document.getElementById("dateInput").value,
+      category:"notice",
+      title,
+      content,
+      status:document.getElementById("status").value
+    });
 
-  if(error){alert(error.message);return;}
+  if(error){
+    alert(error.message);
+    return;
+  }
 
-  currentDate=document.getElementById("dateInput").value;
+  currentDate = document.getElementById("dateInput").value;
+
   setTab("notice");
 }
 
 function startEdit(item){
-  editId=item.id;
+  editId = item.id;
+
   setTab("manage");
 
   setTimeout(()=>{
-    document.getElementById("dateInput").value=item.date || currentDate;
-    document.getElementById("title").value=item.title || "";
-    document.getElementById("content").value=item.content || "";
-    document.getElementById("status").value=item.status || "通常";
+    document.getElementById("dateInput").value = item.date;
+    document.getElementById("title").value = item.title;
+    document.getElementById("content").value = item.content;
+    document.getElementById("status").value = item.status;
   },100);
 }
 
 async function saveEdit(){
-  const {error}=await client.from("shipments")
+  const {error} = await client
+    .from("shipments")
     .update({
       date:document.getElementById("dateInput").value,
       title:document.getElementById("title").value,
@@ -316,23 +504,28 @@ async function saveEdit(){
     })
     .eq("id",editId);
 
-  if(error){alert(error.message);return;}
+  if(error){
+    alert(error.message);
+    return;
+  }
 
-  currentDate=document.getElementById("dateInput").value;
-  editId=null;
-  setTab("notice");
-}
+  editId = null;
 
-function cancelEdit(){
-  editId=null;
   setTab("notice");
 }
 
 async function deleteItem(id){
   if(!confirm("削除しますか？")) return;
 
-  const {error}=await client.from("shipments").delete().eq("id",id);
-  if(error){alert(error.message);return;}
+  const {error} = await client
+    .from("shipments")
+    .delete()
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
 
   render();
 }
