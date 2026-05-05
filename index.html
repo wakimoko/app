@@ -169,6 +169,37 @@ textarea{height:120px}
   padding:10px 0;
   border-radius:12px;
 }
+
+.ship-group{margin-top:24px}
+
+.ship-company{
+  font-size:24px;
+  font-weight:900;
+  margin-bottom:12px;
+}
+
+.ship-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 0;
+  border-bottom:1px solid #eadfd5;
+}
+
+.ship-place{
+  font-size:20px;
+  font-weight:700;
+}
+
+.ship-buttons{
+  display:flex;
+  gap:8px;
+}
+
+.ship-buttons button{
+  padding:10px 16px;
+  border-radius:14px;
+}
 </style>
 </head>
 
@@ -354,6 +385,33 @@ function pickDate(year,month,day){
   render();
 }
 
+function shipRow(place, key){
+  const status = localStorage.getItem(currentDate + "_" + key) || "なし";
+
+  return `
+    <div class="ship-row">
+      <div class="ship-place">${place}</div>
+
+      <div class="ship-buttons">
+        <button class="${status === "あり" ? "active" : ""}"
+          onclick="setShipStatus('${key}','あり')">
+          あり
+        </button>
+
+        <button class="${status === "なし" ? "active" : ""}"
+          onclick="setShipStatus('${key}','なし')">
+          なし
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function setShipStatus(key, value){
+  localStorage.setItem(currentDate + "_" + key, value);
+  render();
+}
+
 async function render(){
   const view = document.getElementById("view");
   view.innerHTML = "";
@@ -362,11 +420,18 @@ async function render(){
     view.innerHTML = `
       <div class="card">
         <div class="item-title">出荷予定</div>
-        <div class="item-content">佐川急便
-2F
 
-福山通運
-2F / 梱包場 / MJ倉庫</div>
+        <div class="ship-group">
+          <div class="ship-company">佐川急便</div>
+          ${shipRow("2F", "sagawa_2f")}
+        </div>
+
+        <div class="ship-group">
+          <div class="ship-company">福山通運</div>
+          ${shipRow("2F", "fukuyama_2f")}
+          ${shipRow("梱包場", "fukuyama_packing")}
+          ${shipRow("MJ倉庫", "fukuyama_mj")}
+        </div>
       </div>
     `;
     return;
