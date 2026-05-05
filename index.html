@@ -4,36 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>出荷管理</title>
-
 <style>
 body{margin:0;padding:20px;background:#f6efe6;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;color:#111}
 h1{font-size:28px}
 button{margin:5px;padding:12px 16px;border:none;border-radius:18px;background:#e6ddd4;color:#111;font-weight:bold}
 .active{background:#b88a5a!important;color:#fff!important}
 .card{background:#fff;padding:20px;border-radius:20px;margin-top:15px;position:relative}
-.item-title{font-size:22px;font-weight:800;margin-bottom:6px}
-.item-content{font-size:18px;margin-bottom:40px}
+.item-title{font-size:22px;font-weight:800;margin-bottom:8px}
+.item-content{font-size:18px;margin-bottom:45px}
 .important{color:red}
-input,textarea,select{width:100%;padding:12px;margin-top:10px;border-radius:12px;border:1px solid #ddd;font-size:16px}
+input,textarea,select{width:100%;padding:12px;margin-top:12px;border-radius:12px;border:1px solid #ddd;font-size:16px}
 textarea{height:100px}
 .icon-btn{position:absolute;bottom:10px;width:32px;height:32px;border-radius:50%;padding:0}
 .edit-btn{right:50px;background:#e6ddd4}
 .delete-btn{right:10px;background:#f3d6d6}
-
-#dates{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:8px;
-  margin-top:12px;
-}
-#weekControls{
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  gap:8px;
-  margin-top:12px;
-}
-#weekControls button,#weekControls input{width:100%;margin:0}
-#dates button{width:100%;margin:0}
+#weekControls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
+#dates{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}
+#weekControls button,#dates button{width:100%;margin:0}
 </style>
 </head>
 
@@ -107,8 +94,27 @@ function renderDates(){
     render();
   };
 
+  const calWrap=document.createElement("div");
+  calWrap.style.position="relative";
+
+  const calBtn=document.createElement("button");
+  calBtn.textContent="📅";
+  calBtn.style.width="100%";
+
   const cal=document.createElement("input");
   cal.type="date";
+  cal.style.position="absolute";
+  cal.style.left="0";
+  cal.style.top="0";
+  cal.style.opacity="0";
+  cal.style.width="100%";
+  cal.style.height="100%";
+
+  calBtn.onclick=()=>{
+    if(cal.showPicker){ cal.showPicker(); }
+    else{ cal.click(); }
+  };
+
   cal.onchange=()=>{
     const selected=new Date(cal.value);
     weekStart=getMonday(selected);
@@ -116,6 +122,9 @@ function renderDates(){
     renderDates();
     render();
   };
+
+  calWrap.appendChild(calBtn);
+  calWrap.appendChild(cal);
 
   const next=document.createElement("button");
   next.textContent="次週";
@@ -127,7 +136,7 @@ function renderDates(){
   };
 
   controls.appendChild(prev);
-  controls.appendChild(cal);
+  controls.appendChild(calWrap);
   controls.appendChild(next);
 
   for(let i=0;i<5;i++){
@@ -193,7 +202,6 @@ async function render(){
         <div class="card">
           <div class="item-title ${item.status==="重要"?"important":""}">${item.title||""}</div>
           <div class="item-content">${item.content||""}</div>
-
           <button class="icon-btn edit-btn" onclick='startEdit(${JSON.stringify(item)})'>✏️</button>
           <button class="icon-btn delete-btn" onclick="deleteItem(${item.id})">🗑️</button>
         </div>`;
@@ -203,8 +211,6 @@ async function render(){
   if(currentTab==="manage"){
     view.innerHTML=`
       <div class="card">
-        <h3>${editId ? "編集" : "追加"}</h3>
-
         <select id="dateInput"></select>
 
         <input id="title" placeholder="タイトル">
