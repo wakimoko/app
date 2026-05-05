@@ -4,62 +4,40 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>出荷管理</title>
-
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;padding:20px;background:#f7f2ec;font-family:-apple-system}
-h1{font-size:28px;margin:20px 0}
-
-button{
-  border:none;
-  border-radius:16px;
-  padding:12px 16px;
-  margin:5px;
-  background:#e8dfd6;
-  color:#000;
-  font-size:15px;
-}
-
-.active{background:#a9744f;color:#fff}
-
-.card{
-  background:#fff;
-  border-radius:18px;
-  padding:18px;
-  margin-top:14px;
-}
-
-.like{
-  background:#c8a98a;
-  margin-top:10px;
-}
+body{margin:0;padding:24px;background:#f7f2ec;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;color:#111}
+h1{font-size:32px}
+button{border:0;border-radius:18px;padding:13px 18px;margin:5px;background:#e8dfd6;font-size:16px;font-weight:700;color:#111}
+.active{background:#a9744f!important;color:white!important}
+.card{background:white;border-radius:22px;padding:22px;margin-top:18px;box-shadow:0 8px 24px rgba(60,40,25,.08)}
+.title{font-size:22px;font-weight:800}
+.important{color:red}
+input,textarea,select{width:100%;font-size:16px;padding:14px;margin:10px 0;border-radius:14px;border:1px solid #ddd}
+textarea{height:100px}
+.like{background:#c8a98a}
 </style>
 </head>
-
 <body>
 
 <h1>出荷管理</h1>
 
-<div>
-  <button id="tab_notice" onclick="setTab('notice')">注意事項</button>
-  <button id="tab_ship" onclick="setTab('ship')">出荷予定</button>
-  <button id="tab_manage" onclick="setTab('manage')">管理</button>
-</div>
+<button id="tab_notice" onclick="setTab('notice')">注意事項</button>
+<button id="tab_ship" onclick="setTab('ship')">出荷予定</button>
+<button id="tab_manage" onclick="setTab('manage')">管理</button>
 
 <div id="dates"></div>
 <div id="view"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-
-const supabase = window.supabase.createClient(
+const client = window.supabase.createClient(
   "https://bylottznuwuizncgfltd.supabase.co",
   "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
 );
 
 let currentTab = "notice";
 let currentDate = "5/4";
-const dates = ["5/4","5/5","5/6","5/7","5/8"];
+const dateList = ["5/4","5/5","5/6","5/7","5/8"];
 
 function setTab(tab){
   currentTab = tab;
@@ -80,17 +58,15 @@ function renderDates(){
 
   box.style.display = "block";
 
-  dates.forEach(d=>{
+  dateList.forEach(d=>{
     const btn = document.createElement("button");
     btn.textContent = d;
     if(d === currentDate) btn.classList.add("active");
-
     btn.onclick = ()=>{
       currentDate = d;
       renderDates();
       render();
     };
-
     box.appendChild(btn);
   });
 }
@@ -100,24 +76,31 @@ async function render(){
   view.innerHTML = "";
 
   if(currentTab === "notice"){
-    const {data} = await supabase
+    const {data,error} = await client
       .from("shipments")
       .select("*")
       .eq("date", currentDate)
-      .eq("category","notice")
+      .eq("category", "notice")
       .order("id",{ascending:false});
 
+    if(error){
+      view.innerHTML = "<div class='card'>読み込みエラー：" + error.message + "</div>";
+      return;
+    }
+
     if(!data || data.length === 0){
-      view.innerHTML = `<div class="card">注意事項はありません</div>`;
+      view.innerHTML = "<div class='card'>注意事項はありません</div>";
       return;
     }
 
     data.forEach(item=>{
       view.innerHTML += `
         <div class="card">
-          <b>${item.title || ""}</b><br>
-          ${item.content || ""}
-          <button class="like" onclick="like(${item.id})">
+          <div class="title ${item.status==="重要" ? "important" : ""}">
+            ${item.title || ""}
+          </div>
+          <div>${item.content || ""}</div>
+          <button class="like" onclick="likeItem(${item.id}, ${item.liked || 0})">
             👍 ×${item.liked || 0}
           </button>
         </div>
@@ -125,56 +108,70 @@ async function render(){
     });
   }
 
+  if(currentTab === "ship"){
+    view.innerHTML = `
+      <div class="card">
+        <h2>出荷予定</h2>
+        <p>佐川急便<br>2F</p>
+        <p>福山通運<br>2F / 梱包場 / MJ倉庫</p>
+      </div>
+    `;
+  }
+
   if(currentTab === "manage"){
     view.innerHTML = `
       <div class="card">
-        <select id="date">
-          <option>5/4</option>
-          <option>5/5</option>
-          <option>5/6</option>
-          <option>5/7</option>
-          <option>5/8</option>
+        <h2>管理</h2>
+        <select id="dateInput">
+          <option>5/4</option><option>5/5</option><option>5/6</option><option>5/7</option><option>5/8</option>
         </select>
-
         <input id="title" placeholder="タイトル">
         <textarea id="content" placeholder="内容"></textarea>
-
-        <button class="active" onclick="add()">追加</button>
+        <select id="status">
+          <option>通常</option>
+          <option>重要</option>
+        </select>
+        <button class="active" onclick="addData()">追加する</button>
       </div>
     `;
   }
 }
 
-async function add(){
-  await supabase.from("shipments").insert({
-    date: document.getElementById("date").value,
-    category:"notice",
+async function addData(){
+  const {error} = await client.from("shipments").insert({
+    date: document.getElementById("dateInput").value,
+    category: "notice",
     title: document.getElementById("title").value,
     content: document.getElementById("content").value,
-    liked:0
+    status: document.getElementById("status").value,
+    liked: 0
   });
 
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  currentDate = document.getElementById("dateInput").value;
   setTab("notice");
 }
 
-async function like(id){
-  await supabase.rpc("increment_like",{row_id:id});
+async function likeItem(id, count){
+  const {error} = await client
+    .from("shipments")
+    .update({ liked: count + 1 })
+    .eq("id", id);
+
+  if(error){
+    alert("いいねエラー：" + error.message);
+    return;
+  }
+
+  render();
 }
 
-/* 🔥リアルタイム更新（ここが神） */
-supabase
-  .channel("realtime")
-  .on(
-    "postgres_changes",
-    { event:"UPDATE", schema:"public", table:"shipments" },
-    payload => {
-      render();
-    }
-  )
-  .subscribe();
-
 setTab("notice");
-
 </script>
+
 </body>
 </html>
