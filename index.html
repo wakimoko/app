@@ -4,21 +4,55 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>出荷管理</title>
+
 <style>
-*{box-sizing:border-box}
-body{margin:0;padding:28px;font-family:sans-serif;background:#f7f2ec;color:#000;font-size:22px}
-h1{font-size:42px}
-button{-webkit-appearance:none;appearance:none;border:none;border-radius:18px;padding:14px 24px;margin:6px;background:#e6ddd4;color:#000!important;font-size:22px;font-weight:bold}
-.active{background:#a9744f!important;color:#fff!important}
-.card{background:#fff;border-radius:24px;padding:26px;margin-top:24px;width:100%}
-.important{color:red!important;font-weight:bold}
-input,textarea,select{width:100%;font-size:22px;padding:16px;margin:10px 0;border-radius:14px;border:1px solid #ddd}
-textarea{height:120px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  margin:0;
+  padding:24px 18px;
+  background:#f7f2ec;
+  color:#111;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+  font-size:16px;
+}
+h1{font-size:32px;font-weight:800;margin:28px 0}
+button{
+  border:none;
+  border-radius:18px;
+  padding:13px 18px;
+  margin:5px;
+  background:#e8dfd6;
+  color:#111;
+  font-size:16px;
+  font-weight:700;
+}
+button:active{transform:scale(.97)}
+.active{background:#a9744f!important;color:white!important}
+.card{
+  background:white;
+  border-radius:22px;
+  padding:22px;
+  margin-top:18px;
+  width:100%;
+  box-shadow:0 8px 24px rgba(60,40,25,.08);
+}
+.title{font-size:20px;font-weight:800}
+.important{color:#d71920!important}
+input,textarea,select{
+  width:100%;
+  font-size:16px;
+  padding:15px;
+  margin:10px 0;
+  border-radius:16px;
+  border:1px solid #e2d6ca;
+}
+textarea{height:110px}
 .like-on{background:#c8a98a!important}
 .like-off{background:#eee!important}
-.row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd;padding:18px 0}
+.row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eadfd5;padding:16px 0}
 </style>
 </head>
+
 <body>
 
 <h1>出荷管理</h1>
@@ -41,7 +75,6 @@ const client = window.supabase.createClient(
 
 let currentTab = "notice";
 let currentDate = "5/4";
-
 const dateList = ["5/4","5/5","5/6","5/7","5/8"];
 
 function setTab(tab){
@@ -67,11 +100,13 @@ function renderDates(){
     const btn = document.createElement("button");
     btn.textContent = d;
     if(d === currentDate) btn.classList.add("active");
+
     btn.onclick = ()=>{
       currentDate = d;
       renderDates();
       render();
     };
+
     box.appendChild(btn);
   });
 }
@@ -85,6 +120,7 @@ async function render(){
       .from("shipments")
       .select("*")
       .eq("date", currentDate)
+      .eq("category", "notice")
       .order("id",{ascending:false});
 
     if(error){
@@ -100,8 +136,8 @@ async function render(){
     data.forEach(item=>{
       view.innerHTML += `
         <div class="card">
-          <div class="${item.status === "重要" ? "important" : ""}">
-            <b>${item.title || ""}</b>
+          <div class="title ${item.status === "重要" ? "important" : ""}">
+            ${item.title || ""}
           </div>
           <div>${item.content || ""}</div>
           <button class="${item.liked ? "like-on" : "like-off"}"
@@ -171,6 +207,7 @@ async function addData(){
 
   const {error} = await client.from("shipments").insert({
     date: date,
+    category: "notice",
     title: document.getElementById("title").value,
     content: document.getElementById("content").value,
     status: document.getElementById("status").value,
@@ -200,5 +237,6 @@ async function toggleLike(id, likes, liked){
 
 setTab("notice");
 </script>
+
 </body>
 </html>
