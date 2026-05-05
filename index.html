@@ -2,56 +2,48 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>出荷管理</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 body{
-  font-family:sans-serif;
-  background:#f5efe7;
   margin:0;
   padding:20px;
+  background:#f6efe6;
+  font-family:sans-serif;
+  color:#111;
 }
 
-h1{margin-bottom:20px;}
+h1{
+  font-size:28px;
+}
 
-.tab button{
+button{
   margin:5px;
-  padding:10px 15px;
+  padding:12px 16px;
   border:none;
-  border-radius:15px;
-  background:#ddd;
+  border-radius:18px;
+  background:#e6ddd4;
+  color:#111;
+  font-weight:bold;
 }
 
 .active{
   background:#b88a5a;
-  color:white;
-}
-
-.date button{
-  margin:5px;
-  padding:10px;
-  border:none;
-  border-radius:15px;
-  background:#ddd;
+  color:#fff;
 }
 
 .card{
-  background:#eee;
-  padding:15px;
-  border-radius:15px;
+  background:#fff;
+  padding:20px;
+  border-radius:20px;
   margin-top:15px;
 }
 
-.important{
-  color:red;
-}
-
 .like{
-  margin-top:10px;
-  padding:8px 15px;
-  border:none;
-  border-radius:15px;
   background:#b88a5a;
   color:white;
 }
@@ -62,110 +54,90 @@ h1{margin-bottom:20px;}
 
 <h1>出荷管理</h1>
 
-<div class="tab">
-  <button onclick="setTab('notice')" id="tab_notice">注意事項</button>
-  <button onclick="setTab('ship')" id="tab_ship">出荷予定</button>
-  <button onclick="setTab('today')" id="tab_today">当日出荷</button>
-  <button onclick="setTab('manage')" id="tab_manage">管理</button>
+<div>
+  <button id="tab_notice" onclick="setTab('notice')">注意事項</button>
+  <button id="tab_ship" onclick="setTab('ship')">出荷予定</button>
+  <button id="tab_today" onclick="setTab('today')">当日出荷</button>
+  <button id="tab_manage" onclick="setTab('manage')">管理</button>
 </div>
 
-<div class="date">
-  <button onclick="setDate('5/4')">5/4</button>
-  <button onclick="setDate('5/5')">5/5</button>
-  <button onclick="setDate('5/6')">5/6</button>
-  <button onclick="setDate('5/7')">5/7</button>
-  <button onclick="setDate('5/8')">5/8</button>
-</div>
-
+<div id="dates"></div>
 <div id="view"></div>
 
-<!-- 管理画面 -->
-<div id="manageArea" style="display:none;margin-top:20px;">
-  <h3>追加</h3>
-
-  <input id="title" placeholder="タイトル"><br><br>
-  <textarea id="content" placeholder="内容"></textarea><br><br>
-
-  <select id="status">
-    <option value="通常">通常</option>
-    <option value="重要">重要</option>
-  </select><br><br>
-
-  <button onclick="addData()">追加</button>
-</div>
-
 <script>
-const supabase = window.supabase.createClient(
-  "https://あなたのURL.supabase.co",
-  "あなたのanonキー"
+const client = supabase.createClient(
+  "https://bylottznuwuizncgfltd.supabase.co",
+  "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
 );
 
 let currentTab="notice";
 let currentDate="5/4";
 
+const dates=["5/4","5/5","5/6","5/7","5/8"];
+
 function setTab(tab){
   currentTab=tab;
-  document.getElementById("manageArea").style.display =
-    tab==="manage" ? "block" : "none";
+
+  document.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
+  document.getElementById("tab_"+tab).classList.add("active");
+
+  renderDates();
   render();
 }
 
-function setDate(date){
-  currentDate=date;
-  render();
+function renderDates(){
+  const box=document.getElementById("dates");
+  box.innerHTML="";
+
+  if(currentTab==="manage") return;
+
+  dates.forEach(d=>{
+    let btn=document.createElement("button");
+    btn.textContent=d;
+    if(d===currentDate) btn.classList.add("active");
+
+    btn.onclick=()=>{
+      currentDate=d;
+      renderDates();
+      render();
+    };
+
+    box.appendChild(btn);
+  });
 }
 
 async function render(){
   const view=document.getElementById("view");
   view.innerHTML="";
 
-  // 出荷予定（固定）
   if(currentTab==="ship"){
     view.innerHTML=`
       <div class="card">
         <h3>出荷予定</h3>
-        <p><b>佐川急便</b><br>2F</p>
-        <p><b>福山通運</b><br>2F / 梱包場 / MJ倉庫</p>
+        佐川急便 2F<br>
+        福山通運 2F / 梱包場 / MJ倉庫
       </div>
     `;
     return;
   }
 
-  // DB取得
-  let {data,error} = await supabase
-    .from("shipments")
-    .select("*")
-    .eq("date",currentDate);
-
-  if(error){
-    view.innerHTML="エラー";
-    return;
-  }
-
-  // 注意事項
   if(currentTab==="notice"){
-    let list=data.filter(d=>d.category==="notice");
+    let {data}=await client.from("shipments")
+      .select("*")
+      .eq("date",currentDate)
+      .eq("category","notice");
 
-    if(list.length===0){
+    if(!data || data.length===0){
       view.innerHTML='<div class="card">データなし</div>';
       return;
     }
 
-    list.sort((a,b)=>{
-      if(a.status==="重要") return -1;
-      if(b.status==="重要") return 1;
-      return 0;
-    });
-
-    list.forEach(item=>{
+    data.forEach(item=>{
       view.innerHTML+=`
         <div class="card">
-          <b class="${item.status==="重要"?"important":""}">
-            ${item.title||""}
-          </b><br>
-          ${item.content||""}
-          <button class="like"
-            onclick="like(${item.id},${item.likes||0})">
+          ${item.title}<br>
+          ${item.content}<br>
+          <button class="like" onclick="like(${item.id},${item.likes||0})">
             👍 ×${item.likes||0}
           </button>
         </div>
@@ -173,48 +145,36 @@ async function render(){
     });
   }
 
-  // 当日出荷（チェック）
   if(currentTab==="today"){
-    let list=data.filter(d=>d.category==="today");
+    view.innerHTML=`
+      <div class="card">
+        <h3>当日出荷</h3>
+        2F：あり / なし<br>
+        2Fテーブル：あり / なし<br>
+        梱包場：あり / なし<br>
+        MJ倉庫：あり / なし
+      </div>
+    `;
+  }
 
-    if(list.length===0){
-      view.innerHTML='<div class="card">データなし</div>';
-      return;
-    }
-
-    list.forEach(item=>{
-      view.innerHTML+=`
-        <div class="card">
-          <h3>${item.title}</h3>
-
-          2F:
-          <input type="checkbox" ${item.floor_2f?"checked":""}
-          onchange="toggleCheck(${item.id},'floor_2f',this.checked)"><br>
-
-          2Fテーブル:
-          <input type="checkbox" ${item.table_2f?"checked":""}
-          onchange="toggleCheck(${item.id},'table_2f',this.checked)"><br>
-
-          梱包場:
-          <input type="checkbox" ${item.packing?"checked":""}
-          onchange="toggleCheck(${item.id},'packing',this.checked)"><br>
-
-          MJ倉庫:
-          <input type="checkbox" ${item.mj?"checked":""}
-          onchange="toggleCheck(${item.id},'mj',this.checked)">
-        </div>
-      `;
-    });
+  if(currentTab==="manage"){
+    view.innerHTML=`
+      <div class="card">
+        <h3>追加</h3>
+        <input id="title" placeholder="タイトル"><br>
+        <textarea id="content" placeholder="内容"></textarea><br>
+        <button onclick="add()">追加</button>
+      </div>
+    `;
   }
 }
 
-async function addData(){
-  await supabase.from("shipments").insert({
+async function add(){
+  await client.from("shipments").insert({
     date:currentDate,
     category:"notice",
     title:document.getElementById("title").value,
     content:document.getElementById("content").value,
-    status:document.getElementById("status").value,
     likes:0
   });
 
@@ -222,26 +182,15 @@ async function addData(){
   render();
 }
 
-async function like(id,likes){
-  await supabase.from("shipments")
-    .update({likes:likes+1})
+async function like(id,count){
+  await client.from("shipments")
+    .update({likes:count+1})
     .eq("id",id);
 
   render();
 }
 
-async function toggleCheck(id,column,value){
-  let obj={};
-  obj[column]=value;
-
-  await supabase.from("shipments")
-    .update(obj)
-    .eq("id",id);
-
-  render();
-}
-
-render();
+setTab("notice");
 </script>
 
 </body>
