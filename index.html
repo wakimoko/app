@@ -2,75 +2,59 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>出荷管理</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-
 body{
+  font-family:sans-serif;
+  background:#f5efe7;
   margin:0;
   padding:20px;
-  background:#f7f2ec;
-  font-family:-apple-system;
-  color:#5c4a3a;
 }
 
-h1{font-size:26px;margin-bottom:15px}
+h1{margin-bottom:20px;}
 
-/* タブ */
-button{
+.tab button{
+  margin:5px;
+  padding:10px 15px;
   border:none;
-  border-radius:20px;
-  padding:12px 16px;
-  margin:4px;
-  background:#e8dfd6;
-  font-weight:700;
-  transition:.15s;
-}
-
-button:active{
-  transform:scale(0.94);
+  border-radius:15px;
+  background:#ddd;
 }
 
 .active{
-  background:#c8a98a !important;
-  color:#fff !important;
-  box-shadow:0 4px 10px rgba(90,70,50,0.18);
+  background:#b88a5a;
+  color:white;
 }
 
-/* 日付 */
-#dates{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:6px;
-  margin-top:10px;
+.date button{
+  margin:5px;
+  padding:10px;
+  border:none;
+  border-radius:15px;
+  background:#ddd;
 }
 
-/* カード */
 .card{
-  background:#fff;
-  border-radius:20px;
-  padding:16px;
-  margin-top:12px;
+  background:#eee;
+  padding:15px;
+  border-radius:15px;
+  margin-top:15px;
 }
 
-/* 行 */
-.row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 0;
-  border-bottom:1px solid #eadfd5;
+.important{
+  color:red;
 }
 
-/* いいね */
 .like{
   margin-top:10px;
-  background:#c8a98a;
-  color:#fff;
+  padding:8px 15px;
+  border:none;
+  border-radius:15px;
+  background:#b88a5a;
+  color:white;
 }
-
 </style>
 </head>
 
@@ -78,81 +62,107 @@ button:active{
 
 <h1>出荷管理</h1>
 
-<button onclick="setTab('notice')" id="tab_notice">注意事項</button>
-<button onclick="setTab('today')" id="tab_today">当日出荷</button>
-<button onclick="setTab('manage')" id="tab_manage">管理</button>
+<div class="tab">
+  <button onclick="setTab('notice')" id="tab_notice">注意事項</button>
+  <button onclick="setTab('ship')" id="tab_ship">出荷予定</button>
+  <button onclick="setTab('today')" id="tab_today">当日出荷</button>
+  <button onclick="setTab('manage')" id="tab_manage">管理</button>
+</div>
 
-<div id="dates"></div>
+<div class="date">
+  <button onclick="setDate('5/4')">5/4</button>
+  <button onclick="setDate('5/5')">5/5</button>
+  <button onclick="setDate('5/6')">5/6</button>
+  <button onclick="setDate('5/7')">5/7</button>
+  <button onclick="setDate('5/8')">5/8</button>
+</div>
+
 <div id="view"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
+<!-- 管理画面 -->
+<div id="manageArea" style="display:none;margin-top:20px;">
+  <h3>追加</h3>
 
-const client = window.supabase.createClient(
-  "https://bylottznuwuizncgfltd.supabase.co",
-  "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
+  <input id="title" placeholder="タイトル"><br><br>
+  <textarea id="content" placeholder="内容"></textarea><br><br>
+
+  <select id="status">
+    <option value="通常">通常</option>
+    <option value="重要">重要</option>
+  </select><br><br>
+
+  <button onclick="addData()">追加</button>
+</div>
+
+<script>
+const supabase = window.supabase.createClient(
+  "https://あなたのURL.supabase.co",
+  "あなたのanonキー"
 );
 
 let currentTab="notice";
 let currentDate="5/4";
-const dateList=["5/4","5/5","5/6","5/7","5/8"];
 
 function setTab(tab){
   currentTab=tab;
-  document.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
-  document.getElementById("tab_"+tab).classList.add("active");
-  renderDates();
+  document.getElementById("manageArea").style.display =
+    tab==="manage" ? "block" : "none";
   render();
 }
 
-function renderDates(){
-  const box=document.getElementById("dates");
-  box.innerHTML="";
-
-  if(currentTab==="manage"){
-    box.style.display="none";
-    return;
-  }
-
-  box.style.display="grid";
-
-  dateList.forEach(d=>{
-    const btn=document.createElement("button");
-    btn.innerText=d;
-    if(d===currentDate) btn.classList.add("active");
-
-    btn.onclick=()=>{
-      currentDate=d;
-      renderDates();
-      render();
-    };
-
-    box.appendChild(btn);
-  });
+function setDate(date){
+  currentDate=date;
+  render();
 }
 
-/* 表示 */
 async function render(){
   const view=document.getElementById("view");
   view.innerHTML="";
 
-  /* 注意事項 */
-  if(currentTab==="notice"){
-    const {data}=await client
-      .from("shipments")
-      .select("*")
-      .eq("date",currentDate)
-      .eq("category","notice");
+  // 出荷予定（固定）
+  if(currentTab==="ship"){
+    view.innerHTML=`
+      <div class="card">
+        <h3>出荷予定</h3>
+        <p><b>佐川急便</b><br>2F</p>
+        <p><b>福山通運</b><br>2F / 梱包場 / MJ倉庫</p>
+      </div>
+    `;
+    return;
+  }
 
-    if(!data || data.length===0){
-      view.innerHTML="<div class='card'>なし</div>";
+  // DB取得
+  let {data,error} = await supabase
+    .from("shipments")
+    .select("*")
+    .eq("date",currentDate);
+
+  if(error){
+    view.innerHTML="エラー";
+    return;
+  }
+
+  // 注意事項
+  if(currentTab==="notice"){
+    let list=data.filter(d=>d.category==="notice");
+
+    if(list.length===0){
+      view.innerHTML='<div class="card">データなし</div>';
       return;
     }
 
-    data.forEach(item=>{
+    list.sort((a,b)=>{
+      if(a.status==="重要") return -1;
+      if(b.status==="重要") return 1;
+      return 0;
+    });
+
+    list.forEach(item=>{
       view.innerHTML+=`
         <div class="card">
-          <b>${item.title||""}</b><br>
+          <b class="${item.status==="重要"?"important":""}">
+            ${item.title||""}
+          </b><br>
           ${item.content||""}
           <button class="like"
             onclick="like(${item.id},${item.likes||0})">
@@ -163,103 +173,76 @@ async function render(){
     });
   }
 
-  /* 当日出荷 */
+  // 当日出荷（チェック）
   if(currentTab==="today"){
-    const {data}=await client
-      .from("shipments")
-      .select("*")
-      .eq("date",currentDate)
-      .eq("category","today")
-      .single();
+    let list=data.filter(d=>d.category==="today");
 
-    if(!data){
-      view.innerHTML="<div class='card'>データなし</div>";
+    if(list.length===0){
+      view.innerHTML='<div class="card">データなし</div>';
       return;
     }
 
-    view.innerHTML=`
-      <div class="card">
-        <h3>当日出荷</h3>
-        ${row("2F","floor_2f",data.floor_2f)}
-        ${row("2Fテーブル","table_2f",data.table_2f)}
-        ${row("梱包場","packing",data.packing)}
-        ${row("MJ倉庫","mj",data.mj)}
-      </div>
-    `;
-  }
+    list.forEach(item=>{
+      view.innerHTML+=`
+        <div class="card">
+          <h3>${item.title}</h3>
 
-  /* 管理 */
-  if(currentTab==="manage"){
-    view.innerHTML=`
-      <div class="card">
-        <select id="date">
-          ${dateList.map(d=>`<option>${d}</option>`).join("")}
-        </select>
+          2F:
+          <input type="checkbox" ${item.floor_2f?"checked":""}
+          onchange="toggleCheck(${item.id},'floor_2f',this.checked)"><br>
 
-        <select id="category">
-          <option value="notice">注意事項</option>
-          <option value="today">当日出荷</option>
-        </select>
+          2Fテーブル:
+          <input type="checkbox" ${item.table_2f?"checked":""}
+          onchange="toggleCheck(${item.id},'table_2f',this.checked)"><br>
 
-        <input id="title" placeholder="タイトル">
-        <textarea id="content"></textarea>
+          梱包場:
+          <input type="checkbox" ${item.packing?"checked":""}
+          onchange="toggleCheck(${item.id},'packing',this.checked)"><br>
 
-        <button class="active" onclick="add()">追加</button>
-      </div>
-    `;
+          MJ倉庫:
+          <input type="checkbox" ${item.mj?"checked":""}
+          onchange="toggleCheck(${item.id},'mj',this.checked)">
+        </div>
+      `;
+    });
   }
 }
 
-/* いいね */
-async function like(id,count){
-  await client
-    .from("shipments")
-    .update({likes:count+1})
+async function addData(){
+  await supabase.from("shipments").insert({
+    date:currentDate,
+    category:"notice",
+    title:document.getElementById("title").value,
+    content:document.getElementById("content").value,
+    status:document.getElementById("status").value,
+    likes:0
+  });
+
+  alert("追加した");
+  render();
+}
+
+async function like(id,likes){
+  await supabase.from("shipments")
+    .update({likes:likes+1})
     .eq("id",id);
 
   render();
 }
 
-/* 行 */
-function row(label,key,value){
-  return `
-    <div class="row">
-      <span>${label}</span>
-      <button onclick="toggle('${key}',${value})"
-        class="${value?'active':''}">
-        ${value?"あり":"なし"}
-      </button>
-    </div>
-  `;
-}
+async function toggleCheck(id,column,value){
+  let obj={};
+  obj[column]=value;
 
-/* 切替 */
-async function toggle(key,value){
-  await client
-    .from("shipments")
-    .update({[key]:!value})
-    .eq("date",currentDate)
-    .eq("category","today");
+  await supabase.from("shipments")
+    .update(obj)
+    .eq("id",id);
 
   render();
 }
 
-/* 追加 */
-async function add(){
-  await client.from("shipments").insert({
-    date:document.getElementById("date").value,
-    category:document.getElementById("category").value,
-    title:document.getElementById("title").value,
-    content:document.getElementById("content").value,
-    likes:0
-  });
-
-  alert("追加OK");
-  setTab("notice");
-}
-
-setTab("notice");
-
+render();
 </script>
+
 </body>
 </html>
