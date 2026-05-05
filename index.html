@@ -183,9 +183,15 @@ textarea{height:120px}
 .ship-row{
   display:flex;
   justify-content:space-between;
-  align-items:center;
+  align-items:flex-start;
   padding:8px 0;
   border-bottom:1px solid #eadfd5;
+}
+
+.ship-left{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
 }
 
 .ship-place{
@@ -193,14 +199,34 @@ textarea{height:120px}
   font-weight:700;
 }
 
+.ship-photo{
+  width:90px;
+  height:90px;
+  object-fit:cover;
+  border-radius:14px;
+}
+
 .ship-buttons{
   display:flex;
   gap:8px;
+  align-items:center;
 }
 
 .ship-buttons button{
   padding:8px 12px;
   border-radius:12px;
+}
+
+.photo-btn{
+  width:40px;
+  height:40px;
+  border-radius:14px;
+  background:#e6ddd4;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  font-weight:800;
 }
 </style>
 </head>
@@ -235,6 +261,7 @@ let weekStart = getMonday(new Date());
 let calendarMonth = new Date();
 let editId = null;
 let lastItems = [];
+let photoMap = {};
 
 function esc(text){
   return String(text ?? "")
@@ -389,10 +416,14 @@ function pickDate(year,month,day){
 
 function shipRow(place, key){
   const status = localStorage.getItem(currentDate + "_" + key) || "なし";
+  const photo = photoMap[key];
 
   return `
     <div class="ship-row">
-      <div class="ship-place">${place}</div>
+      <div class="ship-left">
+        <div class="ship-place">${place}</div>
+        ${photo ? `<img src="${photo}" class="ship-photo">` : ""}
+      </div>
 
       <div class="ship-buttons">
         <button class="${status === "あり" ? "active" : ""}"
@@ -404,6 +435,15 @@ function shipRow(place, key){
           onclick="setShipStatus('${key}','なし')">
           なし
         </button>
+
+        <label class="photo-btn">
+          📷
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            onchange="savePhoto(event,'${key}')">
+        </label>
       </div>
     </div>
   `;
@@ -414,11 +454,70 @@ function setShipStatus(key, value){
   render();
 }
 
+async function savePhoto(event, key){
+  const file = event.target.files[0];
+  if(!file) return;
+
+  const fileName = `${currentDate}_${key}_${Date.now()}_${file.name}`;
+
+  const { error } = await client.storage
+    .from("shipment-photos")
+    .upload(fileName, file);
+
+  if(error){
+    alert("写真アップロードエラー：" + error.message);
+    return;
+  }
+
+  const { data } = client.storage
+    .from("shipment-photos")
+    .getPublicUrl(fileName);
+
+  const photoUrl = data.publicUrl;
+
+  const { data: exists } = await client
+    .from("shipping_photos")
+    .select("id")
+    .eq("date", currentDate)
+    .eq("place_key", key)
+    .maybeSingle();
+
+  if(exists){
+    await client
+      .from("shipping_photos")
+      .update({ photo_url: photoUrl })
+      .eq("id", exists.id);
+  }else{
+    await client
+      .from("shipping_photos")
+      .insert({
+        date: currentDate,
+        place_key: key,
+        photo_url: photoUrl
+      });
+  }
+
+  render();
+}
+
 async function render(){
   const view = document.getElementById("view");
   view.innerHTML = "";
 
   if(currentTab === "ship"){
+    const { data } = await client
+      .from("shipping_photos")
+      .select("*")
+      .eq("date", currentDate);
+
+    photoMap = {};
+
+    if(data){
+      data.forEach(item=>{
+        photoMap[item.place_key] = item.photo_url;
+      });
+    }
+
     view.innerHTML = `
       <div class="card">
         <div class="ship-group">
