@@ -4,10 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>出荷管理</title>
+
 <style>
 body{margin:0;padding:20px;background:#f6efe6;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;color:#111}
 h1{font-size:28px}
-button{margin:5px;padding:12px 16px;border:none;border-radius:18px;background:#e6ddd4;color:#111;font-weight:bold}
+button{margin:4px;padding:10px 14px;border:none;border-radius:16px;background:#e6ddd4;color:#111;font-weight:bold;font-size:15px}
 .active{background:#b88a5a!important;color:#fff!important}
 .card{background:#fff;padding:20px;border-radius:20px;margin-top:15px;position:relative}
 .item-title{font-size:22px;font-weight:800;margin-bottom:8px}
@@ -18,9 +19,21 @@ textarea{height:100px}
 .icon-btn{position:absolute;bottom:10px;width:32px;height:32px;border-radius:50%;padding:0}
 .edit-btn{right:50px;background:#e6ddd4}
 .delete-btn{right:10px;background:#f3d6d6}
-#weekControls{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:8px;margin-top:12px}
+
+#weekControls{display:grid;grid-template-columns:1fr 0.8fr 1fr;gap:8px;margin-top:12px}
 #dates{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}
-#weekControls button,#dates button{width:100%;margin:0}
+#weekControls button,#dates button{width:100%;margin:0;padding:10px 0}
+
+#calendarBox{
+  display:none;
+  background:#fff;
+  border-radius:18px;
+  padding:14px;
+  margin-top:10px;
+}
+.cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal-grid button{padding:8px 0;font-size:14px;border-radius:12px}
 </style>
 </head>
 
@@ -34,6 +47,7 @@ textarea{height:100px}
 <button id="tab_manage" onclick="setTab('manage')">管理</button>
 
 <div id="weekControls"></div>
+<div id="calendarBox"></div>
 <div id="dates"></div>
 <div id="view"></div>
 
@@ -48,6 +62,7 @@ let currentTab="notice";
 let currentDate="";
 let weekStart=getMonday(new Date());
 let editId=null;
+let calendarMonth=new Date();
 
 function getMonday(date){
   const d=new Date(date);
@@ -65,6 +80,7 @@ function setTab(tab){
   currentTab=tab;
   document.querySelectorAll("[id^='tab_']").forEach(b=>b.classList.remove("active"));
   document.getElementById("tab_"+tab).classList.add("active");
+  document.getElementById("calendarBox").style.display="none";
   renderDates();
   render();
 }
@@ -94,25 +110,12 @@ function renderDates(){
     render();
   };
 
-  const cal=document.createElement("input");
-  cal.type="date";
-  cal.style.width="100%";
-  cal.style.height="44px";
-  cal.style.border="none";
-  cal.style.borderRadius="18px";
-  cal.style.background="#e6ddd4";
-  cal.style.color="#111";
-  cal.style.fontSize="16px";
-
-  cal.onchange=()=>{
-    if(!cal.value) return;
-
-    const selected=new Date(cal.value + "T00:00:00");
-    weekStart=getMonday(selected);
-    currentDate=formatDate(selected);
-
-    renderDates();
-    render();
+  const calBtn=document.createElement("button");
+  calBtn.textContent="🗓️";
+  calBtn.onclick=()=>{
+    const cal=document.getElementById("calendarBox");
+    cal.style.display = cal.style.display==="block" ? "none" : "block";
+    renderCalendar();
   };
 
   const next=document.createElement("button");
@@ -125,7 +128,7 @@ function renderDates(){
   };
 
   controls.appendChild(prev);
-  controls.appendChild(cal);
+  controls.appendChild(calBtn);
   controls.appendChild(next);
 
   for(let i=0;i<5;i++){
@@ -141,12 +144,56 @@ function renderDates(){
 
     btn.onclick=()=>{
       currentDate=text;
+      document.getElementById("calendarBox").style.display="none";
       renderDates();
       render();
     };
 
     box.appendChild(btn);
   }
+}
+
+function renderCalendar(){
+  const box=document.getElementById("calendarBox");
+  const y=calendarMonth.getFullYear();
+  const m=calendarMonth.getMonth();
+
+  const first=new Date(y,m,1);
+  const last=new Date(y,m+1,0);
+  const startDay=first.getDay();
+
+  let html=`
+    <div class="cal-head">
+      <button onclick="moveMonth(-1)">前月</button>
+      <b>${y}/${m+1}</b>
+      <button onclick="moveMonth(1)">次月</button>
+    </div>
+    <div class="cal-grid">
+      <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
+  `;
+
+  for(let i=0;i<startDay;i++) html += `<div></div>`;
+
+  for(let day=1;day<=last.getDate();day++){
+    html += `<button onclick="pickDate(${y},${m},${day})">${day}</button>`;
+  }
+
+  html += `</div>`;
+  box.innerHTML=html;
+}
+
+function moveMonth(n){
+  calendarMonth.setMonth(calendarMonth.getMonth()+n);
+  renderCalendar();
+}
+
+function pickDate(y,m,day){
+  const selected=new Date(y,m,day);
+  weekStart=getMonday(selected);
+  currentDate=formatDate(selected);
+  document.getElementById("calendarBox").style.display="none";
+  renderDates();
+  render();
 }
 
 async function render(){
@@ -201,19 +248,15 @@ async function render(){
     view.innerHTML=`
       <div class="card">
         <select id="dateInput"></select>
-
         <input id="title" placeholder="タイトル">
         <textarea id="content" placeholder="内容"></textarea>
-
         <select id="status">
           <option value="通常">通常</option>
           <option value="重要">重要</option>
         </select>
-
         <button class="active" onclick="${editId ? "saveEdit()" : "addData()"}">
           ${editId ? "保存" : "追加"}
         </button>
-
         ${editId ? `<button onclick="cancelEdit()">キャンセル</button>` : ""}
       </div>`;
 
