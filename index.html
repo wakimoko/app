@@ -5,16 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>出荷管理</title>
 <style>
-body{margin:0;padding:24px;background:#f7f2ec;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;color:#111}
-h1{font-size:32px}
-button{border:0;border-radius:18px;padding:13px 18px;margin:5px;background:#e8dfd6;font-size:16px;font-weight:700;color:#111}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;padding:24px 18px;background:#f7f2ec;color:#111;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif}
+h1{font-size:32px;font-weight:800;margin:28px 0}
+button{border:0;border-radius:18px;padding:13px 18px;margin:5px;background:#e8dfd6;color:#111;font-size:16px;font-weight:700}
 .active{background:#a9744f!important;color:white!important}
 .card{background:white;border-radius:22px;padding:22px;margin-top:18px;box-shadow:0 8px 24px rgba(60,40,25,.08)}
 .title{font-size:22px;font-weight:800}
-.important{color:red}
+.important{color:red!important}
 input,textarea,select{width:100%;font-size:16px;padding:14px;margin:10px 0;border-radius:14px;border:1px solid #ddd}
 textarea{height:100px}
-.like{background:#c8a98a}
+.like{background:#c8a98a!important}
+.row{border-bottom:1px solid #eadfd5;padding:16px 0}
 </style>
 </head>
 <body>
@@ -41,7 +43,7 @@ const dateList = ["5/4","5/5","5/6","5/7","5/8"];
 
 function setTab(tab){
   currentTab = tab;
-  document.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll("[id^='tab_']").forEach(b=>b.classList.remove("active"));
   document.getElementById("tab_"+tab).classList.add("active");
   renderDates();
   render();
@@ -100,8 +102,8 @@ async function render(){
             ${item.title || ""}
           </div>
           <div>${item.content || ""}</div>
-          <button class="like" onclick="likeItem(${item.id}, ${item.liked || 0})">
-            👍 ×${item.liked || 0}
+          <button class="like" onclick="likeItem(${item.id}, ${Number(item.liked || 0)})">
+            👍 ×${Number(item.liked || 0)}
           </button>
         </div>
       `;
@@ -112,8 +114,8 @@ async function render(){
     view.innerHTML = `
       <div class="card">
         <h2>出荷予定</h2>
-        <p>佐川急便<br>2F</p>
-        <p>福山通運<br>2F / 梱包場 / MJ倉庫</p>
+        <div class="row"><b>佐川急便</b><br>2F</div>
+        <div class="row"><b>福山通運</b><br>2F / 梱包場 / MJ倉庫</div>
       </div>
     `;
   }
@@ -123,7 +125,11 @@ async function render(){
       <div class="card">
         <h2>管理</h2>
         <select id="dateInput">
-          <option>5/4</option><option>5/5</option><option>5/6</option><option>5/7</option><option>5/8</option>
+          <option>5/4</option>
+          <option>5/5</option>
+          <option>5/6</option>
+          <option>5/7</option>
+          <option>5/8</option>
         </select>
         <input id="title" placeholder="タイトル">
         <textarea id="content" placeholder="内容"></textarea>
@@ -138,8 +144,10 @@ async function render(){
 }
 
 async function addData(){
+  const date = document.getElementById("dateInput").value;
+
   const {error} = await client.from("shipments").insert({
-    date: document.getElementById("dateInput").value,
+    date: date,
     category: "notice",
     title: document.getElementById("title").value,
     content: document.getElementById("content").value,
@@ -152,7 +160,7 @@ async function addData(){
     return;
   }
 
-  currentDate = document.getElementById("dateInput").value;
+  currentDate = date;
   setTab("notice");
 }
 
