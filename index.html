@@ -18,7 +18,7 @@ textarea{height:100px}
 .icon-btn{position:absolute;bottom:10px;width:32px;height:32px;border-radius:50%;padding:0}
 .edit-btn{right:50px;background:#e6ddd4}
 .delete-btn{right:10px;background:#f3d6d6}
-#weekControls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
+#weekControls{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:8px;margin-top:12px}
 #dates{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}
 #weekControls button,#dates button{width:100%;margin:0}
 </style>
@@ -94,40 +94,26 @@ function renderDates(){
     render();
   };
 
-  const calWrap = document.createElement("div");
-  calWrap.style.position = "relative";
+  const cal=document.createElement("input");
+  cal.type="date";
+  cal.style.width="100%";
+  cal.style.height="44px";
+  cal.style.border="none";
+  cal.style.borderRadius="18px";
+  cal.style.background="#e6ddd4";
+  cal.style.color="#111";
+  cal.style.fontSize="16px";
 
-  const cal = document.createElement("input");
-  cal.type = "date";
-  cal.style.width = "100%";
-  cal.style.height = "44px";
-  cal.style.border = "none";
-  cal.style.borderRadius = "18px";
-  cal.style.background = "#e6ddd4";
-  cal.style.color = "transparent";
-  cal.style.fontSize = "16px";
+  cal.onchange=()=>{
+    if(!cal.value) return;
 
-  const label = document.createElement("div");
-  label.textContent = "🗓️";
-  label.style.position = "absolute";
-  label.style.inset = "0";
-  label.style.display = "flex";
-  label.style.alignItems = "center";
-  label.style.justifyContent = "center";
-  label.style.pointerEvents = "none";
-  label.style.fontSize = "20px";
+    const selected=new Date(cal.value + "T00:00:00");
+    weekStart=getMonday(selected);
+    currentDate=formatDate(selected);
 
-  cal.onchange = () => {
-    if (!cal.value) return;
-    const selected = new Date(cal.value + "T00:00:00");
-    weekStart = getMonday(selected);
-    currentDate = formatDate(selected);
     renderDates();
     render();
   };
-
-  calWrap.appendChild(cal);
-  calWrap.appendChild(label);
 
   const next=document.createElement("button");
   next.textContent="次週";
@@ -139,7 +125,7 @@ function renderDates(){
   };
 
   controls.appendChild(prev);
-  controls.appendChild(calWrap);
+  controls.appendChild(cal);
   controls.appendChild(next);
 
   for(let i=0;i<5;i++){
