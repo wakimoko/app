@@ -6,22 +6,20 @@
 <title>出荷管理</title>
 
 <style>
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 
 body{
   margin:0;
   padding:20px;
   background:#f6efe6;
-  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
   color:#111;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
 }
 
 h1{
   font-size:34px;
   margin:28px 0;
+  font-weight:900;
 }
 
 button{
@@ -29,13 +27,15 @@ button{
   border-radius:18px;
   background:#e6ddd4;
   color:#111;
-  font-weight:700;
+  font-weight:800;
   font-size:15px;
 }
 
+button:active{transform:scale(.96)}
+
 .active{
   background:#b88a5a!important;
-  color:white!important;
+  color:#fff!important;
 }
 
 .top-tabs{
@@ -45,20 +45,16 @@ button{
   margin-bottom:16px;
 }
 
-.top-tabs button{
-  padding:14px 0;
-}
+.top-tabs button{padding:14px 0}
 
 #weekControls{
   display:grid;
-  grid-template-columns:1fr 0.7fr 1fr;
+  grid-template-columns:1fr .7fr 1fr;
   gap:8px;
   margin-bottom:10px;
 }
 
-#weekControls button{
-  padding:12px 0;
-}
+#weekControls button{padding:12px 0;width:100%}
 
 #dates{
   display:grid;
@@ -67,12 +63,10 @@ button{
   margin-bottom:16px;
 }
 
-#dates button{
-  padding:14px 0;
-}
+#dates button{padding:14px 0;width:100%}
 
 .card{
-  background:white;
+  background:#fff;
   border-radius:24px;
   padding:24px;
   margin-top:14px;
@@ -82,20 +76,20 @@ button{
 
 .item-title{
   font-size:24px;
-  font-weight:800;
+  font-weight:900;
   margin-bottom:12px;
+  text-align:left;
 }
 
 .item-content{
   font-size:19px;
-  line-height:1.6;
+  line-height:1.7;
   white-space:pre-wrap;
-  padding-bottom:44px;
+  text-align:left;
+  padding-bottom:48px;
 }
 
-.important{
-  color:red;
-}
+.important{color:red}
 
 .icon-btn{
   position:absolute;
@@ -126,21 +120,25 @@ input,textarea,select{
   font-size:16px;
 }
 
-textarea{
-  height:120px;
-}
+textarea{height:120px}
 
 .save-btn{
   width:100%;
   padding:15px 0;
   margin-top:16px;
   background:#b88a5a;
-  color:white;
+  color:#fff;
+}
+
+.cancel-btn{
+  width:100%;
+  padding:15px 0;
+  margin-top:10px;
 }
 
 #calendarBox{
   display:none;
-  background:white;
+  background:#fff;
   border-radius:22px;
   padding:16px;
   margin-bottom:16px;
@@ -153,9 +151,7 @@ textarea{
   margin-bottom:12px;
 }
 
-.cal-head button{
-  padding:8px 14px;
-}
+.cal-head button{padding:8px 14px}
 
 .cal-grid{
   display:grid;
@@ -166,7 +162,7 @@ textarea{
 
 .cal-grid div{
   padding:8px 0;
-  font-weight:700;
+  font-weight:800;
 }
 
 .cal-grid button{
@@ -205,6 +201,16 @@ let currentDate = "";
 let weekStart = getMonday(new Date());
 let calendarMonth = new Date();
 let editId = null;
+let lastItems = [];
+
+function esc(text){
+  return String(text ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
 
 function getMonday(date){
   const d = new Date(date);
@@ -215,7 +221,7 @@ function getMonday(date){
 }
 
 function formatDate(date){
-  return (date.getMonth() + 1) + "/" + date.getDate();
+  return (date.getMonth()+1) + "/" + date.getDate();
 }
 
 function setTab(tab){
@@ -226,7 +232,6 @@ function setTab(tab){
   });
 
   document.getElementById("tab_" + tab).classList.add("active");
-
   document.getElementById("calendarBox").style.display = "none";
 
   renderDates();
@@ -249,43 +254,15 @@ function renderDates(){
   controls.style.display = "grid";
   dates.style.display = "grid";
 
-  const prev = document.createElement("button");
-  prev.textContent = "前週";
-  prev.onclick = ()=>{
-    weekStart.setDate(weekStart.getDate() - 7);
-    currentDate = "";
-    renderDates();
-    render();
-  };
+  controls.innerHTML = `
+    <button onclick="moveWeek(-1)">前週</button>
+    <button onclick="toggleCalendar()">🗓️</button>
+    <button onclick="moveWeek(1)">次週</button>
+  `;
 
-  const cal = document.createElement("button");
-  cal.textContent = "🗓️";
-  cal.onclick = ()=>{
-    const box = document.getElementById("calendarBox");
-    if(box.style.display === "block"){
-      box.style.display = "none";
-    }else{
-      box.style.display = "block";
-      renderCalendar();
-    }
-  };
-
-  const next = document.createElement("button");
-  next.textContent = "次週";
-  next.onclick = ()=>{
-    weekStart.setDate(weekStart.getDate() + 7);
-    currentDate = "";
-    renderDates();
-    render();
-  };
-
-  controls.appendChild(prev);
-  controls.appendChild(cal);
-  controls.appendChild(next);
-
-  for(let i=0; i<5; i++){
+  for(let i=0;i<5;i++){
     const d = new Date(weekStart);
-    d.setDate(weekStart.getDate() + i);
+    d.setDate(weekStart.getDate()+i);
 
     const text = formatDate(d);
 
@@ -311,9 +288,27 @@ function renderDates(){
   }
 }
 
-function renderCalendar(){
+function moveWeek(num){
+  weekStart.setDate(weekStart.getDate() + 7*num);
+  currentDate = "";
+  renderDates();
+  render();
+}
+
+function toggleCalendar(){
   const box = document.getElementById("calendarBox");
 
+  if(box.style.display === "block"){
+    box.style.display = "none";
+    return;
+  }
+
+  box.style.display = "block";
+  renderCalendar();
+}
+
+function renderCalendar(){
+  const box = document.getElementById("calendarBox");
   const year = calendarMonth.getFullYear();
   const month = calendarMonth.getMonth();
 
@@ -323,24 +318,18 @@ function renderCalendar(){
   let html = `
     <div class="cal-head">
       <button onclick="changeMonth(-1)">前月</button>
-      <b>${year}/${month + 1}</b>
+      <b>${year}/${month+1}</b>
       <button onclick="changeMonth(1)">次月</button>
     </div>
     <div class="cal-grid">
-      <div>日</div>
-      <div>月</div>
-      <div>火</div>
-      <div>水</div>
-      <div>木</div>
-      <div>金</div>
-      <div>土</div>
+      <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
   `;
 
-  for(let i=0; i<first.getDay(); i++){
+  for(let i=0;i<first.getDay();i++){
     html += `<div></div>`;
   }
 
-  for(let day=1; day<=last.getDate(); day++){
+  for(let day=1;day<=last.getDate();day++){
     html += `<button onclick="pickDate(${year},${month},${day})">${day}</button>`;
   }
 
@@ -349,12 +338,13 @@ function renderCalendar(){
 }
 
 function changeMonth(num){
-  calendarMonth.setMonth(calendarMonth.getMonth() + num);
+  calendarMonth.setMonth(calendarMonth.getMonth()+num);
   renderCalendar();
 }
 
-function pickDate(year, month, day){
-  const selected = new Date(year, month, day);
+function pickDate(year,month,day){
+  const selected = new Date(year,month,day);
+
   weekStart = getMonday(selected);
   currentDate = formatDate(selected);
 
@@ -396,15 +386,15 @@ MJ倉庫：あり / なし</div>
   }
 
   if(currentTab === "notice"){
-    const { data, error } = await client
+    const {data,error} = await client
       .from("shipments")
       .select("*")
-      .eq("date", currentDate)
-      .eq("category", "notice")
-      .order("id", { ascending:false });
+      .eq("date",currentDate)
+      .eq("category","notice")
+      .order("id",{ascending:false});
 
     if(error){
-      view.innerHTML = `<div class="card">${error.message}</div>`;
+      view.innerHTML = `<div class="card">${esc(error.message)}</div>`;
       return;
     }
 
@@ -413,18 +403,18 @@ MJ倉庫：あり / なし</div>
       return;
     }
 
+    lastItems = data;
+
     data.forEach(item=>{
       view.innerHTML += `
         <div class="card">
           <div class="item-title ${item.status === "重要" ? "important" : ""}">
-            ${item.title || ""}
+            ${esc(item.title)}
           </div>
 
-          <div class="item-content">
-            ${item.content || ""}
-          </div>
+          <div class="item-content">${esc(item.content)}</div>
 
-          <button class="icon-btn edit-btn" onclick='startEdit(${JSON.stringify(item)})'>✏️</button>
+          <button class="icon-btn edit-btn" onclick="startEditById(${item.id})">✏️</button>
           <button class="icon-btn delete-btn" onclick="deleteItem(${item.id})">🗑️</button>
         </div>
       `;
@@ -451,15 +441,16 @@ MJ倉庫：あり / なし</div>
           ${editId ? "保存" : "追加"}
         </button>
 
-        ${editId ? `<button class="save-btn" onclick="cancelEdit()">キャンセル</button>` : ""}
+        ${editId ? `<button class="cancel-btn" onclick="cancelEdit()">キャンセル</button>` : ""}
       </div>
     `;
 
     const select = document.getElementById("dateInput");
 
-    for(let i=0; i<5; i++){
+    for(let i=0;i<5;i++){
       const d = new Date(weekStart);
-      d.setDate(weekStart.getDate() + i);
+      d.setDate(weekStart.getDate()+i);
+
       const text = formatDate(d);
       select.innerHTML += `<option>${text}</option>`;
     }
@@ -471,20 +462,22 @@ MJ倉庫：あり / なし</div>
 async function addData(){
   const title = document.getElementById("title").value.trim();
   const content = document.getElementById("content").value.trim();
+  const status = document.getElementById("status").value;
+  const date = document.getElementById("dateInput").value;
 
   if(!title || !content){
     alert("タイトルと内容を入力してください");
     return;
   }
 
-  const { error } = await client
+  const {error} = await client
     .from("shipments")
     .insert({
-      date: document.getElementById("dateInput").value,
-      category: "notice",
-      title: title,
-      content: content,
-      status: document.getElementById("status").value
+      date,
+      category:"notice",
+      title,
+      content,
+      status
     });
 
   if(error){
@@ -492,12 +485,15 @@ async function addData(){
     return;
   }
 
-  currentDate = document.getElementById("dateInput").value;
+  currentDate = date;
   setTab("notice");
 }
 
-function startEdit(item){
-  editId = item.id;
+function startEditById(id){
+  const item = lastItems.find(x => x.id === id);
+  if(!item) return;
+
+  editId = id;
   setTab("manage");
 
   setTimeout(()=>{
@@ -509,23 +505,33 @@ function startEdit(item){
 }
 
 async function saveEdit(){
-  const { error } = await client
+  const title = document.getElementById("title").value.trim();
+  const content = document.getElementById("content").value.trim();
+  const status = document.getElementById("status").value;
+  const date = document.getElementById("dateInput").value;
+
+  if(!title || !content){
+    alert("タイトルと内容を入力してください");
+    return;
+  }
+
+  const {error} = await client
     .from("shipments")
     .update({
-      date: document.getElementById("dateInput").value,
-      title: document.getElementById("title").value,
-      content: document.getElementById("content").value,
-      status: document.getElementById("status").value
+      date,
+      title,
+      content,
+      status
     })
-    .eq("id", editId);
+    .eq("id",editId);
 
   if(error){
     alert(error.message);
     return;
   }
 
-  currentDate = document.getElementById("dateInput").value;
   editId = null;
+  currentDate = date;
   setTab("notice");
 }
 
@@ -537,10 +543,10 @@ function cancelEdit(){
 async function deleteItem(id){
   if(!confirm("削除しますか？")) return;
 
-  const { error } = await client
+  const {error} = await client
     .from("shipments")
     .delete()
-    .eq("id", id);
+    .eq("id",id);
 
   if(error){
     alert(error.message);
