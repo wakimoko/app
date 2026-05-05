@@ -68,10 +68,10 @@ button:active{transform:scale(.96)}
 .card{
   background:#fff;
   border-radius:24px;
-  padding:24px;
+  padding:18px;
   margin-top:14px;
   position:relative;
-  min-height:150px;
+  min-height:120px;
 }
 
 .item-title{
@@ -170,24 +170,26 @@ textarea{height:120px}
   border-radius:12px;
 }
 
-.ship-group{margin-top:24px}
+.ship-group{
+  margin-top:14px;
+}
 
 .ship-company{
-  font-size:24px;
+  font-size:22px;
   font-weight:900;
-  margin-bottom:12px;
+  margin-bottom:6px;
 }
 
 .ship-row{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:14px 0;
+  padding:8px 0;
   border-bottom:1px solid #eadfd5;
 }
 
 .ship-place{
-  font-size:20px;
+  font-size:18px;
   font-weight:700;
 }
 
@@ -197,8 +199,8 @@ textarea{height:120px}
 }
 
 .ship-buttons button{
-  padding:10px 16px;
-  border-radius:14px;
+  padding:8px 12px;
+  border-radius:12px;
 }
 </style>
 </head>
@@ -419,8 +421,6 @@ async function render(){
   if(currentTab === "ship"){
     view.innerHTML = `
       <div class="card">
-        <div class="item-title">出荷予定</div>
-
         <div class="ship-group">
           <div class="ship-company">佐川急便</div>
           ${shipRow("2F", "sagawa_2f")}
