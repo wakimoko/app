@@ -143,11 +143,6 @@ h1{
   font-size:16px;
   font-weight:900;
   color:#111;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  writing-mode:horizontal-tb;
-  white-space:nowrap;
 }
 
 .photo-links{
@@ -227,11 +222,13 @@ h1{
         <div class="ship-company">佐川急便</div>
         <div class="ship-place">2F</div>
       </div>
+
       <div class="ship-right">
         <div class="ship-status">
           <button class="active" onclick="toggleStatus(this)">あり</button>
           <button onclick="toggleStatus(this)">なし</button>
         </div>
+
         <div class="photo-links">
           <button onclick="showPhoto('sagawa')">写真表示</button>
           <label>添付<input type="file" accept="image/*" onchange="savePhoto(event,'sagawa')"></label>
@@ -246,11 +243,13 @@ h1{
         <div class="ship-company">福山通運</div>
         <div class="ship-place">2F</div>
       </div>
+
       <div class="ship-right">
         <div class="ship-status">
           <button class="active" onclick="toggleStatus(this)">あり</button>
           <button onclick="toggleStatus(this)">なし</button>
         </div>
+
         <div class="photo-links">
           <button onclick="showPhoto('fukuyama')">写真表示</button>
           <label>添付<input type="file" accept="image/*" onchange="savePhoto(event,'fukuyama')"></label>
@@ -264,11 +263,13 @@ h1{
       <div class="ship-left">
         <div class="ship-place">梱包場</div>
       </div>
+
       <div class="ship-right">
         <div class="ship-status">
           <button onclick="toggleStatus(this)">あり</button>
           <button class="active" onclick="toggleStatus(this)">なし</button>
         </div>
+
         <div class="photo-links">
           <button onclick="showPhoto('packing')">写真表示</button>
           <label>添付<input type="file" accept="image/*" onchange="savePhoto(event,'packing')"></label>
@@ -282,11 +283,13 @@ h1{
       <div class="ship-left">
         <div class="ship-place">MJ倉庫</div>
       </div>
+
       <div class="ship-right">
         <div class="ship-status">
           <button onclick="toggleStatus(this)">あり</button>
           <button class="active" onclick="toggleStatus(this)">なし</button>
         </div>
+
         <div class="photo-links">
           <button onclick="showPhoto('mj')">写真表示</button>
           <label>添付<input type="file" accept="image/*" onchange="savePhoto(event,'mj')"></label>
@@ -339,15 +342,18 @@ function openCalendar(){
 
 function changeDate(value){
   if(!value) return;
+
   const date = new Date(value);
   const month = date.getMonth() + 1;
   const day = date.getDate();
+
   alert(month + "/" + day + " を選択しました");
 }
 
 function savePhoto(event,key){
   const file = event.target.files[0];
   if(!file) return;
+
   photos[key] = URL.createObjectURL(file);
   alert("写真を添付しました");
 }
@@ -357,6 +363,7 @@ function showPhoto(key){
     alert("写真がありません");
     return;
   }
+
   document.getElementById("modalImg").src = photos[key];
   document.getElementById("modal").style.display = "flex";
 }
