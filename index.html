@@ -1,253 +1,198 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
 <title>出荷管理</title>
 
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-
 body{
   margin:0;
-  background:#f4ede4;
-  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+  background:#f4efe6;
+  font-family:sans-serif;
   color:#111;
 }
 
-.app{
-  max-width:430px;
-  margin:auto;
-  padding:24px 22px 40px;
+.container{
+  padding:24px 20px 120px;
 }
 
 h1{
-  font-size:34px;
+  font-size:58px;
   font-weight:900;
-  margin:18px 0 28px;
+  margin:20px 0 30px;
 }
 
-button{
-  border:none;
-  cursor:pointer;
-  font-family:inherit;
-}
-
-.active{
-  background:#be8b55!important;
-  color:#fff!important;
-}
+/* ---------- 上メニュー ---------- */
 
 .top-tabs{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  margin-bottom:20px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-bottom:22px;
 }
 
 .top-tabs button{
+  height:72px;
+  border:none;
+  border-radius:24px;
   background:#e6ddd4;
-  border-radius:18px;
-  padding:14px 18px;
-  font-size:15px;
+  font-size:18px;
   font-weight:900;
+  color:#0d6efd;
 }
 
-.week-nav{
+.top-tabs button.active{
+  background:#be8b55;
+  color:#fff;
+}
+
+/* ---------- 日付 ---------- */
+
+.week-row{
   display:grid;
-  grid-template-columns:1fr .75fr 1fr;
-  gap:10px;
-  margin-bottom:12px;
+  grid-template-columns:1fr 120px 1fr;
+  gap:14px;
+  margin-bottom:14px;
 }
 
-.week-nav button{
-  height:44px;
-  border-radius:18px;
+.week-row button{
+  height:74px;
+  border:none;
+  border-radius:24px;
   background:#e6ddd4;
-  font-size:15px;
+  font-size:20px;
   font-weight:900;
+  color:#0d6efd;
 }
 
-.dates{
+.date-row{
   display:grid;
   grid-template-columns:repeat(5,1fr);
-  gap:10px;
-  margin-bottom:18px;
+  gap:12px;
+  margin-bottom:26px;
 }
 
-.dates button{
-  height:44px;
-  border-radius:18px;
-  background:#e6ddd4;
-  font-size:17px;
-  font-weight:900;
-}
-
-.card{
-  background:#fff;
+.date-btn{
+  height:92px;
+  border:none;
   border-radius:24px;
-  padding:24px 22px;
-  margin-bottom:14px;
+  background:#e6ddd4;
+  font-size:26px;
+  font-weight:900;
+  color:#0d6efd;
+}
+
+.date-btn.active{
+  background:#be8b55;
+  color:#fff;
+}
+
+/* ---------- カード ---------- */
+
+.notice-card{
   position:relative;
+  background:#fff;
+  border-radius:34px;
+  padding:34px 28px 90px;
+  margin-bottom:20px;
 }
 
 .notice-title{
-  font-size:24px;
+  font-size:34px;
   font-weight:900;
-  color:#111;
+  margin-bottom:24px;
 }
 
-.notice-title.important{
-  color:red;
-}
-
-.notice-content{
-  margin-top:18px;
-  font-size:18px;
-  line-height:1.6;
+.notice-body{
+  font-size:26px;
+  line-height:1.7;
   white-space:pre-wrap;
 }
 
+/* ---------- 編集削除 ---------- */
+
 .card-actions{
+  position:absolute;
+  right:20px;
+  bottom:20px;
   display:flex;
-  justify-content:flex-end;
   gap:12px;
-  margin-top:28px;
 }
 
 .icon-btn{
-  width:36px;
-  height:36px;
+  width:50px;
+  height:50px;
+  border:none;
   border-radius:50%;
-  background:#e6ddd4;
-  font-size:18px;
+  font-size:22px;
+  cursor:pointer;
+}
+
+.edit-btn{
+  background:#eadfd3;
 }
 
 .delete-btn{
-  background:#f3d6d6;
+  background:#f5d9d9;
 }
 
-.ship-row{
-  padding:14px 0 12px;
-  border-bottom:1px solid #efe5dc;
+/* ---------- 管理 ---------- */
+
+.manage-box{
+  background:#fff;
+  border-radius:34px;
+  padding:26px;
 }
 
-.ship-row:last-child{
-  border-bottom:none;
+.manage-box h2{
+  font-size:34px;
+  margin:0 0 18px;
 }
 
-.ship-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-}
-
-.ship-left{
-  display:flex;
-  flex-direction:column;
-}
-
-.ship-company{
-  font-size:22px;
-  font-weight:900;
-  line-height:1.1;
-}
-
-.ship-place{
-  font-size:16px;
-  font-weight:800;
-  margin-top:4px;
-}
-
-.ship-right{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-end;
-}
-
-.ship-status{
-  display:flex;
-  gap:10px;
-}
-
-.ship-status button{
-  min-width:62px;
-  height:38px;
-  border-radius:999px;
-  background:#e6ddd4;
-  font-size:16px;
-  font-weight:900;
-  color:#111;
-}
-
-.photo-links{
-  display:flex;
-  gap:14px;
-  margin-top:6px;
-}
-
-.photo-links button,
-.photo-links label{
-  background:none;
-  padding:0;
-  margin:0;
-  font-size:11px;
-  font-weight:700;
-  color:#8b5d33;
-  text-decoration:underline;
-}
-
-.photo-links input{
-  display:none;
-}
-
-input,textarea,select{
+.manage-box input,
+.manage-box textarea{
   width:100%;
-  margin-top:10px;
-  padding:12px;
-  border-radius:12px;
-  border:1px solid #ddd;
-  font-size:15px;
+  box-sizing:border-box;
+  margin-bottom:16px;
+  border:2px solid #ddd;
+  border-radius:20px;
+  padding:18px;
+  font-size:20px;
 }
 
-textarea{
-  height:90px;
+.manage-box textarea{
+  min-height:140px;
+  resize:none;
 }
 
 .save-btn{
   width:100%;
-  height:44px;
-  border-radius:14px;
+  height:70px;
+  border:none;
+  border-radius:24px;
   background:#be8b55;
   color:#fff;
-  font-size:16px;
+  font-size:28px;
   font-weight:900;
-  margin-top:12px;
 }
 
-.modal{
+/* 非表示 */
+
+.hidden{
   display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.8);
-  align-items:center;
-  justify-content:center;
-  z-index:999;
-}
-
-.modal img{
-  max-width:90%;
-  max-height:80%;
-  border-radius:12px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<div class="container">
 
 <h1>出荷管理</h1>
+
+<!-- 上タブ -->
 
 <div class="top-tabs">
   <button class="active" onclick="selectTab(this,'notice')">注意事項</button>
@@ -256,366 +201,275 @@ textarea{
   <button onclick="selectTab(this,'manage')">管理</button>
 </div>
 
-<div class="week-nav">
-  <button onclick="moveWeek(-1)">前週</button>
+<!-- 日付 -->
+
+<div class="week-row">
+  <button>前週</button>
+
   <button onclick="openCalendar()">🗓️</button>
-  <button onclick="moveWeek(1)">次週</button>
+
+  <button>次週</button>
 </div>
 
-<input type="date" id="calendarInput" style="display:none" onchange="changeDate(this.value)">
+<div class="date-row">
+  <button class="date-btn active">5/4</button>
+  <button class="date-btn">5/5</button>
+  <button class="date-btn">5/6</button>
+  <button class="date-btn">5/7</button>
+  <button class="date-btn">5/8</button>
+</div>
 
-<div class="dates" id="dates"></div>
+<!-- 注意事項 -->
 
-<div id="content"></div>
+<div id="notice-section">
+
+  <div id="notice-list"></div>
 
 </div>
 
-<div class="modal" id="modal" onclick="closePhoto()">
-  <img id="modalImg">
+<!-- 出荷予定 -->
+
+<div id="ship-section" class="hidden">
+  <div class="manage-box">
+    <h2>出荷予定</h2>
+    <p>ここに出荷予定を表示</p>
+  </div>
 </div>
+
+<!-- 当日出荷 -->
+
+<div id="today-section" class="hidden">
+  <div class="manage-box">
+    <h2>当日出荷</h2>
+    <p>ここに当日出荷を表示</p>
+  </div>
+</div>
+
+<!-- 管理 -->
+
+<div id="manage-section" class="hidden">
+
+  <div class="manage-box">
+
+    <h2>注意事項を追加</h2>
+
+    <input type="text" id="title" placeholder="タイトル">
+
+    <textarea id="body" placeholder="内容"></textarea>
+
+    <button class="save-btn" onclick="saveNotice()">
+      保存
+    </button>
+
+  </div>
+
+</div>
+
+</div>
+
+<!-- hidden calendar -->
+
+<input
+  type="date"
+  id="calendar"
+  style="position:absolute;opacity:0;pointer-events:none;"
+>
 
 <script>
-let currentTab = "notice";
-let weekStart = new Date(2026, 4, 4);
-let currentDate = "";
-const photos = {};
 
-function formatDate(date){
-  return (date.getMonth()+1) + "/" + date.getDate();
-}
+/* ---------------- 保存 ---------------- */
 
-function renderDates(){
-  const dates = document.getElementById("dates");
-  const weekNav = document.querySelector(".week-nav");
+let notices = JSON.parse(localStorage.getItem("notices")) || [];
 
-  if(currentTab === "manage"){
-    dates.style.display = "none";
-    weekNav.style.display = "none";
-    return;
-  }
+let editId = null;
 
-  dates.style.display = "grid";
-  weekNav.style.display = "grid";
-  dates.innerHTML = "";
+/* ---------------- 描画 ---------------- */
 
-  for(let i=0; i<5; i++){
-    const d = new Date(weekStart);
-    d.setDate(weekStart.getDate()+i);
-    const text = formatDate(d);
+function renderNotices(){
 
-    if(!currentDate && i === 0){
-      currentDate = text;
-    }
+  const list = document.getElementById("notice-list");
 
-    const btn = document.createElement("button");
-    btn.textContent = text;
+  list.innerHTML = "";
 
-    if(text === currentDate){
-      btn.classList.add("active");
-    }
+  notices.reverse().forEach(item => {
 
-    btn.onclick = function(){
-      currentDate = text;
-      renderDates();
-      renderContent();
-    };
+    list.innerHTML += `
 
-    dates.appendChild(btn);
-  }
-}
+      <div class="notice-card">
 
-function selectTab(button, tab){
-  currentTab = tab;
-
-  document.querySelectorAll(".top-tabs button").forEach(btn=>{
-    btn.classList.remove("active");
-  });
-
-  button.classList.add("active");
-  renderDates();
-  renderContent();
-}
-
-function moveWeek(num){
-  weekStart.setDate(weekStart.getDate() + 7*num);
-  currentDate = "";
-  renderDates();
-  renderContent();
-}
-
-function openCalendar(){
-  const input = document.getElementById("calendarInput");
-  if(input.showPicker){
-    input.showPicker();
-  }else{
-    input.click();
-  }
-}
-
-function changeDate(value){
-  if(!value) return;
-
-  const d = new Date(value);
-  currentDate = formatDate(d);
-
-  const day = d.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-
-  weekStart = new Date(d);
-  weekStart.setDate(d.getDate() + diff);
-
-  renderDates();
-  renderContent();
-}
-
-function toggleStatus(button){
-  const group = button.parentElement;
-  group.querySelectorAll("button").forEach(btn=>{
-    btn.classList.remove("active");
-  });
-  button.classList.add("active");
-}
-
-function savePhoto(event,key){
-  const file = event.target.files[0];
-  if(!file) return;
-
-  photos[key] = URL.createObjectURL(file);
-  alert("写真を添付しました");
-}
-
-function showPhoto(key){
-  if(!photos[key]){
-    alert("写真がありません");
-    return;
-  }
-
-  document.getElementById("modalImg").src = photos[key];
-  document.getElementById("modal").style.display = "flex";
-}
-
-function closePhoto(){
-  document.getElementById("modal").style.display = "none";
-}
-
-function getNotices(){
-  return JSON.parse(localStorage.getItem("notices") || "[]");
-}
-
-function saveNotices(items){
-  localStorage.setItem("notices", JSON.stringify(items));
-}
-
-function addNotice(){
-  const title = document.getElementById("noticeTitle").value.trim();
-  const content = document.getElementById("noticeContent").value.trim();
-  const status = document.getElementById("noticeStatus").value;
-  const manageDate = document.getElementById("manageDate").value;
-
-  if(!manageDate){
-    alert("日付を選択してください");
-    return;
-  }
-
-  if(!title || !content){
-    alert("タイトルと内容を入力してください");
-    return;
-  }
-
-  const items = getNotices();
-
-  items.push({
-    id: Date.now(),
-    date: formatDate(new Date(manageDate)),
-    title,
-    content,
-    status
-  });
-
-  saveNotices(items);
-
-  currentDate = formatDate(new Date(manageDate));
-  currentTab = "notice";
-
-  document.querySelectorAll(".top-tabs button").forEach(btn=>btn.classList.remove("active"));
-  document.querySelectorAll(".top-tabs button")[0].classList.add("active");
-
-  renderDates();
-  renderContent();
-}
-
-function deleteNotice(id){
-  if(!confirm("削除しますか？")) return;
-
-  const items = getNotices().filter(item=>item.id !== id);
-  saveNotices(items);
-  renderContent();
-}
-
-function editNotice(id){
-  const item = getNotices().find(x=>x.id === id);
-  if(!item) return;
-
-  currentTab = "manage";
-
-  document.querySelectorAll(".top-tabs button").forEach(btn=>btn.classList.remove("active"));
-  document.querySelectorAll(".top-tabs button")[3].classList.add("active");
-
-  renderDates();
-
-  document.getElementById("content").innerHTML = `
-    <div class="card">
-      <div class="ship-company">管理</div>
-      <div class="ship-place">注意事項を編集</div>
-
-      <input type="date" id="manageDate">
-      <input id="noticeTitle" placeholder="タイトル" value="${item.title}">
-      <textarea id="noticeContent" placeholder="内容">${item.content}</textarea>
-
-      <select id="noticeStatus">
-        <option value="通常" ${item.status === "通常" ? "selected" : ""}>通常</option>
-        <option value="重要" ${item.status === "重要" ? "selected" : ""}>重要</option>
-      </select>
-
-      <button class="save-btn" onclick="saveEditNotice(${id})">保存</button>
-    </div>
-  `;
-}
-
-function saveEditNotice(id){
-  const items = getNotices();
-  const item = items.find(x=>x.id === id);
-  if(!item) return;
-
-  item.title = document.getElementById("noticeTitle").value.trim();
-  item.content = document.getElementById("noticeContent").value.trim();
-  item.status = document.getElementById("noticeStatus").value;
-  item.date = formatDate(new Date(document.getElementById("manageDate").value));
-
-  saveNotices(items);
-
-  currentDate = item.date;
-  currentTab = "notice";
-
-  document.querySelectorAll(".top-tabs button").forEach(btn=>btn.classList.remove("active"));
-  document.querySelectorAll(".top-tabs button")[0].classList.add("active");
-
-  renderDates();
-  renderContent();
-}
-
-function row(name, floor, key, yesActive){
-  return `
-    <div class="ship-row">
-      <div class="ship-top">
-        <div class="ship-left">
-          <div class="${floor ? "ship-company" : "ship-place"}">${name}</div>
-          ${floor ? `<div class="ship-place">${floor}</div>` : ""}
-        </div>
-
-        <div class="ship-right">
-          <div class="ship-status">
-            <button class="${yesActive ? "active" : ""}" onclick="toggleStatus(this)">あり</button>
-            <button class="${!yesActive ? "active" : ""}" onclick="toggleStatus(this)">なし</button>
-          </div>
-
-          <div class="photo-links">
-            <button onclick="showPhoto('${key}')">写真表示</button>
-            <label>
-              添付
-              <input type="file" accept="image/*" onchange="savePhoto(event,'${key}')">
-            </label>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderContent(){
-  const content = document.getElementById("content");
-
-  if(currentTab === "ship"){
-    content.innerHTML = `
-      <div class="card">
-        ${row("佐川急便","2F","sagawa",true)}
-        ${row("福山通運","2F","fukuyama",true)}
-        ${row("梱包場","","packing",false)}
-        ${row("MJ倉庫","","mj",false)}
-      </div>
-    `;
-    return;
-  }
-
-  if(currentTab === "notice"){
-    const items = getNotices().filter(item=>item.date === currentDate);
-
-    if(items.length === 0){
-      content.innerHTML = `
-        <div class="card">
-          <div class="notice-title">注意事項なし</div>
-          <div class="notice-content">この日の注意事項はありません</div>
-        </div>
-      `;
-      return;
-    }
-
-    content.innerHTML = items.map(item=>`
-      <div class="card">
-        <div class="notice-title ${item.status === "重要" ? "important" : ""}">
+        <div class="notice-title">
           ${item.title}
         </div>
 
-        <div class="notice-content">${item.content}</div>
+        <div class="notice-body">
+          ${item.body}
+        </div>
 
         <div class="card-actions">
-          <button class="icon-btn" onclick="editNotice(${item.id})">✏️</button>
-          <button class="icon-btn delete-btn" onclick="deleteNotice(${item.id})">🗑️</button>
+
+          <button
+            class="icon-btn edit-btn"
+            onclick="editNotice(${item.id})"
+          >
+            ✏️
+          </button>
+
+          <button
+            class="icon-btn delete-btn"
+            onclick="deleteNotice(${item.id})"
+          >
+            🗑️
+          </button>
+
         </div>
+
       </div>
-    `).join("");
+
+    `;
+  });
+
+  notices.reverse();
+}
+
+/* ---------------- 保存 ---------------- */
+
+function saveNotice(){
+
+  const title = document.getElementById("title").value;
+
+  const body = document.getElementById("body").value;
+
+  if(!title || !body){
+    alert("入力してください");
     return;
   }
 
-  if(currentTab === "today"){
-    content.innerHTML = `
-      <div class="card">
-        ${row("佐川急便","2F","today_sagawa",true)}
-        ${row("福山通運","2F","today_fukuyama",true)}
-        ${row("梱包場","","today_packing",false)}
-        ${row("MJ倉庫","","today_mj",false)}
-      </div>
-    `;
-    return;
+  if(editId){
+
+    notices = notices.map(n => {
+
+      if(n.id === editId){
+        return {
+          ...n,
+          title,
+          body
+        };
+      }
+
+      return n;
+
+    });
+
+    editId = null;
+
+  }else{
+
+    notices.push({
+      id:Date.now(),
+      title,
+      body
+    });
+
   }
 
-  if(currentTab === "manage"){
-    content.innerHTML = `
-      <div class="card">
-        <div class="ship-company">管理</div>
-        <div class="ship-place">注意事項を追加</div>
+  localStorage.setItem(
+    "notices",
+    JSON.stringify(notices)
+  );
 
-        <input type="date" id="manageDate">
-        <input id="noticeTitle" placeholder="タイトル">
-        <textarea id="noticeContent" placeholder="内容"></textarea>
+  document.getElementById("title").value = "";
+  document.getElementById("body").value = "";
 
-        <select id="noticeStatus">
-          <option value="通常">通常</option>
-          <option value="重要">重要</option>
-        </select>
+  renderNotices();
 
-        <button class="save-btn" onclick="addNotice()">保存</button>
-      </div>
-    `;
+  alert("保存しました");
+}
 
-    const input = document.getElementById("manageDate");
-    const today = new Date();
-    input.value = today.toISOString().split("T")[0];
+/* ---------------- 編集 ---------------- */
+
+function editNotice(id){
+
+  const item = notices.find(n => n.id === id);
+
+  if(!item) return;
+
+  document.getElementById("title").value = item.title;
+
+  document.getElementById("body").value = item.body;
+
+  editId = id;
+
+  selectTab(
+    document.querySelectorAll(".top-tabs button")[3],
+    "manage"
+  );
+}
+
+/* ---------------- 削除 ---------------- */
+
+function deleteNotice(id){
+
+  if(!confirm("削除しますか？")) return;
+
+  notices = notices.filter(n => n.id !== id);
+
+  localStorage.setItem(
+    "notices",
+    JSON.stringify(notices)
+  );
+
+  renderNotices();
+}
+
+/* ---------------- タブ切替 ---------------- */
+
+function selectTab(button, type){
+
+  document
+    .querySelectorAll(".top-tabs button")
+    .forEach(btn => btn.classList.remove("active"));
+
+  button.classList.add("active");
+
+  document.getElementById("notice-section").classList.add("hidden");
+  document.getElementById("ship-section").classList.add("hidden");
+  document.getElementById("today-section").classList.add("hidden");
+  document.getElementById("manage-section").classList.add("hidden");
+
+  if(type === "notice"){
+    document.getElementById("notice-section").classList.remove("hidden");
+  }
+
+  if(type === "ship"){
+    document.getElementById("ship-section").classList.remove("hidden");
+  }
+
+  if(type === "today"){
+    document.getElementById("today-section").classList.remove("hidden");
+  }
+
+  if(type === "manage"){
+    document.getElementById("manage-section").classList.remove("hidden");
   }
 }
 
-renderDates();
-renderContent();
+/* ---------------- カレンダー ---------------- */
+
+function openCalendar(){
+
+  const calendar = document.getElementById("calendar");
+
+  if(calendar.showPicker){
+    calendar.showPicker();
+  }else{
+    calendar.click();
+  }
+}
+
+/* ---------------- 初期 ---------------- */
+
+renderNotices();
+
 </script>
 
 </body>
