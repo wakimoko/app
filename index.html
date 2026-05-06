@@ -3,10 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
 <title>出荷管理</title>
 
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
 
 body{
   margin:0;
@@ -16,85 +20,98 @@ body{
 }
 
 .container{
-  padding:16px 18px 90px;
   max-width:430px;
   margin:auto;
+  padding:18px 18px 100px;
 }
 
 h1{
-  font-size:34px;
+  font-size:58px;
   font-weight:900;
-  margin:10px 0 22px;
+  margin:10px 0 28px;
 }
+
+/* ---------- 上タブ ---------- */
 
 .top-tabs{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:8px;
-  margin-bottom:12px;
+  gap:10px;
+  margin-bottom:14px;
 }
 
 .top-tabs button{
-  height:54px;
+  height:64px;
   border:none;
-  border-radius:18px;
+  border-radius:22px;
   background:#e6ddd4;
-  font-size:14px;
-  font-weight:900;
   color:#007aff;
+  font-size:18px;
+  font-weight:900;
 }
 
-.active{
-  background:#be8b55!important;
-  color:#fff!important;
+.top-tabs button.active{
+  background:#be8b55;
+  color:#fff;
 }
+
+/* ---------- 週 ---------- */
 
 .week-row{
   display:grid;
   grid-template-columns:1fr .7fr 1fr;
-  gap:8px;
-  margin-bottom:10px;
+  gap:10px;
+  margin-bottom:12px;
 }
 
 .week-row button{
-  height:48px;
+  height:58px;
   border:none;
-  border-radius:18px;
+  border-radius:22px;
   background:#e6ddd4;
-  font-size:15px;
-  font-weight:900;
   color:#007aff;
+  font-size:18px;
+  font-weight:900;
 }
+
+/* ---------- 日付 ---------- */
 
 .date-row{
   display:grid;
   grid-template-columns:repeat(5,1fr);
-  gap:8px;
-  margin-bottom:12px;
+  gap:10px;
+  margin-bottom:18px;
 }
 
 .date-row button{
-  height:48px;
+  height:72px;
   border:none;
-  border-radius:18px;
+  border-radius:24px;
   background:#e6ddd4;
-  font-size:17px;
-  font-weight:900;
   color:#007aff;
+  font-size:22px;
+  font-weight:900;
 }
+
+.date-row button.active{
+  background:#be8b55;
+  color:#fff;
+}
+
+/* ---------- カード ---------- */
 
 .card{
   background:#fff;
-  border-radius:24px;
-  padding:22px 22px 56px;
+  border-radius:32px;
+  padding:24px 24px 78px;
   position:relative;
   min-height:210px;
 }
 
 .notice-title{
-  font-size:28px;
+  font-size:34px;
   font-weight:900;
-  margin-bottom:14px;
+  margin-bottom:18px;
 }
 
 .notice-title.important{
@@ -102,62 +119,91 @@ h1{
 }
 
 .notice-body{
-  font-size:18px;
-  line-height:1.5;
+  font-size:22px;
+  line-height:1.6;
   white-space:pre-wrap;
+  text-align:left;
+  margin-top:0;
 }
+
+/* ---------- 編集削除 ---------- */
 
 .card-actions{
   position:absolute;
   right:18px;
   bottom:18px;
   display:flex;
-  gap:10px;
+  gap:12px;
 }
 
 .icon-btn{
-  width:38px;
-  height:38px;
+  width:46px;
+  height:46px;
   border:none;
   border-radius:50%;
-  font-size:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  line-height:1;
+  padding:0;
+  cursor:pointer;
 }
 
-.edit-btn{background:#eadfd3}
-.delete-btn{background:#f5d9d9}
+.edit-btn{
+  background:#eadfd3;
+}
+
+.delete-btn{
+  background:#f5d9d9;
+}
+
+/* ---------- 管理 ---------- */
 
 .manage-box{
   background:#fff;
-  border-radius:24px;
-  padding:20px;
+  border-radius:28px;
+  padding:22px;
 }
 
-input,textarea,select{
+.manage-title{
+  font-size:30px;
+  font-weight:900;
+  margin-bottom:18px;
+}
+
+input,
+textarea,
+select{
   width:100%;
-  margin-top:10px;
-  padding:12px;
-  border-radius:12px;
+  margin-bottom:14px;
+  padding:16px;
+  border-radius:18px;
   border:1px solid #ddd;
-  font-size:15px;
+  font-size:18px;
 }
 
 textarea{
-  height:90px;
+  min-height:120px;
+  resize:none;
 }
 
 .save-btn{
   width:100%;
-  height:44px;
+  height:62px;
   border:none;
-  border-radius:14px;
+  border-radius:22px;
   background:#be8b55;
   color:#fff;
-  font-size:16px;
+  font-size:24px;
   font-weight:900;
-  margin-top:12px;
 }
 
-.hidden{display:none}
+/* ---------- 非表示 ---------- */
+
+.hidden{
+  display:none;
+}
 </style>
 </head>
 
@@ -167,170 +213,409 @@ textarea{
 
 <h1>出荷管理</h1>
 
+<!-- 上タブ -->
+
 <div class="top-tabs">
   <button class="active" onclick="selectTab(this,'notice')">注意事項</button>
+
   <button onclick="selectTab(this,'ship')">出荷予定</button>
+
   <button onclick="selectTab(this,'today')">当日出荷</button>
+
   <button onclick="selectTab(this,'manage')">管理</button>
 </div>
 
+<!-- 日付 -->
+
 <div id="dateArea">
+
   <div class="week-row">
-    <button onclick="alert('前週')">前週</button>
-    <button onclick="openCalendar()">🗓️</button>
-    <button onclick="alert('次週')">次週</button>
+
+    <button onclick="alert('前週')">
+      前週
+    </button>
+
+    <button onclick="openCalendar()">
+      🗓️
+    </button>
+
+    <button onclick="alert('次週')">
+      次週
+    </button>
+
   </div>
 
   <div class="date-row">
+
     <button class="active">5/4</button>
     <button>5/5</button>
     <button>5/6</button>
     <button>5/7</button>
     <button>5/8</button>
+
   </div>
+
 </div>
 
-<input type="date" id="calendar" style="display:none">
+<!-- hidden calendar -->
+
+<input
+  type="date"
+  id="calendar"
+  style="display:none;"
+>
+
+<!-- 注意事項 -->
 
 <div id="notice-section">
+
   <div id="notice-list"></div>
+
 </div>
 
-<div id="manage-section" class="hidden">
+<!-- 出荷予定 -->
+
+<div id="ship-section" class="hidden">
+
   <div class="manage-box">
-    <div class="notice-title">注意事項を追加</div>
-    <input id="title" placeholder="タイトル">
-    <textarea id="body" placeholder="内容"></textarea>
+    <div class="manage-title">出荷予定</div>
+    <div>ここに出荷予定を表示</div>
+  </div>
+
+</div>
+
+<!-- 当日出荷 -->
+
+<div id="today-section" class="hidden">
+
+  <div class="manage-box">
+    <div class="manage-title">当日出荷</div>
+    <div>ここに当日出荷を表示</div>
+  </div>
+
+</div>
+
+<!-- 管理 -->
+
+<div id="manage-section" class="hidden">
+
+  <div class="manage-box">
+
+    <div class="manage-title">
+      注意事項を追加
+    </div>
+
+    <input
+      type="text"
+      id="title"
+      placeholder="タイトル"
+    >
+
+    <textarea
+      id="body"
+      placeholder="内容"
+    ></textarea>
+
     <select id="status">
       <option value="通常">通常</option>
       <option value="重要">重要</option>
     </select>
-    <button class="save-btn" onclick="saveNotice()">保存</button>
+
+    <button
+      class="save-btn"
+      onclick="saveNotice()"
+    >
+      保存
+    </button>
+
   </div>
+
 </div>
 
 </div>
 
 <script>
-let notices = JSON.parse(localStorage.getItem("notices") || "[]");
+
+/* ---------------- データ ---------------- */
+
+let notices =
+  JSON.parse(
+    localStorage.getItem("notices") || "[]"
+  );
+
 let editId = null;
 
+/* ---------------- 表示 ---------------- */
+
 function renderNotices(){
-  const list = document.getElementById("notice-list");
+
+  const list =
+    document.getElementById("notice-list");
 
   if(notices.length === 0){
+
     list.innerHTML = `
+
       <div class="card">
-        <div class="notice-title">注意事項なし</div>
-        <div class="notice-body">この日の注意事項はありません</div>
+
+        <div class="notice-title">
+          注意事項なし
+        </div>
+
+        <div class="notice-body">
+          この日の注意事項はありません
+        </div>
+
       </div>
+
     `;
+
     return;
   }
 
-  list.innerHTML = notices.slice().reverse().map(item=>`
-    <div class="card">
-      <div class="notice-title ${item.status === "重要" ? "important" : ""}">
-        ${item.title || ""}
+  list.innerHTML =
+    notices
+    .slice()
+    .reverse()
+    .map(item => `
+
+      <div class="card">
+
+        <div class="notice-title ${item.status === "重要" ? "important" : ""}">
+          ${item.title || ""}
+        </div>
+
+        <div class="notice-body">
+${item.body || ""}
+        </div>
+
+        <div class="card-actions">
+
+          <button
+            class="icon-btn edit-btn"
+            onclick="editNotice(${item.id})"
+          >
+            ✏️
+          </button>
+
+          <button
+            class="icon-btn delete-btn"
+            onclick="deleteNotice(${item.id})"
+          >
+            🗑️
+          </button>
+
+        </div>
+
       </div>
 
-      <div class="notice-body">
-        ${item.body || item.content || ""}
-      </div>
-
-      <div class="card-actions">
-        <button class="icon-btn edit-btn" onclick="editNotice(${item.id})">✏️</button>
-        <button class="icon-btn delete-btn" onclick="deleteNotice(${item.id})">🗑️</button>
-      </div>
-    </div>
-  `).join("");
+    `)
+    .join("");
 }
 
+/* ---------------- 保存 ---------------- */
+
 function saveNotice(){
-  const title = document.getElementById("title").value.trim();
-  const body = document.getElementById("body").value.trim();
-  const status = document.getElementById("status").value;
+
+  const title =
+    document.getElementById("title").value.trim();
+
+  const body =
+    document.getElementById("body").value.trim();
+
+  const status =
+    document.getElementById("status").value;
 
   if(!title || !body){
+
     alert("入力してください");
     return;
   }
 
   if(editId){
-    notices = notices.map(item =>
-      item.id === editId ? {...item,title,body,status} : item
-    );
+
+    notices = notices.map(item => {
+
+      if(item.id === editId){
+
+        return {
+          ...item,
+          title,
+          body,
+          status
+        };
+      }
+
+      return item;
+    });
+
     editId = null;
+
   }else{
+
     notices.push({
       id:Date.now(),
       title,
       body,
       status
     });
+
   }
 
-  localStorage.setItem("notices",JSON.stringify(notices));
+  localStorage.setItem(
+    "notices",
+    JSON.stringify(notices)
+  );
 
   document.getElementById("title").value = "";
   document.getElementById("body").value = "";
 
-  selectTab(document.querySelectorAll(".top-tabs button")[0],"notice");
   renderNotices();
+
+  alert("保存しました");
+
+  selectTab(
+    document.querySelectorAll(".top-tabs button")[0],
+    "notice"
+  );
 }
 
+/* ---------------- 編集 ---------------- */
+
 function editNotice(id){
-  const item = notices.find(x=>x.id===id);
+
+  const item =
+    notices.find(n => n.id === id);
+
   if(!item) return;
 
   editId = id;
 
-  document.getElementById("title").value = item.title || "";
-  document.getElementById("body").value = item.body || item.content || "";
-  document.getElementById("status").value = item.status || "通常";
+  document.getElementById("title").value =
+    item.title || "";
 
-  selectTab(document.querySelectorAll(".top-tabs button")[3],"manage");
+  document.getElementById("body").value =
+    item.body || "";
+
+  document.getElementById("status").value =
+    item.status || "通常";
+
+  selectTab(
+    document.querySelectorAll(".top-tabs button")[3],
+    "manage"
+  );
 }
 
-function deleteNotice(id){
-  if(!confirm("削除しますか？")) return;
+/* ---------------- 削除 ---------------- */
 
-  notices = notices.filter(item=>item.id!==id);
-  localStorage.setItem("notices",JSON.stringify(notices));
+function deleteNotice(id){
+
+  if(!confirm("削除しますか？"))
+    return;
+
+  notices =
+    notices.filter(n => n.id !== id);
+
+  localStorage.setItem(
+    "notices",
+    JSON.stringify(notices)
+  );
+
   renderNotices();
 }
 
+/* ---------------- タブ切替 ---------------- */
+
 function selectTab(button,type){
-  document.querySelectorAll(".top-tabs button").forEach(btn=>{
-    btn.classList.remove("active");
-  });
+
+  document
+    .querySelectorAll(".top-tabs button")
+    .forEach(btn => btn.classList.remove("active"));
+
   button.classList.add("active");
 
-  document.getElementById("notice-section").classList.add("hidden");
-  document.getElementById("manage-section").classList.add("hidden");
+  document
+    .getElementById("notice-section")
+    .classList.add("hidden");
+
+  document
+    .getElementById("ship-section")
+    .classList.add("hidden");
+
+  document
+    .getElementById("today-section")
+    .classList.add("hidden");
+
+  document
+    .getElementById("manage-section")
+    .classList.add("hidden");
 
   if(type === "notice"){
-    document.getElementById("dateArea").style.display = "block";
-    document.getElementById("notice-section").classList.remove("hidden");
+
+    document
+      .getElementById("dateArea")
+      .style.display = "block";
+
+    document
+      .getElementById("notice-section")
+      .classList.remove("hidden");
   }
 
   if(type === "manage"){
-    document.getElementById("dateArea").style.display = "none";
-    document.getElementById("manage-section").classList.remove("hidden");
+
+    document
+      .getElementById("dateArea")
+      .style.display = "none";
+
+    document
+      .getElementById("manage-section")
+      .classList.remove("hidden");
   }
 
-  if(type === "ship" || type === "today"){
-    alert("この画面は次に作ります");
+  if(type === "ship"){
+
+    document
+      .getElementById("dateArea")
+      .style.display = "block";
+
+    document
+      .getElementById("ship-section")
+      .classList.remove("hidden");
+  }
+
+  if(type === "today"){
+
+    document
+      .getElementById("dateArea")
+      .style.display = "block";
+
+    document
+      .getElementById("today-section")
+      .classList.remove("hidden");
   }
 }
+
+/* ---------------- カレンダー ---------------- */
 
 function openCalendar(){
-  const cal = document.getElementById("calendar");
-  if(cal.showPicker){ cal.showPicker(); }
-  else{ cal.click(); }
+
+  const calendar =
+    document.getElementById("calendar");
+
+  if(calendar.showPicker){
+
+    calendar.showPicker();
+
+  }else{
+
+    calendar.click();
+  }
 }
 
+/* ---------------- 初期 ---------------- */
+
 renderNotices();
+
 </script>
 
 </body>
