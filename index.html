@@ -20,16 +20,18 @@ body{
 }
 
 .app{
-  padding:26px 22px 40px;
   max-width:430px;
   margin:auto;
+  padding:24px 20px 40px;
 }
 
 h1{
   font-size:54px;
   font-weight:900;
-  margin:18px 0 28px;
+  margin:12px 0 30px;
 }
+
+/* 上タブ */
 
 .top-tabs{
   display:grid;
@@ -40,17 +42,28 @@ h1{
 
 .top-tabs button{
   height:88px;
+  min-width:0;
+
   border:none;
   border-radius:26px;
+
   background:#e6ddd4;
-  font-size:22px;
+
+  font-size:20px;
   font-weight:900;
+
+  writing-mode:horizontal-tb;
+  white-space:nowrap;
+
+  color:#111;
 }
 
 .top-tabs .active{
   background:#be8b55;
   color:#fff;
 }
+
+/* 週 */
 
 .week-nav{
   display:grid;
@@ -67,6 +80,8 @@ h1{
   font-size:22px;
   font-weight:900;
 }
+
+/* 日付 */
 
 .dates{
   display:grid;
@@ -89,14 +104,18 @@ h1{
   color:#fff;
 }
 
+/* カード */
+
 .card{
   background:#fff;
   border-radius:34px;
-  padding:20px 18px 10px;
+  padding:10px 18px;
 }
 
+/* 行 */
+
 .ship-row{
-  padding:18px 0 16px;
+  padding:24px 0 18px;
   border-bottom:2px solid #efe5dc;
 }
 
@@ -107,8 +126,10 @@ h1{
 .ship-top{
   display:flex;
   justify-content:space-between;
-  align-items:center;
+  align-items:flex-start;
 }
+
+/* 左 */
 
 .ship-left{
   display:flex;
@@ -124,14 +145,18 @@ h1{
 .ship-place{
   font-size:20px;
   font-weight:800;
-  margin-top:8px;
+  margin-top:10px;
 }
+
+/* 右 */
 
 .ship-right{
   display:flex;
   flex-direction:column;
   align-items:flex-end;
 }
+
+/* ありなし */
 
 .ship-status{
   display:flex;
@@ -141,20 +166,25 @@ h1{
 }
 
 .ship-status button{
-  min-width:74px;
-  height:42px;
+  min-width:92px;
+  height:58px;
+
   border:none;
   border-radius:999px;
+
   background:#e6ddd4;
-  font-size:18px;
-  font-weight:900;
   color:#111;
+
+  font-size:22px;
+  font-weight:900;
 }
 
 .ship-status .active{
   background:#be8b55;
   color:#fff;
 }
+
+/* 写真 */
 
 .photo-links{
   display:flex;
@@ -168,9 +198,12 @@ h1{
   background:none;
   padding:0;
   margin:0;
+
+  color:#8b5d33;
+
   font-size:14px;
   font-weight:700;
-  color:#8b5d33;
+
   text-decoration:underline;
 }
 
