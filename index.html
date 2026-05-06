@@ -86,7 +86,7 @@ button{
 .card{
   background:#fff;
   border-radius:24px;
-  padding:10px 16px;
+  padding:14px 16px;
 }
 
 .ship-row{
@@ -163,6 +163,54 @@ button{
   display:none;
 }
 
+input,textarea,select{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid #ddd;
+  font-size:15px;
+}
+
+textarea{
+  height:90px;
+}
+
+.save-btn{
+  width:100%;
+  height:44px;
+  border-radius:14px;
+  background:#be8b55;
+  color:#fff;
+  font-size:16px;
+  font-weight:900;
+  margin-top:12px;
+}
+
+.delete-btn{
+  margin-top:10px;
+  background:#f2d6d6;
+  padding:8px 12px;
+  border-radius:10px;
+  font-weight:800;
+}
+
+.notice-title{
+  font-size:22px;
+  font-weight:900;
+}
+
+.notice-content{
+  margin-top:8px;
+  font-size:15px;
+  font-weight:700;
+  white-space:pre-wrap;
+}
+
+.important{
+  color:red;
+}
+
 .modal{
   display:none;
   position:fixed;
@@ -229,7 +277,6 @@ function renderDates(){
   for(let i=0; i<5; i++){
     const d = new Date(weekStart);
     d.setDate(weekStart.getDate()+i);
-
     const text = formatDate(d);
 
     if(!currentDate && i === 0){
@@ -261,7 +308,6 @@ function selectTab(button, tab){
   });
 
   button.classList.add("active");
-
   renderContent();
 }
 
@@ -274,7 +320,6 @@ function moveWeek(num){
 
 function openCalendar(){
   const input = document.getElementById("calendarInput");
-
   if(input.showPicker){
     input.showPicker();
   }else{
@@ -330,6 +375,53 @@ function closePhoto(){
   document.getElementById("modal").style.display = "none";
 }
 
+function getNotices(){
+  return JSON.parse(localStorage.getItem("notices") || "[]");
+}
+
+function saveNotices(items){
+  localStorage.setItem("notices", JSON.stringify(items));
+}
+
+function addNotice(){
+  const title = document.getElementById("noticeTitle").value.trim();
+  const content = document.getElementById("noticeContent").value.trim();
+  const status = document.getElementById("noticeStatus").value;
+
+  if(!title || !content){
+    alert("タイトルと内容を入力してください");
+    return;
+  }
+
+  const items = getNotices();
+
+  items.push({
+    id: Date.now(),
+    date: currentDate,
+    title,
+    content,
+    status
+  });
+
+  saveNotices(items);
+
+  alert("保存しました");
+
+  currentTab = "notice";
+  document.querySelectorAll(".top-tabs button").forEach(btn=>btn.classList.remove("active"));
+  document.querySelectorAll(".top-tabs button")[0].classList.add("active");
+
+  renderContent();
+}
+
+function deleteNotice(id){
+  if(!confirm("削除しますか？")) return;
+
+  const items = getNotices().filter(item=>item.id !== id);
+  saveNotices(items);
+  renderContent();
+}
+
 function row(name, floor, key, yesActive){
   return `
     <div class="ship-row">
@@ -374,12 +466,31 @@ function renderContent(){
   }
 
   if(currentTab === "notice"){
+    const items = getNotices().filter(item=>item.date === currentDate);
+
+    if(items.length === 0){
+      content.innerHTML = `
+        <div class="card">
+          <div class="ship-row">
+            <div class="ship-company">注意事項</div>
+            <div class="ship-place">この日の注意事項はありません</div>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
     content.innerHTML = `
       <div class="card">
-        <div class="ship-row">
-          <div class="ship-company">注意事項</div>
-          <div class="ship-place">この日に注意する内容を表示します</div>
-        </div>
+        ${items.map(item=>`
+          <div class="ship-row">
+            <div class="notice-title ${item.status === "重要" ? "important" : ""}">
+              ${item.title}
+            </div>
+            <div class="notice-content">${item.content}</div>
+            <button class="delete-btn" onclick="deleteNotice(${item.id})">削除</button>
+          </div>
+        `).join("")}
       </div>
     `;
     return;
@@ -388,10 +499,10 @@ function renderContent(){
   if(currentTab === "today"){
     content.innerHTML = `
       <div class="card">
-        <div class="ship-row">
-          <div class="ship-company">当日出荷</div>
-          <div class="ship-place">本日分の出荷確認</div>
-        </div>
+        ${row("佐川急便","2F","today_sagawa",true)}
+        ${row("福山通運","2F","today_fukuyama",true)}
+        ${row("梱包場","","today_packing",false)}
+        ${row("MJ倉庫","","today_mj",false)}
       </div>
     `;
     return;
@@ -400,10 +511,18 @@ function renderContent(){
   if(currentTab === "manage"){
     content.innerHTML = `
       <div class="card">
-        <div class="ship-row">
-          <div class="ship-company">管理</div>
-          <div class="ship-place">編集画面はここに作成できます</div>
-        </div>
+        <div class="ship-company">管理</div>
+        <div class="ship-place">注意事項を追加</div>
+
+        <input id="noticeTitle" placeholder="タイトル">
+        <textarea id="noticeContent" placeholder="内容"></textarea>
+
+        <select id="noticeStatus">
+          <option value="通常">通常</option>
+          <option value="重要">重要</option>
+        </select>
+
+        <button class="save-btn" onclick="addNotice()">保存</button>
       </div>
     `;
   }
