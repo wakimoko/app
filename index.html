@@ -1,161 +1,76 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>出荷管理</title>
-
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-
-body{
-  margin:0;
-  background:#f4ede4;
-  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
-  color:#111;
-}
-
-.app{
-  max-width:430px;
-  margin:auto;
-  padding:22px 20px 40px;
-}
-
-h1{
-  font-size:34px;
-  font-weight:900;
-  margin:20px 0 28px;
-}
-
-.top-tabs{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
-  margin-bottom:14px;
-}
-
-.top-tabs button{
-  height:58px;
-  border:none;
-  border-radius:22px;
-  background:#e6ddd4;
-  font-size:15px;
-  font-weight:900;
-  white-space:nowrap;
-}
-
-.active{
-  background:#be8b55!important;
-  color:#fff!important;
-}
-
-.week-nav{
-  display:grid;
-  grid-template-columns:1fr .7fr 1fr;
-  gap:10px;
-  margin-bottom:12px;
-}
-
-.week-nav button{
-  height:52px;
-  border:none;
-  border-radius:20px;
-  background:#e6ddd4;
-  font-size:16px;
-  font-weight:900;
-}
-
-.dates{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:10px;
-  margin-bottom:16px;
-}
-
-.dates button{
-  height:52px;
-  border:none;
-  border-radius:20px;
-  background:#e6ddd4;
-  font-size:18px;
-  font-weight:900;
-}
-
-.card{
-  background:#fff;
-  border-radius:28px;
-  padding:14px 18px;
-}
-
 .ship-row{
-  padding:16px 0 14px;
-  border-bottom:1px solid #efe5dc;
-}
-
-.ship-row:last-child{
-  border-bottom:none;
-}
-
-.ship-top{
   display:flex;
   justify-content:space-between;
-  align-items:flex-start;
+  align-items:center;
+  padding:22px 0;
+  border-bottom:1px solid #e5ddd4;
 }
 
 .ship-left{
   display:flex;
   flex-direction:column;
+  justify-content:center;
+  gap:8px;
+  padding-left:8px;
 }
 
-.ship-company{
-  font-size:24px;
+.company{
+  font-size:30px;
   font-weight:900;
   line-height:1.1;
 }
 
-.ship-place{
-  font-size:18px;
-  font-weight:800;
-  margin-top:6px;
+.place{
+  font-size:22px;
+  font-weight:900;
+  line-height:1;
 }
 
 .ship-right{
   display:flex;
   flex-direction:column;
   align-items:flex-end;
+  gap:12px;
 }
 
-.ship-status{
+.ship-buttons{
   display:flex;
-  gap:10px;
+  align-items:center;
+  gap:18px;
 }
 
-.ship-status button{
-  min-width:68px;
-  height:42px;
+.ship-buttons button{
   border:none;
+  width:120px;
+  height:60px;
   border-radius:999px;
-  background:#e6ddd4;
-  font-size:18px;
+  font-size:24px;
   font-weight:900;
+  background:#e8dfd6;
   color:#111;
+}
+
+.ship-buttons button.active{
+  background:#c89557;
+  color:#fff;
 }
 
 .photo-links{
   display:flex;
-  gap:16px;
-  margin-top:8px;
+  gap:28px;
+  padding-right:10px;
 }
 
-.photo-links button,
-.photo-links label{
+.photo-links label,
+.photo-links button{
   border:none;
   background:none;
   padding:0;
   margin:0;
-  font-size:12px;
-  font-weight:700;
-  color:#8b5d33;
+  font-size:16px;
+  font-weight:900;
+  color:#9a6a3d;
   text-decoration:underline;
 }
 
@@ -163,114 +78,30 @@ h1{
   display:none;
 }
 </style>
-</head>
 
-<body>
+<div class="ship-row">
 
-<div class="app">
-
-<h1>出荷管理</h1>
-
-<div class="top-tabs">
-  <button>注意事項</button>
-  <button class="active">出荷予定</button>
-  <button>当日出荷</button>
-  <button>管理</button>
-</div>
-
-<div class="week-nav">
-  <button>前週</button>
-  <button>🗓️</button>
-  <button>次週</button>
-</div>
-
-<div class="dates">
-  <button class="active">5/4</button>
-  <button>5/5</button>
-  <button>5/6</button>
-  <button>5/7</button>
-  <button>5/8</button>
-</div>
-
-<div class="card">
-
-  <div class="ship-row">
-    <div class="ship-top">
-      <div class="ship-left">
-        <div class="ship-company">佐川急便</div>
-        <div class="ship-place">2F</div>
-      </div>
-      <div class="ship-right">
-        <div class="ship-status">
-          <button class="active">あり</button>
-          <button>なし</button>
-        </div>
-        <div class="photo-links">
-          <button>写真表示</button>
-          <label>添付<input type="file" accept="image/*"></label>
-        </div>
-      </div>
-    </div>
+  <div class="ship-left">
+    <div class="company">佐川急便</div>
+    <div class="place">2F</div>
   </div>
 
-  <div class="ship-row">
-    <div class="ship-top">
-      <div class="ship-left">
-        <div class="ship-company">福山通運</div>
-        <div class="ship-place">2F</div>
-      </div>
-      <div class="ship-right">
-        <div class="ship-status">
-          <button class="active">あり</button>
-          <button>なし</button>
-        </div>
-        <div class="photo-links">
-          <button>写真表示</button>
-          <label>添付<input type="file" accept="image/*"></label>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div class="ship-right">
 
-  <div class="ship-row">
-    <div class="ship-top">
-      <div class="ship-left">
-        <div class="ship-place">梱包場</div>
-      </div>
-      <div class="ship-right">
-        <div class="ship-status">
-          <button>あり</button>
-          <button class="active">なし</button>
-        </div>
-        <div class="photo-links">
-          <button>写真表示</button>
-          <label>添付<input type="file" accept="image/*"></label>
-        </div>
-      </div>
+    <div class="ship-buttons">
+      <button class="active">あり</button>
+      <button>なし</button>
     </div>
-  </div>
 
-  <div class="ship-row">
-    <div class="ship-top">
-      <div class="ship-left">
-        <div class="ship-place">MJ倉庫</div>
-      </div>
-      <div class="ship-right">
-        <div class="ship-status">
-          <button>あり</button>
-          <button class="active">なし</button>
-        </div>
-        <div class="photo-links">
-          <button>写真表示</button>
-          <label>添付<input type="file" accept="image/*"></label>
-        </div>
-      </div>
+    <div class="photo-links">
+      <button>写真表示</button>
+
+      <label>
+        添付
+        <input type="file" accept="image/*">
+      </label>
     </div>
+
   </div>
 
 </div>
-
-</div>
-
-</body>
-</html>
