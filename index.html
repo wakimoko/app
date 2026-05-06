@@ -34,13 +34,18 @@ h1{
   margin-bottom:14px;
 }
 
+.top-tabs button,
+.week-nav button,
+.dates button{
+  border:none;
+  background:#e6ddd4;
+  font-weight:900;
+}
+
 .top-tabs button{
   height:54px;
-  border:none;
   border-radius:20px;
-  background:#e6ddd4;
   font-size:14px;
-  font-weight:900;
   white-space:nowrap;
 }
 
@@ -58,11 +63,8 @@ h1{
 
 .week-nav button{
   height:48px;
-  border:none;
   border-radius:18px;
-  background:#e6ddd4;
   font-size:15px;
-  font-weight:900;
 }
 
 .dates{
@@ -74,11 +76,8 @@ h1{
 
 .dates button{
   height:48px;
-  border:none;
   border-radius:18px;
-  background:#e6ddd4;
   font-size:16px;
-  font-weight:900;
 }
 
 .card{
@@ -162,6 +161,22 @@ h1{
 .photo-links input{
   display:none;
 }
+
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.8);
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+}
+
+.modal img{
+  max-width:90%;
+  max-height:80%;
+  border-radius:12px;
+}
 </style>
 </head>
 
@@ -172,24 +187,24 @@ h1{
 <h1>出荷管理</h1>
 
 <div class="top-tabs">
-  <button>注意事項</button>
-  <button class="active">出荷予定</button>
-  <button>当日出荷</button>
-  <button>管理</button>
+  <button onclick="selectTab(this)">注意事項</button>
+  <button class="active" onclick="selectTab(this)">出荷予定</button>
+  <button onclick="selectTab(this)">当日出荷</button>
+  <button onclick="selectTab(this)">管理</button>
 </div>
 
 <div class="week-nav">
-  <button>前週</button>
-  <button>🗓️</button>
-  <button>次週</button>
+  <button onclick="alert('前週')">前週</button>
+  <button onclick="alert('日付選択')">🗓️</button>
+  <button onclick="alert('次週')">次週</button>
 </div>
 
 <div class="dates">
-  <button class="active">5/4</button>
-  <button>5/5</button>
-  <button>5/6</button>
-  <button>5/7</button>
-  <button>5/8</button>
+  <button class="active" onclick="selectDate(this)">5/4</button>
+  <button onclick="selectDate(this)">5/5</button>
+  <button onclick="selectDate(this)">5/6</button>
+  <button onclick="selectDate(this)">5/7</button>
+  <button onclick="selectDate(this)">5/8</button>
 </div>
 
 <div class="card">
@@ -202,12 +217,12 @@ h1{
       </div>
       <div class="ship-right">
         <div class="ship-status">
-          <button class="active">あり</button>
-          <button>なし</button>
+          <button class="active" onclick="toggleStatus(this)">あり</button>
+          <button onclick="toggleStatus(this)">なし</button>
         </div>
         <div class="photo-links">
-          <button>写真表示</button>
-          <label>添付<input type="file" accept="image/*"></label>
+          <button onclick="showPhoto('sagawa')">写真表示</button>
+          <label>添付<input type="file" accept="image/*" onchange="savePhoto(event,'sagawa')"></label>
         </div>
       </div>
     </div>
@@ -221,12 +236,12 @@ h1{
       </div>
       <div class="ship-right">
         <div class="ship-status">
-          <button class="active">あり</button>
-          <button>なし</button>
+          <button class="active" onclick="toggleStatus(this)">あり</button>
+          <button onclick="toggleStatus(this)">なし</button>
         </div>
         <div class="photo-links">
-          <button>写真表示</button>
-          <label>添付<input type="file" accept="image/*"></label>
+          <button onclick="showPhoto('fukuyama')">写真表示</button>
+          <label>添付<input type="file" accept="image/*" onchange="savePhoto(event,'fukuyama')"></label>
         </div>
       </div>
     </div>
@@ -239,12 +254,12 @@ h1{
       </div>
       <div class="ship-right">
         <div class="ship-status">
-          <button>あり</button>
-          <button class="active">なし</button>
+          <button onclick="toggleStatus(this)">あり</button>
+          <button class="active" onclick="toggleStatus(this)">なし</button>
         </div>
         <div class="photo-links">
-          <button>写真表示</button>
-          <label>添付<input type="file" accept="image/*"></label>
+          <button onclick="showPhoto('packing')">写真表示</button>
+          <label>添付<input type="file" accept="image/*" onchange="savePhoto(event,'packing')"></label>
         </div>
       </div>
     </div>
@@ -257,12 +272,12 @@ h1{
       </div>
       <div class="ship-right">
         <div class="ship-status">
-          <button>あり</button>
-          <button class="active">なし</button>
+          <button onclick="toggleStatus(this)">あり</button>
+          <button class="active" onclick="toggleStatus(this)">なし</button>
         </div>
         <div class="photo-links">
-          <button>写真表示</button>
-          <label>添付<input type="file" accept="image/*"></label>
+          <button onclick="showPhoto('mj')">写真表示</button>
+          <label>添付<input type="file" accept="image/*" onchange="savePhoto(event,'mj')"></label>
         </div>
       </div>
     </div>
@@ -271,6 +286,58 @@ h1{
 </div>
 
 </div>
+
+<div class="modal" id="modal" onclick="closePhoto()">
+  <img id="modalImg">
+</div>
+
+<script>
+const photos = {};
+
+function selectTab(button){
+  document.querySelectorAll(".top-tabs button").forEach(btn=>{
+    btn.classList.remove("active");
+  });
+  button.classList.add("active");
+}
+
+function selectDate(button){
+  document.querySelectorAll(".dates button").forEach(btn=>{
+    btn.classList.remove("active");
+  });
+  button.classList.add("active");
+}
+
+function toggleStatus(button){
+  const group = button.parentElement;
+  group.querySelectorAll("button").forEach(btn=>{
+    btn.classList.remove("active");
+  });
+  button.classList.add("active");
+}
+
+function savePhoto(event,key){
+  const file = event.target.files[0];
+  if(!file) return;
+
+  photos[key] = URL.createObjectURL(file);
+  alert("写真を添付しました");
+}
+
+function showPhoto(key){
+  if(!photos[key]){
+    alert("写真がありません");
+    return;
+  }
+
+  document.getElementById("modalImg").src = photos[key];
+  document.getElementById("modal").style.display = "flex";
+}
+
+function closePhoto(){
+  document.getElementById("modal").style.display = "none";
+}
+</script>
 
 </body>
 </html>
