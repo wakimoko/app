@@ -2,170 +2,188 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>出荷管理</title>
 
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
 
 body{
   margin:0;
-  padding:14px;
-  background:#f6efe6;
-  color:#111;
+  background:#f4ede4;
   font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+  color:#111;
+}
+
+.app{
+  padding:26px 22px 40px;
+  max-width:430px;
+  margin:auto;
 }
 
 h1{
-  font-size:30px;
-  margin:16px 0 18px;
+  font-size:54px;
   font-weight:900;
-}
-
-button{
-  border:none;
-  background:#e6ddd4;
-  color:#111;
-  font-weight:800;
-}
-
-.active{
-  background:#b88a5a!important;
-  color:#fff!important;
+  margin:18px 0 28px;
 }
 
 .top-tabs{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:8px;
-  margin-bottom:10px;
+  gap:14px;
+  margin-bottom:18px;
 }
 
 .top-tabs button{
-  padding:11px 0;
-  border-radius:18px;
-  font-size:14px;
+  height:88px;
+  border:none;
+  border-radius:26px;
+  background:#e6ddd4;
+  font-size:22px;
+  font-weight:900;
 }
 
-#weekControls{
+.top-tabs .active{
+  background:#be8b55;
+  color:#fff;
+}
+
+.week-nav{
   display:grid;
   grid-template-columns:1fr .7fr 1fr;
-  gap:8px;
-  margin-bottom:8px;
+  gap:14px;
+  margin-bottom:18px;
 }
 
-#weekControls button{
-  padding:10px 0;
-  border-radius:18px;
-  font-size:14px;
+.week-nav button{
+  height:82px;
+  border:none;
+  border-radius:24px;
+  background:#e6ddd4;
+  font-size:22px;
+  font-weight:900;
 }
 
-#dates{
+.dates{
   display:grid;
   grid-template-columns:repeat(5,1fr);
-  gap:8px;
-  margin-bottom:10px;
+  gap:14px;
+  margin-bottom:22px;
 }
 
-#dates button{
-  padding:11px 0;
-  border-radius:18px;
-  font-size:14px;
+.dates button{
+  height:82px;
+  border:none;
+  border-radius:24px;
+  background:#e6ddd4;
+  font-size:24px;
+  font-weight:900;
+}
+
+.dates .active{
+  background:#be8b55;
+  color:#fff;
 }
 
 .card{
   background:#fff;
-  border-radius:22px;
-  padding:12px 16px;
-  margin-top:10px;
+  border-radius:34px;
+  padding:20px 18px 10px;
 }
 
 .ship-row{
-  position:relative;
-  display:grid;
-  grid-template-columns:1fr 68px 68px;
-  column-gap:10px;
-  align-items:center;
-  padding:16px 0 28px;
-  border-bottom:1px solid #eadfd5;
+  padding:18px 0 16px;
+  border-bottom:2px solid #efe5dc;
 }
 
-.ship-row:last-child{border-bottom:none}
+.ship-row:last-child{
+  border-bottom:none;
+}
+
+.ship-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
 
 .ship-left{
   display:flex;
   flex-direction:column;
-  gap:4px;
 }
 
 .ship-company{
-  font-size:18px;
+  font-size:28px;
   font-weight:900;
-  line-height:1.2;
+  line-height:1.1;
 }
 
 .ship-place{
-  font-size:18px;
+  font-size:20px;
   font-weight:800;
+  margin-top:8px;
 }
 
-.ship-buttons{display:contents}
-
-.ship-buttons button{
-  width:68px;
-  height:42px;
-  border-radius:999px;
-  font-size:17px;
-  font-weight:800;
-}
-
-.photo-text-group{
-  position:absolute;
-  right:4px;
-  bottom:6px;
+.ship-right{
   display:flex;
-  gap:16px;
+  flex-direction:column;
+  align-items:flex-end;
 }
 
-.photo-text{
+.ship-status{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:14px;
+}
+
+.ship-status button{
+  min-width:74px;
+  height:42px;
   border:none;
-  background:transparent;
+  border-radius:999px;
+  background:#e6ddd4;
+  font-size:18px;
+  font-weight:900;
+  color:#111;
+}
+
+.ship-status .active{
+  background:#be8b55;
+  color:#fff;
+}
+
+.photo-links{
+  display:flex;
+  gap:18px;
+  margin-top:12px;
+}
+
+.photo-links button,
+.photo-links label{
+  border:none;
+  background:none;
   padding:0;
   margin:0;
-  color:#6b4b2f;
-  font-size:9px;
-  font-weight:800;
+  font-size:14px;
+  font-weight:700;
+  color:#8b5d33;
   text-decoration:underline;
 }
 
-.photo-modal{
+.photo-links input{
   display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.8);
-  z-index:9999;
-  align-items:center;
-  justify-content:center;
 }
 
-.photo-modal img{
-  max-width:90%;
-  max-height:80vh;
-  border-radius:16px;
-}
-
-.photo-close{
-  position:absolute;
-  top:20px;
-  right:20px;
-  background:#fff;
-  border-radius:10px;
-  padding:10px 14px;
-}
 </style>
 </head>
 
 <body>
+
+<div class="app">
 
 <h1>出荷管理</h1>
 
@@ -176,13 +194,13 @@ button{
   <button>管理</button>
 </div>
 
-<div id="weekControls">
+<div class="week-nav">
   <button>前週</button>
   <button>🗓️</button>
   <button>次週</button>
 </div>
 
-<div id="dates">
+<div class="dates">
   <button class="active">5/4</button>
   <button>5/5</button>
   <button>5/6</button>
@@ -192,63 +210,135 @@ button{
 
 <div class="card">
 
+  <!-- 佐川 -->
   <div class="ship-row">
-    <div class="ship-left">
-      <div class="ship-company">佐川急便</div>
-      <div class="ship-place">2F</div>
+
+    <div class="ship-top">
+
+      <div class="ship-left">
+        <div class="ship-company">佐川急便</div>
+        <div class="ship-place">2F</div>
+      </div>
+
+      <div class="ship-right">
+
+        <div class="ship-status">
+          <button class="active">あり</button>
+          <button>なし</button>
+        </div>
+
+        <div class="photo-links">
+          <button>写真表示</button>
+
+          <label>
+            添付
+            <input type="file" accept="image/*">
+          </label>
+        </div>
+
+      </div>
+
     </div>
 
-    <button class="active">あり</button>
-    <button>なし</button>
-
-    <div class="photo-text-group">
-      <button class="photo-text">写真表示</button>
-      <label class="photo-text">添付<input type="file" hidden></label>
-    </div>
   </div>
 
+  <!-- 福山 -->
   <div class="ship-row">
-    <div class="ship-left">
-      <div class="ship-company">福山通運</div>
-      <div class="ship-place">2F</div>
+
+    <div class="ship-top">
+
+      <div class="ship-left">
+        <div class="ship-company">福山通運</div>
+        <div class="ship-place">2F</div>
+      </div>
+
+      <div class="ship-right">
+
+        <div class="ship-status">
+          <button class="active">あり</button>
+          <button>なし</button>
+        </div>
+
+        <div class="photo-links">
+          <button>写真表示</button>
+
+          <label>
+            添付
+            <input type="file" accept="image/*">
+          </label>
+        </div>
+
+      </div>
+
     </div>
 
-    <button class="active">あり</button>
-    <button>なし</button>
-
-    <div class="photo-text-group">
-      <button class="photo-text">写真表示</button>
-      <label class="photo-text">添付<input type="file" hidden></label>
-    </div>
   </div>
 
+  <!-- 梱包場 -->
   <div class="ship-row">
-    <div class="ship-left">
-      <div class="ship-company">梱包場</div>
+
+    <div class="ship-top">
+
+      <div class="ship-left">
+        <div class="ship-company">梱包場</div>
+        <div class="ship-place">2F</div>
+      </div>
+
+      <div class="ship-right">
+
+        <div class="ship-status">
+          <button>あり</button>
+          <button class="active">なし</button>
+        </div>
+
+        <div class="photo-links">
+          <button>写真表示</button>
+
+          <label>
+            添付
+            <input type="file" accept="image/*">
+          </label>
+        </div>
+
+      </div>
+
     </div>
 
-    <button>あり</button>
-    <button class="active">なし</button>
-
-    <div class="photo-text-group">
-      <button class="photo-text">写真表示</button>
-      <label class="photo-text">添付<input type="file" hidden></label>
-    </div>
   </div>
 
+  <!-- MJ -->
   <div class="ship-row">
-    <div class="ship-left">
-      <div class="ship-company">MJ倉庫</div>
+
+    <div class="ship-top">
+
+      <div class="ship-left">
+        <div class="ship-company">MJ倉庫</div>
+        <div class="ship-place">2F</div>
+      </div>
+
+      <div class="ship-right">
+
+        <div class="ship-status">
+          <button>あり</button>
+          <button class="active">なし</button>
+        </div>
+
+        <div class="photo-links">
+          <button>写真表示</button>
+
+          <label>
+            添付
+            <input type="file" accept="image/*">
+          </label>
+        </div>
+
+      </div>
+
     </div>
 
-    <button>あり</button>
-    <button class="active">なし</button>
-
-    <div class="photo-text-group">
-      <button class="photo-text">写真表示</button>
-      <label class="photo-text">添付<input type="file" hidden></label>
-    </div>
   </div>
+
+</div>
 
 </div>
 
