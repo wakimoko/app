@@ -1,127 +1,115 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>出荷管理</title>
 
 <style>
-*{
-  box-sizing:border-box;
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #f3eadf;
+  color: #111;
 }
 
-body{
-  margin:0;
-  font-family:sans-serif;
-  background:#f3eadf;
-  color:#111;
+.app {
+  max-width: 430px;
+  margin: 0 auto;
+  padding: 44px 22px 24px;
 }
 
-.app{
-  max-width:430px;
-  margin:0 auto;
-  padding:44px 22px 24px;
+h1 {
+  font-size: 34px;
+  margin: 0 0 30px;
+  font-weight: 900;
 }
 
-h1{
-  font-size:34px;
-  margin:0 0 30px;
-  font-weight:900;
+button {
+  border: none;
+  border-radius: 22px;
+  background: #ded6cd;
+  color: #111;
+  font-size: 16px;
+  font-weight: 900;
+  padding: 12px 10px;
+  cursor: pointer;
 }
 
-button{
-  border:none;
-  border-radius:22px;
-  background:#ded6cd;
-  color:#111;
-  font-size:16px;
-  font-weight:900;
-  padding:12px 10px;
-  cursor:pointer;
-}
-
-button.active{
-  background:#bd8b55;
-  color:white;
+button.active {
+  background: #bd8b55;
+  color: #fff;
 }
 
 .tabs,
 .week-nav,
-.dates{
-  display:flex;
-  gap:12px;
+.dates {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
-.tabs{
-  margin-bottom:18px;
+.tabs button {
+  flex: 1;
+  height: 58px;
 }
 
-.tabs button{
-  flex:1;
-  height:58px;
+.week-nav button {
+  flex: 1;
+  height: 56px;
 }
 
-.week-nav{
-  margin-bottom:14px;
+.dates button {
+  flex: 1;
+  height: 56px;
 }
 
-.week-nav button{
-  flex:1;
-  height:56px;
+.card {
+  background: white;
+  border-radius: 30px;
+  padding: 22px 20px;
+  margin-top: 18px;
 }
 
-.dates{
-  margin-bottom:18px;
+.row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  border-bottom: 1px solid #e8ddd2;
+  padding: 18px 0;
 }
 
-.dates button{
-  flex:1;
-  height:56px;
+.row:last-child {
+  border-bottom: none;
 }
 
-.card{
-  background:white;
-  border-radius:30px;
-  padding:18px 22px;
+.info h2 {
+  font-size: 28px;
+  margin: 0 0 8px;
+  font-weight: 900;
 }
 
-.row{
-  border-bottom:1px solid #e8ddd2;
-  padding:26px 0;
+.info p {
+  font-size: 22px;
+  margin: 0;
+  font-weight: 900;
 }
 
-.row:last-child{
-  border-bottom:none;
+.actions {
+  display: flex;
+  gap: 10px;
 }
 
-.info h2{
-  font-size:28px;
-  margin:0 0 10px;
-  font-weight:900;
+.actions button {
+  width: 62px;
+  height: 52px;
+  padding: 0;
 }
 
-.info p{
-  font-size:22px;
-  margin:0;
-  font-weight:800;
-}
-
-.actions{
-  display:flex;
-  justify-content:flex-end;
-  gap:12px;
-  margin-top:18px;
-}
-
-.actions button{
-  min-width:72px;
-  height:52px;
-}
-
-.camera{
-  min-width:64px !important;
-  font-size:22px;
+.camera {
+  font-size: 20px;
 }
 </style>
 </head>
@@ -133,10 +121,10 @@ button.active{
   <h1>出荷管理</h1>
 
   <div class="tabs">
-    <button>注意事項</button>
-    <button class="active">出荷予定</button>
-    <button>当日出荷</button>
-    <button>管理</button>
+    <button onclick="selectTab(this)">注意事項</button>
+    <button class="active" onclick="selectTab(this)">出荷予定</button>
+    <button onclick="selectTab(this)">当日出荷</button>
+    <button onclick="selectTab(this)">管理</button>
   </div>
 
   <div class="week-nav">
@@ -146,83 +134,98 @@ button.active{
   </div>
 
   <div class="dates">
-    <button class="active">5/4</button>
-    <button>5/5</button>
-    <button>5/6</button>
-    <button>5/7</button>
-    <button>5/8</button>
+    <button class="active" onclick="selectDate(this)">5/4</button>
+    <button onclick="selectDate(this)">5/5</button>
+    <button onclick="selectDate(this)">5/6</button>
+    <button onclick="selectDate(this)">5/7</button>
+    <button onclick="selectDate(this)">5/8</button>
   </div>
 
   <div class="card">
 
     <div class="row">
-
       <div class="info">
         <h2>佐川急便</h2>
         <p>2F</p>
       </div>
-
       <div class="actions">
-        <button class="active">あり</button>
-        <button>なし</button>
-        <button class="camera">📷</button>
+        <button class="active" onclick="toggleYesNo(this)">あり</button>
+        <button onclick="toggleYesNo(this)">なし</button>
+        <button class="camera" onclick="openCamera()">📷</button>
       </div>
-
     </div>
 
     <div class="row">
-
       <div class="info">
         <h2>福山通運</h2>
         <p>2F</p>
       </div>
-
       <div class="actions">
-        <button class="active">あり</button>
-        <button>なし</button>
-        <button class="camera">📷</button>
+        <button class="active" onclick="toggleYesNo(this)">あり</button>
+        <button onclick="toggleYesNo(this)">なし</button>
+        <button class="camera" onclick="openCamera()">📷</button>
       </div>
-
     </div>
 
     <div class="row">
-
       <div class="info">
         <h2>梱包場</h2>
+        <p>-</p>
       </div>
-
       <div class="actions">
-        <button class="active">あり</button>
-        <button>なし</button>
-        <button class="camera">📷</button>
+        <button class="active" onclick="toggleYesNo(this)">あり</button>
+        <button onclick="toggleYesNo(this)">なし</button>
+        <button class="camera" onclick="openCamera()">📷</button>
       </div>
-
     </div>
 
     <div class="row">
-
       <div class="info">
         <h2>MJ倉庫</h2>
+        <p>-</p>
       </div>
-
       <div class="actions">
-        <button>あり</button>
-        <button class="active">なし</button>
-        <button class="camera">📷</button>
+        <button onclick="toggleYesNo(this)">あり</button>
+        <button class="active" onclick="toggleYesNo(this)">なし</button>
+        <button class="camera" onclick="openCamera()">📷</button>
       </div>
-
     </div>
 
   </div>
 
 </div>
 
-<input
-  type="file"
-  accept="image/*"
-  capture="environment"
-  style="display:none;"
->
+<input id="cameraInput" type="file" accept="image/*" capture="environment" style="display:none;">
+
+<script>
+function selectTab(button) {
+  document.querySelectorAll(".tabs button").forEach(btn => {
+    btn.classList.remove("active");
+  });
+  button.classList.add("active");
+}
+
+function selectDate(button) {
+  document.querySelectorAll(".dates button").forEach(btn => {
+    btn.classList.remove("active");
+  });
+  button.classList.add("active");
+}
+
+function toggleYesNo(button) {
+  const group = button.parentElement;
+
+  group.querySelectorAll("button:not(.camera)").forEach(btn => {
+    btn.classList.remove("active");
+  });
+
+  button.classList.add("active");
+}
+
+function openCamera() {
+  document.getElementById("cameraInput").click();
+}
+</script>
 
 </body>
 </html>
