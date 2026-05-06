@@ -88,12 +88,7 @@ button:active{
 }
 
 .ship-row{
-  position:relative;
-  display:grid;
-  grid-template-columns:1fr 58px 58px;
-  align-items:center;
-  column-gap:8px;
-  padding:13px 0 22px;
+  padding:16px 0;
   border-bottom:1px solid #eadfd5;
 }
 
@@ -101,41 +96,44 @@ button:active{
   border-bottom:none;
 }
 
-.ship-left{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-}
-
 .ship-company{
-  font-size:22px;
+  font-size:23px;
   font-weight:900;
+  margin-bottom:18px;
   line-height:1.1;
 }
 
+.ship-bottom{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
 .ship-place{
-  font-size:16px;
+  font-size:18px;
   font-weight:800;
 }
 
-.ship-buttons{
-  display:contents;
+.ship-right{
+  display:flex;
+  align-items:center;
+  gap:9px;
 }
 
-.ship-buttons button{
-  width:54px;
-  height:38px;
-  border-radius:10px;
-  font-size:14px;
-  white-space:nowrap;
+.ship-right button{
+  width:58px;
+  height:40px;
+  border-radius:12px;
+  font-size:15px;
+  font-weight:800;
 }
 
 .photo-text-group{
-  position:absolute;
-  right:4px;
-  bottom:5px;
   display:flex;
-  gap:14px;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:2px;
+  margin-left:2px;
 }
 
 .photo-text{
@@ -148,6 +146,12 @@ button:active{
   font-weight:800;
   line-height:1;
   text-decoration:underline;
+  width:auto;
+  height:auto;
+}
+
+.photo-text:active{
+  transform:none;
 }
 
 .photo-modal{
@@ -184,142 +188,110 @@ button:active{
 <h1>出荷管理</h1>
 
 <div class="top-tabs">
-  <button>注意事項</button>
-  <button class="active">出荷予定</button>
-  <button>当日出荷</button>
-  <button>管理</button>
+  <button id="tab_notice" onclick="setTab('notice')">注意事項</button>
+  <button id="tab_ship" onclick="setTab('ship')">出荷予定</button>
+  <button id="tab_today" onclick="setTab('today')">当日出荷</button>
+  <button id="tab_manage" onclick="setTab('manage')">管理</button>
 </div>
 
-<div id="weekControls">
-  <button>前週</button>
-  <button>🗓️</button>
-  <button>次週</button>
-</div>
-
-<div id="dates">
-  <button class="active">5/4</button>
-  <button>5/5</button>
-  <button>5/6</button>
-  <button>5/7</button>
-  <button>5/8</button>
-</div>
-
-<div class="card">
-
-  <div class="ship-row">
-
-    <div class="ship-left">
-      <div class="ship-company">佐川急便</div>
-      <div class="ship-place">2F</div>
-    </div>
-
-    <button class="active">あり</button>
-    <button>なし</button>
-
-    <div class="photo-text-group">
-
-      <button
-        class="photo-text"
-        onclick="openPhotoModal('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200')">
-        写真表示
-      </button>
-
-      <label class="photo-text">
-        添付
-        <input type="file" hidden accept="image/*">
-      </label>
-
-    </div>
-
-  </div>
-
-  <div class="ship-row">
-
-    <div class="ship-left">
-      <div class="ship-company">福山通運</div>
-      <div class="ship-place">2F</div>
-    </div>
-
-    <button class="active">あり</button>
-    <button>なし</button>
-
-    <div class="photo-text-group">
-
-      <button
-        class="photo-text"
-        onclick="openPhotoModal('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200')">
-        写真表示
-      </button>
-
-      <label class="photo-text">
-        添付
-        <input type="file" hidden accept="image/*">
-      </label>
-
-    </div>
-
-  </div>
-
-  <div class="ship-row">
-
-    <div class="ship-left">
-      <div class="ship-company">梱包場</div>
-    </div>
-
-    <button>あり</button>
-    <button class="active">なし</button>
-
-    <div class="photo-text-group">
-
-      <button
-        class="photo-text"
-        onclick="openPhotoModal('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200')">
-        写真表示
-      </button>
-
-      <label class="photo-text">
-        添付
-        <input type="file" hidden accept="image/*">
-      </label>
-
-    </div>
-
-  </div>
-
-  <div class="ship-row">
-
-    <div class="ship-left">
-      <div class="ship-company">MJ倉庫</div>
-    </div>
-
-    <button>あり</button>
-    <button class="active">なし</button>
-
-    <div class="photo-text-group">
-
-      <button
-        class="photo-text"
-        onclick="openPhotoModal('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200')">
-        写真表示
-      </button>
-
-      <label class="photo-text">
-        添付
-        <input type="file" hidden accept="image/*">
-      </label>
-
-    </div>
-
-  </div>
-
-</div>
+<div id="weekControls"></div>
+<div id="dates"></div>
+<div id="view"></div>
 
 <div id="photoModal" class="photo-modal" onclick="closePhotoModal()">
   <button class="photo-close">閉じる</button>
   <img id="modalPhoto" src="">
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
+const client = supabase.createClient(
+  "https://bylottznuwuizncgfltd.supabase.co",
+  "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
+);
+
+let currentTab = "ship";
+let currentDate = "";
+let weekStart = getMonday(new Date());
+let photoMap = {};
+
+function getMonday(date){
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  return d;
+}
+
+function formatDate(date){
+  return (date.getMonth()+1) + "/" + date.getDate();
+}
+
+function setTab(tab){
+  currentTab = tab;
+
+  document.querySelectorAll(".top-tabs button").forEach(btn=>{
+    btn.classList.remove("active");
+  });
+
+  document.getElementById("tab_" + tab).classList.add("active");
+
+  renderDates();
+  render();
+}
+
+function renderDates(){
+  const controls = document.getElementById("weekControls");
+  const dates = document.getElementById("dates");
+
+  controls.innerHTML = `
+    <button onclick="moveWeek(-1)">前週</button>
+    <button>🗓️</button>
+    <button onclick="moveWeek(1)">次週</button>
+  `;
+
+  dates.innerHTML = "";
+
+  for(let i=0;i<5;i++){
+    const d = new Date(weekStart);
+    d.setDate(weekStart.getDate()+i);
+
+    const text = formatDate(d);
+
+    if(!currentDate && i === 0){
+      currentDate = text;
+    }
+
+    const btn = document.createElement("button");
+    btn.textContent = text;
+
+    if(text === currentDate){
+      btn.classList.add("active");
+    }
+
+    btn.onclick = ()=>{
+      currentDate = text;
+      renderDates();
+      render();
+    };
+
+    dates.appendChild(btn);
+  }
+}
+
+function moveWeek(num){
+  weekStart.setDate(weekStart.getDate()+7*num);
+  currentDate = "";
+  renderDates();
+  render();
+}
+
+function setShipStatus(key,value){
+  localStorage.setItem(currentDate + "_" + key, value);
+  render();
+}
+
 function openPhotoModal(url){
   document.getElementById("modalPhoto").src = url;
   document.getElementById("photoModal").style.display = "flex";
@@ -327,7 +299,155 @@ function openPhotoModal(url){
 
 function closePhotoModal(){
   document.getElementById("photoModal").style.display = "none";
+  document.getElementById("modalPhoto").src = "";
 }
+
+function shipRow(company,place,key){
+  const status =
+    localStorage.getItem(currentDate + "_" + key) || "なし";
+
+  const photo = photoMap[key];
+
+  return `
+    <div class="ship-row">
+
+      <div class="ship-company">${company}</div>
+
+      <div class="ship-bottom">
+
+        <div class="ship-place">
+          ${place !== "-" ? place : ""}
+        </div>
+
+        <div class="ship-right">
+
+          <button
+            class="${status === "あり" ? "active" : ""}"
+            onclick="setShipStatus('${key}','あり')">
+            あり
+          </button>
+
+          <button
+            class="${status === "なし" ? "active" : ""}"
+            onclick="setShipStatus('${key}','なし')">
+            なし
+          </button>
+
+          <div class="photo-text-group">
+
+            <button
+              class="photo-text"
+              onclick="${
+                photo
+                ? `openPhotoModal('${photo}')`
+                : `alert('写真なし')`
+              }">
+              写真表示
+            </button>
+
+            <label class="photo-text">
+              添付
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                onchange="savePhoto(event,'${key}')">
+            </label>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  `;
+}
+
+async function savePhoto(event,key){
+  const file = event.target.files[0];
+  if(!file) return;
+
+  const fileName =
+    `${currentDate}_${key}_${Date.now()}_${file.name}`;
+
+  const { error } =
+    await client.storage
+      .from("shipment-photos")
+      .upload(fileName,file);
+
+  if(error){
+    alert("写真アップロードエラー：" + error.message);
+    return;
+  }
+
+  const { data } =
+    client.storage
+      .from("shipment-photos")
+      .getPublicUrl(fileName);
+
+  const photoUrl = data.publicUrl;
+
+  const { data: exists } =
+    await client
+      .from("shipping_photos")
+      .select("id")
+      .eq("date", currentDate)
+      .eq("place_key", key)
+      .maybeSingle();
+
+  if(exists){
+    await client
+      .from("shipping_photos")
+      .update({ photo_url: photoUrl })
+      .eq("id", exists.id);
+  }else{
+    await client
+      .from("shipping_photos")
+      .insert({
+        date: currentDate,
+        place_key: key,
+        photo_url: photoUrl
+      });
+  }
+
+  photoMap[key] = photoUrl;
+  render();
+}
+
+async function render(){
+  const view = document.getElementById("view");
+
+  if(currentTab !== "ship"){
+    view.innerHTML = `<div class="card">開発中</div>`;
+    return;
+  }
+
+  const { data } =
+    await client
+      .from("shipping_photos")
+      .select("*")
+      .eq("date", currentDate);
+
+  photoMap = {};
+
+  if(data){
+    data.forEach(item=>{
+      photoMap[item.place_key] = item.photo_url;
+    });
+  }
+
+  view.innerHTML = `
+    <div class="card">
+      ${shipRow("佐川急便","2F","sagawa_2f")}
+      ${shipRow("福山通運","2F","fukuyama_2f")}
+      ${shipRow("梱包場","-","packing")}
+      ${shipRow("MJ倉庫","-","mj")}
+    </div>
+  `;
+}
+
+setTab("ship");
 </script>
 
 </body>
