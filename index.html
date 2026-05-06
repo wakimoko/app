@@ -6,7 +6,10 @@
 <title>出荷管理</title>
 
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
 
 body{
   margin:0;
@@ -72,19 +75,6 @@ button{
   font-weight:900;
 }
 
-.calendar-wrap{
-  position:relative;
-  overflow:hidden;
-}
-
-.calendar-wrap input{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  opacity:0;
-}
-
 .date-row{
   display:grid;
   grid-template-columns:repeat(5,1fr);
@@ -100,6 +90,8 @@ button{
   font-size:15px;
   font-weight:900;
 }
+
+/* カード */
 
 .card{
   background:#fff;
@@ -144,8 +136,15 @@ button{
   justify-content:center;
 }
 
-.edit-btn{background:#efe7dc}
-.delete-btn{background:#f8dede}
+.edit-btn{
+  background:#efe7dc;
+}
+
+.delete-btn{
+  background:#f8dede;
+}
+
+/* 編集モーダル */
 
 .modal{
   position:fixed;
@@ -199,6 +198,102 @@ button{
   background:#ece6df;
   font-weight:700;
 }
+
+/* 自作カレンダー */
+
+.calendar-popup{
+  display:none;
+  position:fixed;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:340px;
+  background:#f3eee6;
+  border-radius:26px;
+  padding:18px;
+  z-index:1000;
+  box-shadow:0 12px 35px rgba(0,0,0,.25);
+}
+
+.calendar-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
+}
+
+.calendar-title{
+  font-size:18px;
+  font-weight:900;
+}
+
+.calendar-header button{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  background:#c99657;
+  color:#fff;
+  font-size:20px;
+  font-weight:900;
+}
+
+.calendar-week{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:6px;
+  margin-bottom:6px;
+}
+
+.calendar-week div{
+  text-align:center;
+  font-size:12px;
+  font-weight:900;
+  color:#8b7b6b;
+}
+
+.calendar-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:6px;
+}
+
+.calendar-day,
+.calendar-empty{
+  height:38px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:800;
+}
+
+.calendar-day{
+  background:#e6ddd4;
+  color:#111;
+}
+
+.calendar-day.active{
+  background:#c99657;
+  color:#fff;
+}
+
+.calendar-close{
+  margin-top:14px;
+  width:100%;
+  height:40px;
+  border-radius:14px;
+  background:#e6ddd4;
+  color:#111;
+  font-weight:900;
+}
+
+.calendar-bg{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.25);
+  z-index:999;
+}
 </style>
 </head>
 
@@ -217,12 +312,7 @@ button{
 
 <div class="week-row">
   <button id="prevWeek">前週</button>
-
-  <button id="calendarBtn" class="calendar-wrap">
-    🗓
-    <input type="date" id="hiddenDate">
-  </button>
-
+  <button id="calendarBtn">🗓</button>
   <button id="nextWeek">次週</button>
 </div>
 
@@ -241,6 +331,7 @@ button{
 
 </div>
 
+<!-- 編集モーダル -->
 <div class="modal" id="modal">
   <div class="modal-content" id="modalContent">
     <input type="text" id="titleInput" placeholder="タイトル">
@@ -251,8 +342,35 @@ button{
   </div>
 </div>
 
+<!-- 自作カレンダー -->
+<div class="calendar-bg" id="calendarBg"></div>
+
+<div class="calendar-popup" id="calendarPopup">
+  <div class="calendar-header">
+    <button id="calPrev">‹</button>
+    <div class="calendar-title" id="calendarTitle"></div>
+    <button id="calNext">›</button>
+  </div>
+
+  <div class="calendar-week">
+    <div>日</div>
+    <div>月</div>
+    <div>火</div>
+    <div>水</div>
+    <div>木</div>
+    <div>金</div>
+    <div>土</div>
+  </div>
+
+  <div class="calendar-grid" id="calendarGrid"></div>
+
+  <button class="calendar-close" id="calendarClose">閉じる</button>
+</div>
+
 <script>
 let weekStart = new Date(2026,4,4);
+let calendarMonth = new Date(2026,4,1);
+let selectedDate = new Date(2026,4,4);
 
 function getMonday(date){
   const d = new Date(date);
@@ -266,7 +384,15 @@ function formatDate(date){
   return (date.getMonth()+1) + "/" + date.getDate();
 }
 
-function renderDates(selectedDate){
+function sameDate(a,b){
+  return a &&
+         b &&
+         a.getFullYear() === b.getFullYear() &&
+         a.getMonth() === b.getMonth() &&
+         a.getDate() === b.getDate();
+}
+
+function renderDates(){
   const dateRow = document.getElementById("dateRow");
   dateRow.innerHTML = "";
 
@@ -277,17 +403,13 @@ function renderDates(selectedDate){
     const btn = document.createElement("button");
     btn.textContent = formatDate(d);
 
-    if(
-      selectedDate
-      ? d.getMonth() === selectedDate.getMonth() && d.getDate() === selectedDate.getDate()
-      : i === 0
-    ){
+    if(sameDate(d, selectedDate)){
       btn.classList.add("active");
     }
 
     btn.onclick = ()=>{
-      document.querySelectorAll("#dateRow button").forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
+      selectedDate = new Date(d);
+      renderDates();
     };
 
     dateRow.appendChild(btn);
@@ -296,20 +418,88 @@ function renderDates(selectedDate){
 
 document.getElementById("prevWeek").onclick = ()=>{
   weekStart.setDate(weekStart.getDate()-7);
+  selectedDate = new Date(weekStart);
   renderDates();
 };
 
 document.getElementById("nextWeek").onclick = ()=>{
   weekStart.setDate(weekStart.getDate()+7);
+  selectedDate = new Date(weekStart);
   renderDates();
 };
 
-document.getElementById("hiddenDate").onchange = (e)=>{
-  if(!e.target.value) return;
-  const selected = new Date(e.target.value);
-  weekStart = getMonday(selected);
-  renderDates(selected);
+/* 自作カレンダー */
+
+function openCalendar(){
+  document.getElementById("calendarBg").style.display = "block";
+  document.getElementById("calendarPopup").style.display = "block";
+  calendarMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+  renderCalendar();
+}
+
+function closeCalendar(){
+  document.getElementById("calendarBg").style.display = "none";
+  document.getElementById("calendarPopup").style.display = "none";
+}
+
+function renderCalendar(){
+  const grid = document.getElementById("calendarGrid");
+  const title = document.getElementById("calendarTitle");
+
+  grid.innerHTML = "";
+
+  const year = calendarMonth.getFullYear();
+  const month = calendarMonth.getMonth();
+
+  title.textContent = `${year}年 ${month+1}月`;
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const lastDate = new Date(year, month+1, 0).getDate();
+
+  for(let i=0;i<firstDay;i++){
+    const empty = document.createElement("div");
+    empty.className = "calendar-empty";
+    grid.appendChild(empty);
+  }
+
+  for(let day=1;day<=lastDate;day++){
+    const d = new Date(year, month, day);
+
+    const cell = document.createElement("div");
+    cell.className = "calendar-day";
+    cell.textContent = day;
+
+    if(sameDate(d, selectedDate)){
+      cell.classList.add("active");
+    }
+
+    cell.onclick = ()=>{
+      selectedDate = new Date(d);
+      weekStart = getMonday(selectedDate);
+      renderDates();
+      closeCalendar();
+    };
+
+    grid.appendChild(cell);
+  }
+}
+
+document.getElementById("calendarBtn").onclick = openCalendar;
+
+document.getElementById("calendarClose").onclick = closeCalendar;
+document.getElementById("calendarBg").onclick = closeCalendar;
+
+document.getElementById("calPrev").onclick = ()=>{
+  calendarMonth.setMonth(calendarMonth.getMonth()-1);
+  renderCalendar();
 };
+
+document.getElementById("calNext").onclick = ()=>{
+  calendarMonth.setMonth(calendarMonth.getMonth()+1);
+  renderCalendar();
+};
+
+/* 編集 */
 
 const modal = document.getElementById("modal");
 const modalContent = document.getElementById("modalContent");
