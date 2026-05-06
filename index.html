@@ -27,6 +27,16 @@ h1{
   margin:18px 0 24px;
 }
 
+button{
+  border:none;
+  cursor:pointer;
+}
+
+.active{
+  background:#be8b55!important;
+  color:#fff!important;
+}
+
 .top-tabs{
   display:grid;
   grid-template-columns:repeat(4,1fr);
@@ -34,29 +44,13 @@ h1{
   margin-bottom:14px;
 }
 
-.top-tabs button,
-.week-nav button,
-.dates button{
-  border:none;
-  background:#e6ddd4;
-  font-weight:900;
-  color:#111;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  writing-mode:horizontal-tb;
-  white-space:nowrap;
-}
-
 .top-tabs button{
   height:54px;
   border-radius:20px;
+  background:#e6ddd4;
   font-size:14px;
-}
-
-.active{
-  background:#be8b55!important;
-  color:#fff!important;
+  font-weight:900;
+  white-space:nowrap;
 }
 
 .week-nav{
@@ -69,7 +63,9 @@ h1{
 .week-nav button{
   height:48px;
   border-radius:18px;
+  background:#e6ddd4;
   font-size:15px;
+  font-weight:900;
 }
 
 .dates{
@@ -82,7 +78,9 @@ h1{
 .dates button{
   height:48px;
   border-radius:18px;
+  background:#e6ddd4;
   font-size:16px;
+  font-weight:900;
 }
 
 .card{
@@ -137,7 +135,6 @@ h1{
 .ship-status button{
   min-width:62px;
   height:38px;
-  border:none;
   border-radius:999px;
   background:#e6ddd4;
   font-size:16px;
@@ -153,7 +150,6 @@ h1{
 
 .photo-links button,
 .photo-links label{
-  border:none;
   background:none;
   padding:0;
   margin:0;
@@ -192,113 +188,23 @@ h1{
 <h1>出荷管理</h1>
 
 <div class="top-tabs">
-  <button onclick="selectTab(this)">注意事項</button>
-  <button class="active" onclick="selectTab(this)">出荷予定</button>
-  <button onclick="selectTab(this)">当日出荷</button>
-  <button onclick="selectTab(this)">管理</button>
+  <button onclick="selectTab(this,'notice')">注意事項</button>
+  <button class="active" onclick="selectTab(this,'ship')">出荷予定</button>
+  <button onclick="selectTab(this,'today')">当日出荷</button>
+  <button onclick="selectTab(this,'manage')">管理</button>
 </div>
 
 <div class="week-nav">
-  <button onclick="alert('前週')">前週</button>
+  <button onclick="moveWeek(-1)">前週</button>
   <button onclick="openCalendar()">🗓️</button>
-  <button onclick="alert('次週')">次週</button>
+  <button onclick="moveWeek(1)">次週</button>
 </div>
 
 <input type="date" id="calendarInput" style="display:none" onchange="changeDate(this.value)">
 
-<div class="dates">
-  <button class="active" onclick="selectDate(this)">5/4</button>
-  <button onclick="selectDate(this)">5/5</button>
-  <button onclick="selectDate(this)">5/6</button>
-  <button onclick="selectDate(this)">5/7</button>
-  <button onclick="selectDate(this)">5/8</button>
-</div>
+<div class="dates" id="dates"></div>
 
-<div class="card">
-
-  <div class="ship-row">
-    <div class="ship-top">
-      <div class="ship-left">
-        <div class="ship-company">佐川急便</div>
-        <div class="ship-place">2F</div>
-      </div>
-
-      <div class="ship-right">
-        <div class="ship-status">
-          <button class="active" onclick="toggleStatus(this)">あり</button>
-          <button onclick="toggleStatus(this)">なし</button>
-        </div>
-
-        <div class="photo-links">
-          <button onclick="showPhoto('sagawa')">写真表示</button>
-          <label>添付<input type="file" accept="image/*" onchange="savePhoto(event,'sagawa')"></label>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="ship-row">
-    <div class="ship-top">
-      <div class="ship-left">
-        <div class="ship-company">福山通運</div>
-        <div class="ship-place">2F</div>
-      </div>
-
-      <div class="ship-right">
-        <div class="ship-status">
-          <button class="active" onclick="toggleStatus(this)">あり</button>
-          <button onclick="toggleStatus(this)">なし</button>
-        </div>
-
-        <div class="photo-links">
-          <button onclick="showPhoto('fukuyama')">写真表示</button>
-          <label>添付<input type="file" accept="image/*" onchange="savePhoto(event,'fukuyama')"></label>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="ship-row">
-    <div class="ship-top">
-      <div class="ship-left">
-        <div class="ship-place">梱包場</div>
-      </div>
-
-      <div class="ship-right">
-        <div class="ship-status">
-          <button onclick="toggleStatus(this)">あり</button>
-          <button class="active" onclick="toggleStatus(this)">なし</button>
-        </div>
-
-        <div class="photo-links">
-          <button onclick="showPhoto('packing')">写真表示</button>
-          <label>添付<input type="file" accept="image/*" onchange="savePhoto(event,'packing')"></label>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="ship-row">
-    <div class="ship-top">
-      <div class="ship-left">
-        <div class="ship-place">MJ倉庫</div>
-      </div>
-
-      <div class="ship-right">
-        <div class="ship-status">
-          <button onclick="toggleStatus(this)">あり</button>
-          <button class="active" onclick="toggleStatus(this)">なし</button>
-        </div>
-
-        <div class="photo-links">
-          <button onclick="showPhoto('mj')">写真表示</button>
-          <label>添付<input type="file" accept="image/*" onchange="savePhoto(event,'mj')"></label>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div>
+<div id="content"></div>
 
 </div>
 
@@ -307,32 +213,68 @@ h1{
 </div>
 
 <script>
+let currentTab = "ship";
+let weekStart = new Date(2026, 4, 4);
+let currentDate = "";
 const photos = {};
 
-function selectTab(button){
+function formatDate(date){
+  return (date.getMonth()+1) + "/" + date.getDate();
+}
+
+function renderDates(){
+  const dates = document.getElementById("dates");
+  dates.innerHTML = "";
+
+  for(let i=0; i<5; i++){
+    const d = new Date(weekStart);
+    d.setDate(weekStart.getDate()+i);
+
+    const text = formatDate(d);
+
+    if(!currentDate && i === 0){
+      currentDate = text;
+    }
+
+    const btn = document.createElement("button");
+    btn.textContent = text;
+
+    if(text === currentDate){
+      btn.classList.add("active");
+    }
+
+    btn.onclick = function(){
+      currentDate = text;
+      renderDates();
+      renderContent();
+    };
+
+    dates.appendChild(btn);
+  }
+}
+
+function selectTab(button, tab){
+  currentTab = tab;
+
   document.querySelectorAll(".top-tabs button").forEach(btn=>{
     btn.classList.remove("active");
   });
+
   button.classList.add("active");
+
+  renderContent();
 }
 
-function selectDate(button){
-  document.querySelectorAll(".dates button").forEach(btn=>{
-    btn.classList.remove("active");
-  });
-  button.classList.add("active");
-}
-
-function toggleStatus(button){
-  const group = button.parentElement;
-  group.querySelectorAll("button").forEach(btn=>{
-    btn.classList.remove("active");
-  });
-  button.classList.add("active");
+function moveWeek(num){
+  weekStart.setDate(weekStart.getDate() + 7*num);
+  currentDate = "";
+  renderDates();
+  renderContent();
 }
 
 function openCalendar(){
   const input = document.getElementById("calendarInput");
+
   if(input.showPicker){
     input.showPicker();
   }else{
@@ -343,11 +285,27 @@ function openCalendar(){
 function changeDate(value){
   if(!value) return;
 
-  const date = new Date(value);
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
+  const d = new Date(value);
+  currentDate = formatDate(d);
 
-  alert(month + "/" + day + " を選択しました");
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+
+  weekStart = new Date(d);
+  weekStart.setDate(d.getDate() + diff);
+
+  renderDates();
+  renderContent();
+}
+
+function toggleStatus(button){
+  const group = button.parentElement;
+
+  group.querySelectorAll("button").forEach(btn=>{
+    btn.classList.remove("active");
+  });
+
+  button.classList.add("active");
 }
 
 function savePhoto(event,key){
@@ -371,6 +329,88 @@ function showPhoto(key){
 function closePhoto(){
   document.getElementById("modal").style.display = "none";
 }
+
+function row(name, floor, key, yesActive){
+  return `
+    <div class="ship-row">
+      <div class="ship-top">
+        <div class="ship-left">
+          <div class="${floor ? "ship-company" : "ship-place"}">${name}</div>
+          ${floor ? `<div class="ship-place">${floor}</div>` : ""}
+        </div>
+
+        <div class="ship-right">
+          <div class="ship-status">
+            <button class="${yesActive ? "active" : ""}" onclick="toggleStatus(this)">あり</button>
+            <button class="${!yesActive ? "active" : ""}" onclick="toggleStatus(this)">なし</button>
+          </div>
+
+          <div class="photo-links">
+            <button onclick="showPhoto('${key}')">写真表示</button>
+            <label>
+              添付
+              <input type="file" accept="image/*" onchange="savePhoto(event,'${key}')">
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderContent(){
+  const content = document.getElementById("content");
+
+  if(currentTab === "ship"){
+    content.innerHTML = `
+      <div class="card">
+        ${row("佐川急便","2F","sagawa",true)}
+        ${row("福山通運","2F","fukuyama",true)}
+        ${row("梱包場","","packing",false)}
+        ${row("MJ倉庫","","mj",false)}
+      </div>
+    `;
+    return;
+  }
+
+  if(currentTab === "notice"){
+    content.innerHTML = `
+      <div class="card">
+        <div class="ship-row">
+          <div class="ship-company">注意事項</div>
+          <div class="ship-place">この日に注意する内容を表示します</div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  if(currentTab === "today"){
+    content.innerHTML = `
+      <div class="card">
+        <div class="ship-row">
+          <div class="ship-company">当日出荷</div>
+          <div class="ship-place">本日分の出荷確認</div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  if(currentTab === "manage"){
+    content.innerHTML = `
+      <div class="card">
+        <div class="ship-row">
+          <div class="ship-company">管理</div>
+          <div class="ship-place">編集画面はここに作成できます</div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+renderDates();
+renderContent();
 </script>
 
 </body>
