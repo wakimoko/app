@@ -30,6 +30,7 @@ h1{
 button{
   border:none;
   cursor:pointer;
+  font-family:inherit;
 }
 
 .top-tabs{
@@ -49,7 +50,8 @@ button{
   line-height:1.15;
 }
 
-.top-tabs .active{
+.top-tabs .active,
+.date-row .active{
   background:#c99657;
   color:#fff;
 }
@@ -73,22 +75,17 @@ button{
 .date-row{
   display:grid;
   grid-template-columns:repeat(5,1fr);
-  gap:8px;
-  margin-bottom:14px;
+  gap:7px;
+  margin-bottom:12px;
 }
 
 .date-row button{
-  height:50px;
-  border-radius:18px;
+  height:44px;
+  border-radius:16px;
   background:#e6ddd4;
   color:#007aff;
-  font-size:17px;
+  font-size:15px;
   font-weight:900;
-}
-
-.date-row .active{
-  background:#c99657;
-  color:#fff;
 }
 
 .card{
@@ -113,6 +110,7 @@ button{
 .notice-body{
   font-size:18px;
   line-height:1.5;
+  white-space:pre-wrap;
 }
 
 .card-actions{
@@ -210,27 +208,17 @@ button{
   <button id="nextWeek">次週</button>
 </div>
 
-<div class="date-row" id="dateRow">
-  <button class="active">5/4</button>
-  <button>5/5</button>
-  <button>5/6</button>
-  <button>5/7</button>
-  <button>5/8</button>
-</div>
+<div class="date-row" id="dateRow"></div>
 
 <div class="card">
-
   <div class="notice-title">クレーム</div>
-
   <div class="notice-name">○○様</div>
-
   <div class="notice-body">要検品</div>
 
   <div class="card-actions">
     <button class="icon-btn edit-btn" id="editBtn">✏️</button>
     <button class="icon-btn delete-btn" id="deleteBtn">🗑️</button>
   </div>
-
 </div>
 
 </div>
@@ -248,64 +236,108 @@ button{
 <input type="date" id="hiddenDate" style="display:none">
 
 <script>
-const dateButtons = document.querySelectorAll('#dateRow button');
+let weekStart = new Date(2026,4,4);
 
-dateButtons.forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    dateButtons.forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-  });
-});
+function getMonday(date){
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  return d;
+}
 
-const modal = document.getElementById('modal');
-const titleEl = document.querySelector('.notice-title');
-const nameEl = document.querySelector('.notice-name');
-const bodyEl = document.querySelector('.notice-body');
+function formatDate(date){
+  return (date.getMonth()+1) + "/" + date.getDate();
+}
 
-document.getElementById('editBtn').addEventListener('click',()=>{
-  document.getElementById('titleInput').value = titleEl.innerText;
-  document.getElementById('nameInput').value = nameEl.innerText;
-  document.getElementById('bodyInput').value = bodyEl.innerText;
-  modal.style.display = 'flex';
-});
+function renderDates(selectedDate){
+  const dateRow = document.getElementById("dateRow");
+  dateRow.innerHTML = "";
 
-document.getElementById('closeBtn').addEventListener('click',()=>{
-  modal.style.display = 'none';
-});
+  for(let i=0;i<5;i++){
+    const d = new Date(weekStart);
+    d.setDate(weekStart.getDate()+i);
 
-document.getElementById('saveBtn').addEventListener('click',()=>{
-  titleEl.innerText = document.getElementById('titleInput').value;
-  nameEl.innerText = document.getElementById('nameInput').value;
-  bodyEl.innerText = document.getElementById('bodyInput').value;
-  modal.style.display = 'none';
-});
+    const btn = document.createElement("button");
+    btn.textContent = formatDate(d);
 
-document.getElementById('deleteBtn').addEventListener('click',()=>{
-  if(confirm('削除しますか？')){
-    document.querySelector('.card').remove();
+    if(
+      selectedDate
+        ? d.getMonth() === selectedDate.getMonth() && d.getDate() === selectedDate.getDate()
+        : i === 0
+    ){
+      btn.classList.add("active");
+    }
+
+    btn.onclick = ()=>{
+      document.querySelectorAll("#dateRow button").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+    };
+
+    dateRow.appendChild(btn);
   }
-});
+}
 
-document.getElementById('calendarBtn').addEventListener('click',()=>{
-  const input = document.getElementById('hiddenDate');
-  if(input.showPicker){
-    input.showPicker();
-  }else{
-    input.click();
+document.getElementById("prevWeek").onclick = ()=>{
+  weekStart.setDate(weekStart.getDate()-7);
+  renderDates();
+};
+
+document.getElementById("nextWeek").onclick = ()=>{
+  weekStart.setDate(weekStart.getDate()+7);
+  renderDates();
+};
+
+document.getElementById("calendarBtn").onclick = ()=>{
+  const input = document.getElementById("hiddenDate");
+  if(input.showPicker){input.showPicker();}
+  else{input.click();}
+};
+
+document.getElementById("hiddenDate").onchange = (e)=>{
+  if(!e.target.value) return;
+  const selected = new Date(e.target.value);
+  weekStart = getMonday(selected);
+  renderDates(selected);
+};
+
+const modal = document.getElementById("modal");
+const titleEl = document.querySelector(".notice-title");
+const nameEl = document.querySelector(".notice-name");
+const bodyEl = document.querySelector(".notice-body");
+
+document.getElementById("editBtn").onclick = ()=>{
+  document.getElementById("titleInput").value = titleEl.innerText;
+  document.getElementById("nameInput").value = nameEl.innerText;
+  document.getElementById("bodyInput").value = bodyEl.innerText;
+  modal.style.display = "flex";
+};
+
+document.getElementById("manageBtn").onclick = ()=>{
+  document.getElementById("titleInput").value = "";
+  document.getElementById("nameInput").value = "";
+  document.getElementById("bodyInput").value = "";
+  modal.style.display = "flex";
+};
+
+document.getElementById("closeBtn").onclick = ()=>{
+  modal.style.display = "none";
+};
+
+document.getElementById("saveBtn").onclick = ()=>{
+  titleEl.innerText = document.getElementById("titleInput").value || "無題";
+  nameEl.innerText = document.getElementById("nameInput").value || "";
+  bodyEl.innerText = document.getElementById("bodyInput").value || "";
+  modal.style.display = "none";
+};
+
+document.getElementById("deleteBtn").onclick = ()=>{
+  if(confirm("削除しますか？")){
+    document.querySelector(".card").remove();
   }
-});
+};
 
-document.getElementById('prevWeek').addEventListener('click',()=>{
-  alert('前週へ');
-});
-
-document.getElementById('nextWeek').addEventListener('click',()=>{
-  alert('次週へ');
-});
-
-document.getElementById('manageBtn').addEventListener('click',()=>{
-  modal.style.display = 'flex';
-});
+renderDates();
 </script>
 
 </body>
