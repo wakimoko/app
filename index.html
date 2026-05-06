@@ -126,15 +126,15 @@ button:active{
 }
 
 .photo-btn{
-  width:50px;
+  width:64px;
   height:46px;
   border-radius:14px;
   background:#e6ddd4;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:18px;
-  font-weight:900;
+  font-size:13px;
+  font-weight:800;
 }
 
 .photo-modal{
@@ -210,6 +210,7 @@ function formatDate(date){
 }
 
 function setTab(tab){
+
   currentTab = tab;
 
   document.querySelectorAll(".top-tabs button").forEach(btn=>{
@@ -223,8 +224,12 @@ function setTab(tab){
 }
 
 function renderDates(){
-  const controls = document.getElementById("weekControls");
-  const dates = document.getElementById("dates");
+
+  const controls =
+    document.getElementById("weekControls");
+
+  const dates =
+    document.getElementById("dates");
 
   controls.innerHTML = `
     <button onclick="moveWeek(-1)">前週</button>
@@ -235,7 +240,9 @@ function renderDates(){
   dates.innerHTML = "";
 
   for(let i=0;i<5;i++){
+
     const d = new Date(weekStart);
+
     d.setDate(weekStart.getDate()+i);
 
     const text = formatDate(d);
@@ -245,6 +252,7 @@ function renderDates(){
     }
 
     const btn = document.createElement("button");
+
     btn.textContent = text;
 
     if(text === currentDate){
@@ -262,30 +270,46 @@ function renderDates(){
 }
 
 function moveWeek(num){
-  weekStart.setDate(weekStart.getDate()+7*num);
+
+  weekStart.setDate(
+    weekStart.getDate()+7*num
+  );
+
   currentDate = "";
+
   renderDates();
   render();
 }
 
 function setShipStatus(key,value){
-  localStorage.setItem(currentDate + "_" + key, value);
+
+  localStorage.setItem(
+    currentDate + "_" + key,
+    value
+  );
+
   render();
 }
 
 function openPhotoModal(url){
+
   document.getElementById("modalPhoto").src = url;
+
   document.getElementById("photoModal").style.display = "flex";
 }
 
 function closePhotoModal(){
+
   document.getElementById("photoModal").style.display = "none";
+
   document.getElementById("modalPhoto").src = "";
 }
 
 function shipRow(company,place,key){
+
   const status =
-    localStorage.getItem(currentDate + "_" + key) || "なし";
+    localStorage.getItem(currentDate + "_" + key)
+    || "なし";
 
   const photo = photoMap[key];
 
@@ -311,28 +335,26 @@ function shipRow(company,place,key){
           なし
         </button>
 
-        ${
-          photo
-          ?
-          `
-          <div
-            class="photo-btn"
-            onclick="openPhotoModal('${photo}')">
-            📷
-          </div>
-          `
-          :
-          `
-          <label class="photo-btn">
-            📷
-            <input
-              type="file"
-              accept="image/*"
-              hidden
-              onchange="savePhoto(event,'${key}')">
-          </label>
-          `
-        }
+        <!-- 添付 -->
+        <label class="photo-btn">
+          添付
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            onchange="savePhoto(event,'${key}')">
+        </label>
+
+        <!-- 表示 -->
+        <button
+          class="photo-btn"
+          onclick="${
+            photo
+            ? `openPhotoModal('${photo}')`
+            : `alert('写真なし')`
+          }">
+          表示
+        </button>
 
       </div>
 
@@ -375,11 +397,16 @@ async function savePhoto(event,key){
       .maybeSingle();
 
   if(exists){
+
     await client
       .from("shipping_photos")
-      .update({ photo_url: photoUrl })
+      .update({
+        photo_url: photoUrl
+      })
       .eq("id", exists.id);
+
   }else{
+
     await client
       .from("shipping_photos")
       .insert({
@@ -396,14 +423,17 @@ async function savePhoto(event,key){
 
 async function render(){
 
-  const view = document.getElementById("view");
+  const view =
+    document.getElementById("view");
 
   if(currentTab !== "ship"){
+
     view.innerHTML = `
       <div class="card">
         開発中
       </div>
     `;
+
     return;
   }
 
@@ -416,6 +446,7 @@ async function render(){
   photoMap = {};
 
   if(data){
+
     data.forEach(item=>{
       photoMap[item.place_key] = item.photo_url;
     });
@@ -424,13 +455,29 @@ async function render(){
   view.innerHTML = `
     <div class="card">
 
-      ${shipRow("佐川急便","2F","sagawa_2f")}
+      ${shipRow(
+        "佐川急便",
+        "2F",
+        "sagawa_2f"
+      )}
 
-      ${shipRow("福山通運","2F","fukuyama_2f")}
+      ${shipRow(
+        "福山通運",
+        "2F",
+        "fukuyama_2f"
+      )}
 
-      ${shipRow("梱包場","-","packing")}
+      ${shipRow(
+        "梱包場",
+        "-",
+        "packing"
+      )}
 
-      ${shipRow("MJ倉庫","-","mj")}
+      ${shipRow(
+        "MJ倉庫",
+        "-",
+        "mj"
+      )}
 
     </div>
   `;
