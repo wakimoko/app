@@ -299,8 +299,8 @@ button{
 <div class="date-row" id="dateRow"></div>
 
 <div class="card">
-  <div class="notice-title">クレーム</div>
-  <div class="notice-name">○○様</div>
+  <div class="notice-title">5/4</div>
+  <div class="notice-name">クレーム</div>
   <div class="notice-body">要検品</div>
 
   <div class="card-actions">
@@ -313,7 +313,7 @@ button{
 
 <div class="modal" id="modal">
   <div class="modal-content" id="modalContent">
-    <input type="text" id="titleInput" placeholder="日付選択">
+    <input type="text" id="titleInput" placeholder="日付選択" readonly>
     <input type="text" id="nameInput" placeholder="タイトル">
     <textarea id="bodyInput" placeholder="内容"></textarea>
     <button class="save-btn" id="saveBtn">保存</button>
@@ -343,6 +343,7 @@ button{
 let weekStart = new Date(2026,4,4);
 let selectedDate = new Date(2026,4,4);
 let calendarMonth = new Date(2026,4,1);
+let calendarTarget = "week";
 
 function setActiveTab(btn){
   document.querySelectorAll(".top-tabs button").forEach(b=>b.classList.remove("active"));
@@ -401,9 +402,12 @@ document.getElementById("nextWeek").onclick = ()=>{
   renderDates();
 };
 
-function openCalendar(){
+function openCalendar(target){
+  calendarTarget = target;
+
   document.getElementById("calendarBg").style.display = "block";
   document.getElementById("calendarPopup").style.display = "block";
+
   calendarMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
   renderCalendar();
 }
@@ -444,8 +448,14 @@ function renderCalendar(){
 
     cell.onclick = ()=>{
       selectedDate = new Date(d);
-      weekStart = getMonday(selectedDate);
-      renderDates();
+
+      if(calendarTarget === "input"){
+        document.getElementById("titleInput").value = formatDate(selectedDate);
+      }else{
+        weekStart = getMonday(selectedDate);
+        renderDates();
+      }
+
       closeCalendar();
     };
 
@@ -453,7 +463,14 @@ function renderCalendar(){
   }
 }
 
-document.getElementById("calendarBtn").onclick = openCalendar;
+document.getElementById("calendarBtn").onclick = ()=>{
+  openCalendar("week");
+};
+
+document.getElementById("titleInput").onclick = ()=>{
+  openCalendar("input");
+};
+
 document.getElementById("calendarBg").onclick = closeCalendar;
 document.getElementById("calendarClose").onclick = closeCalendar;
 
@@ -490,10 +507,6 @@ document.getElementById("manageBtn").onclick = ()=>{
   document.getElementById("nameInput").value = "";
   document.getElementById("bodyInput").value = "";
 
-  document.getElementById("titleInput").placeholder = "日付選択";
-  document.getElementById("nameInput").placeholder = "タイトル";
-  document.getElementById("bodyInput").placeholder = "内容";
-
   modal.style.display = "flex";
 };
 
@@ -514,7 +527,7 @@ document.getElementById("closeBtn").onclick = ()=>{
 };
 
 document.getElementById("saveBtn").onclick = ()=>{
-  titleEl.innerText = document.getElementById("titleInput").value || "無題";
+  titleEl.innerText = document.getElementById("titleInput").value || "日付未選択";
   nameEl.innerText = document.getElementById("nameInput").value || "";
   bodyEl.innerText = document.getElementById("bodyInput").value || "";
   modal.style.display = "none";
