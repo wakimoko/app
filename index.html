@@ -1,342 +1,392 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
 <title>出荷管理</title>
 
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-
 body{
   margin:0;
-  background:#f4ede4;
-  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+  background:#e9e3d9;
+  font-family:sans-serif;
   color:#111;
 }
 
-.app{
-  max-width:430px;
-  margin:auto;
-  padding:22px 20px 40px;
+.container{
+  padding:24px 18px 40px;
 }
 
-h1{
-  font-size:30px;
+.title{
+  font-size:64px;
   font-weight:900;
-  margin:18px 0 24px;
+  margin-bottom:24px;
 }
 
-.top-tabs{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
-  margin-bottom:14px;
+.top-buttons,
+.week-buttons,
+.date-buttons{
+  display:flex;
+  gap:14px;
+  margin-bottom:18px;
 }
 
-.top-tabs button,
-.week-nav button,
-.dates button{
+.menu-btn{
+  flex:1;
   border:none;
-  background:#e6ddd4;
-  font-weight:900;
-}
-
-.top-tabs button{
-  height:54px;
-  border-radius:20px;
-  font-size:14px;
-  white-space:nowrap;
+  border-radius:28px;
+  background:#ddd6cf;
+  padding:22px 0;
+  font-size:22px;
+  font-weight:700;
 }
 
 .active{
-  background:#be8b55!important;
-  color:#fff!important;
+  background:#c79255;
+  color:#fff;
 }
 
-.week-nav{
-  display:grid;
-  grid-template-columns:1fr .7fr 1fr;
-  gap:10px;
-  margin-bottom:12px;
+.calendar-btn{
+  width:90px;
+  border:none;
+  border-radius:28px;
+  background:#ddd6cf;
+  font-size:28px;
 }
 
-.week-nav button{
-  height:48px;
-  border-radius:18px;
-  font-size:15px;
-}
-
-.dates{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:10px;
-  margin-bottom:16px;
-}
-
-.dates button{
-  height:48px;
-  border-radius:18px;
-  font-size:16px;
+.date-btn{
+  width:90px;
+  height:90px;
+  border:none;
+  border-radius:28px;
+  background:#ddd6cf;
+  font-size:26px;
+  font-weight:700;
 }
 
 .card{
-  background:#fff;
-  border-radius:24px;
-  padding:10px 16px;
+  background:#f4f4f4;
+  border-radius:34px;
+  padding:22px 18px;
 }
 
-.ship-row{
-  padding:14px 0 12px;
-  border-bottom:1px solid #efe5dc;
+.row{
+  padding:18px 0;
+  border-bottom:1px solid #ddd0c2;
 }
 
-.ship-row:last-child{
+.row:last-child{
   border-bottom:none;
 }
 
-.ship-top{
+.row-top{
   display:flex;
   justify-content:space-between;
-  align-items:flex-start;
+  align-items:center;
 }
 
-.ship-left{
-  display:flex;
-  flex-direction:column;
+.place-wrap{
+  padding-left:8px;
 }
 
-.ship-company{
-  font-size:22px;
+.place{
+  font-size:30px;
   font-weight:900;
-  line-height:1.1;
+  line-height:1.2;
 }
 
-.ship-place{
-  font-size:16px;
-  font-weight:800;
+.floor{
+  font-size:24px;
+  font-weight:700;
   margin-top:4px;
 }
 
-.ship-right{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-end;
-}
-
-.ship-status{
-  display:flex;
-  gap:10px;
-}
-
-.ship-status button{
-  min-width:62px;
-  height:38px;
-  border:none;
-  border-radius:999px;
-  background:#e6ddd4;
-  font-size:16px;
-  font-weight:900;
-  color:#111;
-}
-
-.photo-links{
+.status-wrap{
   display:flex;
   gap:14px;
-  margin-top:6px;
 }
 
-.photo-links button,
-.photo-links label{
+.status-btn{
+  width:150px;
+  height:70px;
+  border:none;
+  border-radius:999px;
+  font-size:28px;
+  font-weight:800;
+  background:#e6dfd7;
+}
+
+.status-active{
+  background:#c79255;
+  color:#fff;
+}
+
+.bottom-links{
+  display:flex;
+  justify-content:flex-end;
+  gap:26px;
+  margin-top:12px;
+  padding-right:8px;
+}
+
+.link-btn{
   border:none;
   background:none;
-  padding:0;
-  margin:0;
-  font-size:11px;
+  color:#9a6a35;
+  font-size:16px;
   font-weight:700;
-  color:#8b5d33;
   text-decoration:underline;
 }
 
-.photo-links input{
-  display:none;
-}
-
 .modal{
-  display:none;
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.8);
-  align-items:center;
+  background:rgba(0,0,0,0.5);
+  display:none;
   justify-content:center;
+  align-items:center;
   z-index:999;
 }
 
-.modal img{
-  max-width:90%;
-  max-height:80%;
-  border-radius:12px;
+.modal-content{
+  width:90%;
+  background:#fff;
+  border-radius:20px;
+  padding:20px;
+}
+
+.modal-img{
+  width:100%;
+  border-radius:14px;
+}
+
+.close-btn{
+  width:100%;
+  margin-top:14px;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  background:#c79255;
+  color:#fff;
+  font-size:18px;
+  font-weight:700;
 }
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<div class="container">
 
-<h1>出荷管理</h1>
+<div class="title">出荷管理</div>
 
-<div class="top-tabs">
-  <button onclick="selectTab(this)">注意事項</button>
-  <button class="active" onclick="selectTab(this)">出荷予定</button>
-  <button onclick="selectTab(this)">当日出荷</button>
-  <button onclick="selectTab(this)">管理</button>
+<div class="top-buttons">
+  <button class="menu-btn">注意事項</button>
+  <button class="menu-btn active">出荷予定</button>
+  <button class="menu-btn">当日出荷</button>
+  <button class="menu-btn">管理</button>
 </div>
 
-<div class="week-nav">
-  <button onclick="alert('前週')">前週</button>
-  <button onclick="alert('日付選択')">🗓️</button>
-  <button onclick="alert('次週')">次週</button>
+<div class="week-buttons">
+  <button class="menu-btn">前週</button>
+
+  <button class="calendar-btn" onclick="openCalendar()">🗓️</button>
+
+  <input
+    type="date"
+    id="calendarInput"
+    style="display:none"
+    onchange="changeDate(this.value)"
+  >
+
+  <button class="menu-btn">次週</button>
 </div>
 
-<div class="dates">
-  <button class="active" onclick="selectDate(this)">5/4</button>
-  <button onclick="selectDate(this)">5/5</button>
-  <button onclick="selectDate(this)">5/6</button>
-  <button onclick="selectDate(this)">5/7</button>
-  <button onclick="selectDate(this)">5/8</button>
+<div class="date-buttons">
+  <button class="date-btn active">5/4</button>
+  <button class="date-btn">5/5</button>
+  <button class="date-btn">5/6</button>
+  <button class="date-btn">5/7</button>
+  <button class="date-btn">5/8</button>
 </div>
 
 <div class="card">
 
-  <div class="ship-row">
-    <div class="ship-top">
-      <div class="ship-left">
-        <div class="ship-company">佐川急便</div>
-        <div class="ship-place">2F</div>
+  <!-- 佐川 -->
+  <div class="row">
+
+    <div class="row-top">
+
+      <div class="place-wrap">
+        <div class="place">佐川急便</div>
+        <div class="floor">2F</div>
       </div>
-      <div class="ship-right">
-        <div class="ship-status">
-          <button class="active" onclick="toggleStatus(this)">あり</button>
-          <button onclick="toggleStatus(this)">なし</button>
-        </div>
-        <div class="photo-links">
-          <button onclick="showPhoto('sagawa')">写真表示</button>
-          <label>添付<input type="file" accept="image/*" onchange="savePhoto(event,'sagawa')"></label>
-        </div>
+
+      <div class="status-wrap">
+        <button class="status-btn status-active">あり</button>
+        <button class="status-btn">なし</button>
       </div>
+
     </div>
+
+    <div class="bottom-links">
+      <button class="link-btn" onclick="showPhoto('https://picsum.photos/600/400?1')">
+        写真表示
+      </button>
+
+      <button class="link-btn" onclick="uploadPhoto()">
+        添付
+      </button>
+    </div>
+
   </div>
 
-  <div class="ship-row">
-    <div class="ship-top">
-      <div class="ship-left">
-        <div class="ship-company">福山通運</div>
-        <div class="ship-place">2F</div>
+  <!-- 福山 -->
+  <div class="row">
+
+    <div class="row-top">
+
+      <div class="place-wrap">
+        <div class="place">福山通運</div>
+        <div class="floor">2F</div>
       </div>
-      <div class="ship-right">
-        <div class="ship-status">
-          <button class="active" onclick="toggleStatus(this)">あり</button>
-          <button onclick="toggleStatus(this)">なし</button>
-        </div>
-        <div class="photo-links">
-          <button onclick="showPhoto('fukuyama')">写真表示</button>
-          <label>添付<input type="file" accept="image/*" onchange="savePhoto(event,'fukuyama')"></label>
-        </div>
+
+      <div class="status-wrap">
+        <button class="status-btn status-active">あり</button>
+        <button class="status-btn">なし</button>
       </div>
+
     </div>
+
+    <div class="bottom-links">
+      <button class="link-btn" onclick="showPhoto('https://picsum.photos/600/400?2')">
+        写真表示
+      </button>
+
+      <button class="link-btn" onclick="uploadPhoto()">
+        添付
+      </button>
+    </div>
+
   </div>
 
-  <div class="ship-row">
-    <div class="ship-top">
-      <div class="ship-left">
-        <div class="ship-place">梱包場</div>
+  <!-- 梱包場 -->
+  <div class="row">
+
+    <div class="row-top">
+
+      <div class="place-wrap">
+        <div class="floor">梱包場</div>
       </div>
-      <div class="ship-right">
-        <div class="ship-status">
-          <button onclick="toggleStatus(this)">あり</button>
-          <button class="active" onclick="toggleStatus(this)">なし</button>
-        </div>
-        <div class="photo-links">
-          <button onclick="showPhoto('packing')">写真表示</button>
-          <label>添付<input type="file" accept="image/*" onchange="savePhoto(event,'packing')"></label>
-        </div>
+
+      <div class="status-wrap">
+        <button class="status-btn">あり</button>
+        <button class="status-btn status-active">なし</button>
       </div>
+
     </div>
+
+    <div class="bottom-links">
+      <button class="link-btn" onclick="showPhoto('https://picsum.photos/600/400?3')">
+        写真表示
+      </button>
+
+      <button class="link-btn" onclick="uploadPhoto()">
+        添付
+      </button>
+    </div>
+
   </div>
 
-  <div class="ship-row">
-    <div class="ship-top">
-      <div class="ship-left">
-        <div class="ship-place">MJ倉庫</div>
+  <!-- MJ -->
+  <div class="row">
+
+    <div class="row-top">
+
+      <div class="place-wrap">
+        <div class="floor">MJ倉庫</div>
       </div>
-      <div class="ship-right">
-        <div class="ship-status">
-          <button onclick="toggleStatus(this)">あり</button>
-          <button class="active" onclick="toggleStatus(this)">なし</button>
-        </div>
-        <div class="photo-links">
-          <button onclick="showPhoto('mj')">写真表示</button>
-          <label>添付<input type="file" accept="image/*" onchange="savePhoto(event,'mj')"></label>
-        </div>
+
+      <div class="status-wrap">
+        <button class="status-btn">あり</button>
+        <button class="status-btn status-active">なし</button>
       </div>
+
     </div>
+
+    <div class="bottom-links">
+      <button class="link-btn" onclick="showPhoto('https://picsum.photos/600/400?4')">
+        写真表示
+      </button>
+
+      <button class="link-btn" onclick="uploadPhoto()">
+        添付
+      </button>
+    </div>
+
   </div>
 
 </div>
 
 </div>
 
-<div class="modal" id="modal" onclick="closePhoto()">
-  <img id="modalImg">
+<!-- モーダル -->
+<div class="modal" id="photoModal">
+
+  <div class="modal-content">
+
+    <img id="modalImg" class="modal-img" src="">
+
+    <button class="close-btn" onclick="closePhoto()">
+      閉じる
+    </button>
+
+  </div>
+
 </div>
 
 <script>
-const photos = {};
 
-function selectTab(button){
-  document.querySelectorAll(".top-tabs button").forEach(btn=>{
-    btn.classList.remove("active");
-  });
-  button.classList.add("active");
-}
+function openCalendar(){
+  const input = document.getElementById("calendarInput");
 
-function selectDate(button){
-  document.querySelectorAll(".dates button").forEach(btn=>{
-    btn.classList.remove("active");
-  });
-  button.classList.add("active");
-}
-
-function toggleStatus(button){
-  const group = button.parentElement;
-  group.querySelectorAll("button").forEach(btn=>{
-    btn.classList.remove("active");
-  });
-  button.classList.add("active");
-}
-
-function savePhoto(event,key){
-  const file = event.target.files[0];
-  if(!file) return;
-
-  photos[key] = URL.createObjectURL(file);
-  alert("写真を添付しました");
-}
-
-function showPhoto(key){
-  if(!photos[key]){
-    alert("写真がありません");
-    return;
+  if(input.showPicker){
+    input.showPicker();
+  }else{
+    input.click();
   }
+}
 
-  document.getElementById("modalImg").src = photos[key];
-  document.getElementById("modal").style.display = "flex";
+function changeDate(value){
+
+  if(!value) return;
+
+  const date = new Date(value);
+
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+
+  alert(month + "/" + day + " を選択しました");
+}
+
+function showPhoto(src){
+
+  document.getElementById("modalImg").src = src;
+
+  document.getElementById("photoModal").style.display = "flex";
 }
 
 function closePhoto(){
-  document.getElementById("modal").style.display = "none";
+
+  document.getElementById("photoModal").style.display = "none";
 }
+
+function uploadPhoto(){
+
+  alert("写真添付");
+}
+
 </script>
 
 </body>
