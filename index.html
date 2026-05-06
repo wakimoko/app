@@ -272,11 +272,23 @@ function formatDate(date){
 
 function renderDates(){
   const dates = document.getElementById("dates");
+  const weekNav = document.querySelector(".week-nav");
+
+  if(currentTab === "manage"){
+    dates.style.display = "none";
+    weekNav.style.display = "none";
+    return;
+  }
+
+  dates.style.display = "grid";
+  weekNav.style.display = "grid";
+
   dates.innerHTML = "";
 
   for(let i=0; i<5; i++){
     const d = new Date(weekStart);
     d.setDate(weekStart.getDate()+i);
+
     const text = formatDate(d);
 
     if(!currentDate && i === 0){
@@ -308,6 +320,8 @@ function selectTab(button, tab){
   });
 
   button.classList.add("active");
+
+  renderDates();
   renderContent();
 }
 
@@ -387,6 +401,12 @@ function addNotice(){
   const title = document.getElementById("noticeTitle").value.trim();
   const content = document.getElementById("noticeContent").value.trim();
   const status = document.getElementById("noticeStatus").value;
+  const manageDate = document.getElementById("manageDate").value;
+
+  if(!manageDate){
+    alert("日付を選択してください");
+    return;
+  }
 
   if(!title || !content){
     alert("タイトルと内容を入力してください");
@@ -397,7 +417,7 @@ function addNotice(){
 
   items.push({
     id: Date.now(),
-    date: currentDate,
+    date: formatDate(new Date(manageDate)),
     title,
     content,
     status
@@ -405,12 +425,13 @@ function addNotice(){
 
   saveNotices(items);
 
-  alert("保存しました");
-
+  currentDate = formatDate(new Date(manageDate));
   currentTab = "notice";
+
   document.querySelectorAll(".top-tabs button").forEach(btn=>btn.classList.remove("active"));
   document.querySelectorAll(".top-tabs button")[0].classList.add("active");
 
+  renderDates();
   renderContent();
 }
 
@@ -514,6 +535,8 @@ function renderContent(){
         <div class="ship-company">管理</div>
         <div class="ship-place">注意事項を追加</div>
 
+        <input type="date" id="manageDate">
+
         <input id="noticeTitle" placeholder="タイトル">
         <textarea id="noticeContent" placeholder="内容"></textarea>
 
@@ -525,6 +548,12 @@ function renderContent(){
         <button class="save-btn" onclick="addNotice()">保存</button>
       </div>
     `;
+
+    const input = document.getElementById("manageDate");
+    const today = new Date();
+    input.value = today.toISOString().split("T")[0];
+
+    return;
   }
 }
 
