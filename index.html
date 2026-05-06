@@ -170,40 +170,32 @@ textarea{height:120px}
   border-radius:12px;
 }
 
-.ship-group{
-  margin-top:14px;
-}
-
-.ship-company{
-  font-size:22px;
-  font-weight:900;
-  margin-bottom:6px;
-}
-
 .ship-row{
   display:flex;
   justify-content:space-between;
-  align-items:flex-start;
-  padding:8px 0;
+  align-items:center;
+  padding:14px 0;
   border-bottom:1px solid #eadfd5;
+}
+
+.ship-row:last-child{
+  border-bottom:none;
 }
 
 .ship-left{
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:6px;
+}
+
+.ship-company{
+  font-size:24px;
+  font-weight:900;
 }
 
 .ship-place{
-  font-size:18px;
-  font-weight:700;
-}
-
-.ship-photo{
-  width:90px;
-  height:90px;
-  object-fit:cover;
-  border-radius:14px;
+  font-size:20px;
+  font-weight:900;
 }
 
 .ship-buttons{
@@ -213,20 +205,27 @@ textarea{height:120px}
 }
 
 .ship-buttons button{
-  padding:8px 12px;
-  border-radius:12px;
+  width:54px;
+  height:46px;
+  border-radius:14px;
 }
 
 .photo-btn{
-  width:40px;
-  height:40px;
+  width:50px;
+  height:46px;
   border-radius:14px;
   background:#e6ddd4;
   display:flex;
   align-items:center;
   justify-content:center;
   font-size:18px;
-  font-weight:800;
+}
+
+.ship-photo{
+  width:54px;
+  height:54px;
+  object-fit:cover;
+  border-radius:12px;
 }
 </style>
 </head>
@@ -255,7 +254,7 @@ const client = supabase.createClient(
   "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
 );
 
-let currentTab = "notice";
+let currentTab = "ship";
 let currentDate = "";
 let weekStart = getMonday(new Date());
 let calendarMonth = new Date();
@@ -414,35 +413,27 @@ function pickDate(year,month,day){
   render();
 }
 
-function shipRow(place, key){
+function shipRow(company, place, key){
   const status = localStorage.getItem(currentDate + "_" + key) || "なし";
   const photo = photoMap[key];
 
   return `
     <div class="ship-row">
       <div class="ship-left">
+        <div class="ship-company">${company}</div>
         <div class="ship-place">${place}</div>
-        ${photo ? `<img src="${photo}" class="ship-photo">` : ""}
       </div>
 
       <div class="ship-buttons">
         <button class="${status === "あり" ? "active" : ""}"
-          onclick="setShipStatus('${key}','あり')">
-          あり
-        </button>
+          onclick="setShipStatus('${key}','あり')">あり</button>
 
         <button class="${status === "なし" ? "active" : ""}"
-          onclick="setShipStatus('${key}','なし')">
-          なし
-        </button>
+          onclick="setShipStatus('${key}','なし')">なし</button>
 
         <label class="photo-btn">
-          📷
-          <input
-            type="file"
-            accept="image/*"
-            hidden
-            onchange="savePhoto(event,'${key}')">
+          ${photo ? `<img src="${photo}" class="ship-photo">` : "📷"}
+          <input type="file" accept="image/*" hidden onchange="savePhoto(event,'${key}')">
         </label>
       </div>
     </div>
@@ -475,28 +466,44 @@ async function savePhoto(event, key){
 
   const photoUrl = data.publicUrl;
 
-  const { data: exists } = await client
+  const { data: exists, error: selectError } = await client
     .from("shipping_photos")
     .select("id")
     .eq("date", currentDate)
     .eq("place_key", key)
     .maybeSingle();
 
+  if(selectError){
+    alert("写真確認エラー：" + selectError.message);
+    return;
+  }
+
   if(exists){
-    await client
+    const { error: updateError } = await client
       .from("shipping_photos")
       .update({ photo_url: photoUrl })
       .eq("id", exists.id);
+
+    if(updateError){
+      alert("写真更新エラー：" + updateError.message);
+      return;
+    }
   }else{
-    await client
+    const { error: insertError } = await client
       .from("shipping_photos")
       .insert({
         date: currentDate,
         place_key: key,
         photo_url: photoUrl
       });
+
+    if(insertError){
+      alert("写真保存エラー：" + insertError.message);
+      return;
+    }
   }
 
+  photoMap[key] = photoUrl;
   render();
 }
 
@@ -520,17 +527,10 @@ async function render(){
 
     view.innerHTML = `
       <div class="card">
-        <div class="ship-group">
-          <div class="ship-company">佐川急便</div>
-          ${shipRow("2F", "sagawa_2f")}
-        </div>
-
-        <div class="ship-group">
-          <div class="ship-company">福山通運</div>
-          ${shipRow("2F", "fukuyama_2f")}
-          ${shipRow("梱包場", "fukuyama_packing")}
-          ${shipRow("MJ倉庫", "fukuyama_mj")}
-        </div>
+        ${shipRow("佐川急便", "2F", "sagawa_2f")}
+        ${shipRow("福山通運", "2F", "fukuyama_2f")}
+        ${shipRow("梱包場", "-", "packing")}
+        ${shipRow("MJ倉庫", "-", "mj")}
       </div>
     `;
     return;
@@ -540,10 +540,7 @@ async function render(){
     view.innerHTML = `
       <div class="card">
         <div class="item-title">当日出荷</div>
-        <div class="item-content">2F：あり / なし
-2Fテーブル：あり / なし
-梱包場：あり / なし
-MJ倉庫：あり / なし</div>
+        <div class="item-content">本日の出荷内容を確認してください。</div>
       </div>
     `;
     return;
@@ -720,7 +717,7 @@ async function deleteItem(id){
   render();
 }
 
-setTab("notice");
+setTab("ship");
 </script>
 
 </body>
