@@ -34,7 +34,9 @@ button{
   font-size:15px;
 }
 
-button:active{transform:scale(.96)}
+button:active{
+  transform:scale(.96);
+}
 
 .active{
   background:#b88a5a!important;
@@ -48,7 +50,9 @@ button:active{transform:scale(.96)}
   margin-bottom:16px;
 }
 
-.top-tabs button{padding:14px 0}
+.top-tabs button{
+  padding:14px 0;
+}
 
 #weekControls{
   display:grid;
@@ -96,17 +100,21 @@ button:active{transform:scale(.96)}
 .ship-left{
   display:flex;
   flex-direction:column;
-  gap:4px;
+  justify-content:center;
+  gap:2px;
 }
 
 .ship-company{
   font-size:24px;
   font-weight:900;
+  line-height:1.1;
 }
 
 .ship-place{
   font-size:17px;
   font-weight:800;
+  line-height:1;
+  margin-top:2px;
 }
 
 .ship-buttons{
@@ -126,9 +134,12 @@ button:active{transform:scale(.96)}
 .photo-text-group{
   display:flex;
   flex-direction:column;
-  align-items:flex-start;
-  gap:3px;
-  margin-left:2px;
+  align-items:flex-end;
+  justify-content:flex-end;
+  gap:2px;
+  margin-left:0;
+  align-self:flex-end;
+  min-width:52px;
 }
 
 .photo-text{
@@ -137,9 +148,9 @@ button:active{transform:scale(.96)}
   padding:0;
   margin:0;
   color:#6b4b2f;
-  font-size:10px;
+  font-size:9px;
   font-weight:800;
-  line-height:1.2;
+  line-height:1;
   text-decoration:underline;
   width:auto;
   height:auto;
@@ -183,7 +194,7 @@ button:active{transform:scale(.96)}
 
 <div class="top-tabs">
   <button id="tab_notice" onclick="setTab('notice')">注意事項</button>
-  <button id="tab_ship" onclick="setTab('ship')">出荷予定</button>
+  <button id="tab_ship" class="active" onclick="setTab('ship')">出荷予定</button>
   <button id="tab_today" onclick="setTab('today')">当日出荷</button>
   <button id="tab_manage" onclick="setTab('manage')">管理</button>
 </div>
@@ -236,6 +247,7 @@ function setTab(tab){
 }
 
 function renderDates(){
+
   const controls = document.getElementById("weekControls");
   const dates = document.getElementById("dates");
 
@@ -248,7 +260,9 @@ function renderDates(){
   dates.innerHTML = "";
 
   for(let i=0;i<5;i++){
+
     const d = new Date(weekStart);
+
     d.setDate(weekStart.getDate()+i);
 
     const text = formatDate(d);
@@ -258,6 +272,7 @@ function renderDates(){
     }
 
     const btn = document.createElement("button");
+
     btn.textContent = text;
 
     if(text === currentDate){
@@ -297,8 +312,10 @@ function closePhotoModal(){
 }
 
 function shipRow(company,place,key){
+
   const status =
-    localStorage.getItem(currentDate + "_" + key) || "なし";
+    localStorage.getItem(currentDate + "_" + key)
+    || "なし";
 
   const photo = photoMap[key];
 
@@ -354,6 +371,7 @@ function shipRow(company,place,key){
 }
 
 async function savePhoto(event,key){
+
   const file = event.target.files[0];
 
   if(!file) return;
@@ -387,11 +405,16 @@ async function savePhoto(event,key){
       .maybeSingle();
 
   if(exists){
+
     await client
       .from("shipping_photos")
-      .update({ photo_url: photoUrl })
+      .update({
+        photo_url: photoUrl
+      })
       .eq("id", exists.id);
+
   }else{
+
     await client
       .from("shipping_photos")
       .insert({
@@ -402,14 +425,18 @@ async function savePhoto(event,key){
   }
 
   photoMap[key] = photoUrl;
+
   render();
 }
 
 async function render(){
+
   const view = document.getElementById("view");
 
   if(currentTab !== "ship"){
-    view.innerHTML = `<div class="card">開発中</div>`;
+    view.innerHTML = `
+      <div class="card">開発中</div>
+    `;
     return;
   }
 
@@ -429,10 +456,15 @@ async function render(){
 
   view.innerHTML = `
     <div class="card">
+
       ${shipRow("佐川急便","2F","sagawa_2f")}
+
       ${shipRow("福山通運","2F","fukuyama_2f")}
+
       ${shipRow("梱包場","-","packing")}
+
       ${shipRow("MJ倉庫","-","mj")}
+
     </div>
   `;
 }
