@@ -6,10 +6,7 @@
 <title>出荷管理</title>
 
 <style>
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 
 body{
   margin:0;
@@ -50,7 +47,6 @@ button{
   color:#007aff;
   font-size:13px;
   font-weight:900;
-  line-height:1.15;
 }
 
 .top-tabs .active,
@@ -90,8 +86,6 @@ button{
   font-size:15px;
   font-weight:900;
 }
-
-/* カード */
 
 .card{
   background:#fff;
@@ -136,15 +130,8 @@ button{
   justify-content:center;
 }
 
-.edit-btn{
-  background:#efe7dc;
-}
-
-.delete-btn{
-  background:#f8dede;
-}
-
-/* 編集モーダル */
+.edit-btn{background:#efe7dc}
+.delete-btn{background:#f8dede}
 
 .modal{
   position:fixed;
@@ -167,7 +154,6 @@ button{
 .modal input,
 .modal textarea{
   width:100%;
-  box-sizing:border-box;
   border:2px solid #e3ddd5;
   border-radius:14px;
   padding:12px;
@@ -199,7 +185,13 @@ button{
   font-weight:700;
 }
 
-/* 自作カレンダー */
+.calendar-bg{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.25);
+  z-index:1000;
+}
 
 .calendar-popup{
   display:none;
@@ -211,7 +203,7 @@ button{
   background:#f3eee6;
   border-radius:26px;
   padding:18px;
-  z-index:1000;
+  z-index:1001;
   box-shadow:0 12px 35px rgba(0,0,0,.25);
 }
 
@@ -237,10 +229,14 @@ button{
   font-weight:900;
 }
 
-.calendar-week{
+.calendar-week,
+.calendar-grid{
   display:grid;
   grid-template-columns:repeat(7,1fr);
   gap:6px;
+}
+
+.calendar-week{
   margin-bottom:6px;
 }
 
@@ -249,12 +245,6 @@ button{
   font-size:12px;
   font-weight:900;
   color:#8b7b6b;
-}
-
-.calendar-grid{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:6px;
 }
 
 .calendar-day,
@@ -269,7 +259,6 @@ button{
 
 .calendar-day{
   background:#e6ddd4;
-  color:#111;
 }
 
 .calendar-day.active{
@@ -283,16 +272,7 @@ button{
   height:40px;
   border-radius:14px;
   background:#e6ddd4;
-  color:#111;
   font-weight:900;
-}
-
-.calendar-bg{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.25);
-  z-index:999;
 }
 </style>
 </head>
@@ -304,9 +284,9 @@ button{
 <h1>出荷管理</h1>
 
 <div class="top-tabs">
-  <button class="active">注意事項</button>
-  <button>出荷予定</button>
-  <button>当日出荷</button>
+  <button id="noticeBtn" class="active">注意事項</button>
+  <button id="shipBtn">出荷予定</button>
+  <button id="todayBtn">当日出荷</button>
   <button id="manageBtn">管理</button>
 </div>
 
@@ -331,18 +311,16 @@ button{
 
 </div>
 
-<!-- 編集モーダル -->
 <div class="modal" id="modal">
   <div class="modal-content" id="modalContent">
-    <input type="text" id="titleInput" placeholder="タイトル">
-    <input type="text" id="nameInput" placeholder="名前">
+    <input type="text" id="titleInput" placeholder="日付選択">
+    <input type="text" id="nameInput" placeholder="タイトル">
     <textarea id="bodyInput" placeholder="内容"></textarea>
     <button class="save-btn" id="saveBtn">保存</button>
     <button class="close-btn" id="closeBtn">閉じる</button>
   </div>
 </div>
 
-<!-- 自作カレンダー -->
 <div class="calendar-bg" id="calendarBg"></div>
 
 <div class="calendar-popup" id="calendarPopup">
@@ -353,13 +331,7 @@ button{
   </div>
 
   <div class="calendar-week">
-    <div>日</div>
-    <div>月</div>
-    <div>火</div>
-    <div>水</div>
-    <div>木</div>
-    <div>金</div>
-    <div>土</div>
+    <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
   </div>
 
   <div class="calendar-grid" id="calendarGrid"></div>
@@ -369,14 +341,18 @@ button{
 
 <script>
 let weekStart = new Date(2026,4,4);
-let calendarMonth = new Date(2026,4,1);
 let selectedDate = new Date(2026,4,4);
+let calendarMonth = new Date(2026,4,1);
+
+function setActiveTab(btn){
+  document.querySelectorAll(".top-tabs button").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+}
 
 function getMonday(date){
   const d = new Date(date);
   const day = d.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-  d.setDate(d.getDate() + diff);
+  d.setDate(d.getDate() + (day === 0 ? -6 : 1 - day));
   return d;
 }
 
@@ -385,16 +361,15 @@ function formatDate(date){
 }
 
 function sameDate(a,b){
-  return a &&
-         b &&
-         a.getFullYear() === b.getFullYear() &&
-         a.getMonth() === b.getMonth() &&
-         a.getDate() === b.getDate();
+  return a && b &&
+    a.getFullYear()===b.getFullYear() &&
+    a.getMonth()===b.getMonth() &&
+    a.getDate()===b.getDate();
 }
 
 function renderDates(){
-  const dateRow = document.getElementById("dateRow");
-  dateRow.innerHTML = "";
+  const row = document.getElementById("dateRow");
+  row.innerHTML = "";
 
   for(let i=0;i<5;i++){
     const d = new Date(weekStart);
@@ -403,16 +378,14 @@ function renderDates(){
     const btn = document.createElement("button");
     btn.textContent = formatDate(d);
 
-    if(sameDate(d, selectedDate)){
-      btn.classList.add("active");
-    }
+    if(sameDate(d, selectedDate)) btn.classList.add("active");
 
     btn.onclick = ()=>{
       selectedDate = new Date(d);
       renderDates();
     };
 
-    dateRow.appendChild(btn);
+    row.appendChild(btn);
   }
 }
 
@@ -427,8 +400,6 @@ document.getElementById("nextWeek").onclick = ()=>{
   selectedDate = new Date(weekStart);
   renderDates();
 };
-
-/* 自作カレンダー */
 
 function openCalendar(){
   document.getElementById("calendarBg").style.display = "block";
@@ -464,14 +435,12 @@ function renderCalendar(){
 
   for(let day=1;day<=lastDate;day++){
     const d = new Date(year, month, day);
-
     const cell = document.createElement("div");
+
     cell.className = "calendar-day";
     cell.textContent = day;
 
-    if(sameDate(d, selectedDate)){
-      cell.classList.add("active");
-    }
+    if(sameDate(d, selectedDate)) cell.classList.add("active");
 
     cell.onclick = ()=>{
       selectedDate = new Date(d);
@@ -485,9 +454,8 @@ function renderCalendar(){
 }
 
 document.getElementById("calendarBtn").onclick = openCalendar;
-
-document.getElementById("calendarClose").onclick = closeCalendar;
 document.getElementById("calendarBg").onclick = closeCalendar;
+document.getElementById("calendarClose").onclick = closeCalendar;
 
 document.getElementById("calPrev").onclick = ()=>{
   calendarMonth.setMonth(calendarMonth.getMonth()-1);
@@ -499,21 +467,14 @@ document.getElementById("calNext").onclick = ()=>{
   renderCalendar();
 };
 
-/* 編集 */
-
 const modal = document.getElementById("modal");
 const modalContent = document.getElementById("modalContent");
 const titleEl = document.querySelector(".notice-title");
 const nameEl = document.querySelector(".notice-name");
 const bodyEl = document.querySelector(".notice-body");
 
-modalContent.onclick = (e)=>{
-  e.stopPropagation();
-};
-
-modal.onclick = ()=>{
-  modal.style.display = "none";
-};
+modalContent.onclick = e=>e.stopPropagation();
+modal.onclick = ()=>modal.style.display = "none";
 
 document.getElementById("editBtn").onclick = ()=>{
   document.getElementById("titleInput").value = titleEl.innerText;
@@ -523,10 +484,29 @@ document.getElementById("editBtn").onclick = ()=>{
 };
 
 document.getElementById("manageBtn").onclick = ()=>{
+  setActiveTab(document.getElementById("manageBtn"));
+
   document.getElementById("titleInput").value = "";
   document.getElementById("nameInput").value = "";
   document.getElementById("bodyInput").value = "";
+
+  document.getElementById("titleInput").placeholder = "日付選択";
+  document.getElementById("nameInput").placeholder = "タイトル";
+  document.getElementById("bodyInput").placeholder = "内容";
+
   modal.style.display = "flex";
+};
+
+document.getElementById("noticeBtn").onclick = ()=>{
+  setActiveTab(document.getElementById("noticeBtn"));
+};
+
+document.getElementById("shipBtn").onclick = ()=>{
+  setActiveTab(document.getElementById("shipBtn"));
+};
+
+document.getElementById("todayBtn").onclick = ()=>{
+  setActiveTab(document.getElementById("todayBtn"));
 };
 
 document.getElementById("closeBtn").onclick = ()=>{
@@ -538,6 +518,7 @@ document.getElementById("saveBtn").onclick = ()=>{
   nameEl.innerText = document.getElementById("nameInput").value || "";
   bodyEl.innerText = document.getElementById("bodyInput").value || "";
   modal.style.display = "none";
+  setActiveTab(document.getElementById("noticeBtn"));
 };
 
 document.getElementById("deleteBtn").onclick = ()=>{
