@@ -3,220 +3,178 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>出荷注意（今週）</title>
+  <title>出荷管理</title>
 
   <style>
     body {
-      font-family: sans-serif;
-      background: #f5f5f5;
       margin: 0;
-      padding: 0;
+      font-family: sans-serif;
+      background: #f3eadf;
+      color: #111;
     }
 
-    header {
-      background: #1f2937;
-      color: white;
-      padding: 16px;
-      text-align: center;
-      font-size: 22px;
-      font-weight: bold;
+    .app {
+      padding: 48px 22px 24px;
     }
 
-    .container {
-      padding: 12px;
+    h1 {
+      font-size: 40px;
+      margin: 0 0 36px;
+      font-weight: 900;
     }
 
-    .day-card {
-      background: white;
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-
-    .day-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 8px;
-    }
-
-    .notice {
-      padding: 10px;
-      border-radius: 8px;
-      margin-top: 8px;
-      color: white;
-      font-size: 16px;
-    }
-
-    .normal {
-      background: #6b7280;
-    }
-
-    .important {
-      background: #f59e0b;
-    }
-
-    .urgent {
-      background: #dc2626;
+    .tabs,
+    .week-nav,
+    .dates {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 18px;
     }
 
     button {
-      width: 100%;
-      margin-top: 12px;
-      padding: 12px;
       border: none;
-      border-radius: 10px;
-      background: #2563eb;
+      border-radius: 22px;
+      background: #ddd5cc;
+      color: #111;
+      font-size: 18px;
+      font-weight: 800;
+      padding: 16px 18px;
+    }
+
+    button.active {
+      background: #bd8b55;
       color: white;
-      font-size: 16px;
-      cursor: pointer;
     }
 
-    button:hover {
-      background: #1d4ed8;
+    .tabs button {
+      flex: 1;
+      min-height: 58px;
     }
 
-    .empty {
-      margin-top: 8px;
-      color: #666;
-      font-size: 15px;
+    .week-nav button {
+      flex: 1;
+    }
+
+    .dates {
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .dates button {
+      min-width: 72px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 28px;
+      padding: 24px 20px;
+      margin-top: 18px;
+    }
+
+    .row {
+      border-bottom: 1px solid #e8ddd2;
+      padding: 18px 0;
+    }
+
+    .row:last-child {
+      border-bottom: none;
+    }
+
+    .row h2 {
+      font-size: 28px;
+      margin: 0 0 10px;
+      font-weight: 900;
+    }
+
+    .row p {
+      font-size: 22px;
+      margin: 0 0 14px;
+      font-weight: 800;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .actions button {
+      min-width: 64px;
+      padding: 12px 16px;
+    }
+
+    .camera {
+      min-width: 64px;
     }
   </style>
 </head>
 
 <body>
+  <div class="app">
+    <h1>出荷管理</h1>
 
-  <header>
-    出荷注意（今週）
-  </header>
+    <div class="tabs">
+      <button>注意事項</button>
+      <button class="active">出荷予定</button>
+      <button>当日出荷</button>
+      <button>管理</button>
+    </div>
 
-  <div class="container" id="app"></div>
+    <div class="week-nav">
+      <button>前週</button>
+      <button>🗓️</button>
+      <button>次週</button>
+    </div>
 
-  <script>
-    const data = [
-      {
-        date: "5/6（水）",
-        today: true,
-        notices: [
-          {
-            level: "urgent",
-            text: "大型ソファ出荷 / 2人作業必須"
-          },
-          {
-            level: "important",
-            text: "搬入口B使用（午前便）"
-          }
-        ]
-      },
+    <div class="dates">
+      <button class="active">5/4</button>
+      <button>5/5</button>
+      <button>5/6</button>
+      <button>5/7</button>
+      <button>5/8</button>
+      <button>5/9</button>
+      <button>5/10</button>
+    </div>
 
-      {
-        date: "5/7（木）",
-        notices: [
-          {
-            level: "important",
-            text: "ガラス製品あり"
-          }
-        ]
-      },
+    <div class="card">
+      <div class="row">
+        <h2>佐川急便</h2>
+        <p>2F</p>
+        <div class="actions">
+          <button class="active">あり</button>
+          <button>なし</button>
+          <button class="camera">📷</button>
+        </div>
+      </div>
 
-      {
-        date: "5/8（金）",
-        notices: [
-          {
-            level: "normal",
-            text: "通常出荷"
-          }
-        ]
-      },
+      <div class="row">
+        <h2>福山通運</h2>
+        <p>2F</p>
+        <div class="actions">
+          <button class="active">あり</button>
+          <button>なし</button>
+          <button class="camera">📷</button>
+        </div>
+      </div>
 
-      {
-        date: "5/9（土）",
-        notices: []
-      },
+      <div class="row">
+        <h2>梱包場</h2>
+        <div class="actions">
+          <button class="active">あり</button>
+          <button>なし</button>
+          <button class="camera">📷</button>
+        </div>
+      </div>
 
-      {
-        date: "5/10（日）",
-        notices: []
-      },
-
-      {
-        date: "5/11（月）",
-        notices: [
-          {
-            level: "important",
-            text: "大型テーブル出荷"
-          }
-        ]
-      },
-
-      {
-        date: "5/12（火）",
-        notices: [
-          {
-            level: "urgent",
-            text: "配送時間変更あり"
-          }
-        ]
-      }
-    ];
-
-    const app = document.getElementById("app");
-
-    data.forEach(day => {
-
-      const card = document.createElement("div");
-      card.className = "day-card";
-
-      const title = document.createElement("div");
-      title.className = "day-title";
-
-      title.innerText = day.today
-        ? `${day.date} 【今日】`
-        : day.date;
-
-      card.appendChild(title);
-
-      if (day.notices.length === 0) {
-
-        const empty = document.createElement("div");
-        empty.className = "empty";
-        empty.innerText = "注意事項なし";
-
-        card.appendChild(empty);
-
-      } else {
-
-        day.notices.forEach(noticeData => {
-
-          const notice = document.createElement("div");
-
-          notice.className =
-            `notice ${noticeData.level}`;
-
-          notice.innerText =
-            noticeData.text;
-
-          card.appendChild(notice);
-
-        });
-
-      }
-
-      const button = document.createElement("button");
-
-      button.innerText = "確認しました";
-
-      button.onclick = () => {
-        alert(`${day.date} を確認しました`);
-      };
-
-      card.appendChild(button);
-
-      app.appendChild(card);
-
-    });
-  </script>
-
+      <div class="row">
+        <h2>MJ倉庫</h2>
+        <div class="actions">
+          <button>あり</button>
+          <button class="active">なし</button>
+          <button class="camera">📷</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
