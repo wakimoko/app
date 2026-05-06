@@ -18,18 +18,19 @@ body{
 .app{
   max-width:430px;
   margin:auto;
-  padding:22px 20px 40px;
+  padding:24px 22px 40px;
 }
 
 h1{
-  font-size:30px;
+  font-size:34px;
   font-weight:900;
-  margin:18px 0 24px;
+  margin:18px 0 28px;
 }
 
 button{
   border:none;
   cursor:pointer;
+  font-family:inherit;
 }
 
 .active{
@@ -38,30 +39,29 @@ button{
 }
 
 .top-tabs{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
+  display:flex;
+  flex-wrap:wrap;
   gap:10px;
-  margin-bottom:14px;
+  margin-bottom:20px;
 }
 
 .top-tabs button{
-  height:54px;
-  border-radius:20px;
   background:#e6ddd4;
-  font-size:14px;
+  border-radius:18px;
+  padding:14px 18px;
+  font-size:15px;
   font-weight:900;
-  white-space:nowrap;
 }
 
 .week-nav{
   display:grid;
-  grid-template-columns:1fr .7fr 1fr;
+  grid-template-columns:1fr .75fr 1fr;
   gap:10px;
   margin-bottom:12px;
 }
 
 .week-nav button{
-  height:48px;
+  height:44px;
   border-radius:18px;
   background:#e6ddd4;
   font-size:15px;
@@ -72,21 +72,59 @@ button{
   display:grid;
   grid-template-columns:repeat(5,1fr);
   gap:10px;
-  margin-bottom:16px;
+  margin-bottom:18px;
 }
 
 .dates button{
-  height:48px;
+  height:44px;
   border-radius:18px;
   background:#e6ddd4;
-  font-size:16px;
+  font-size:17px;
   font-weight:900;
 }
 
 .card{
   background:#fff;
   border-radius:24px;
-  padding:14px 16px;
+  padding:24px 22px;
+  margin-bottom:14px;
+  position:relative;
+}
+
+.notice-title{
+  font-size:24px;
+  font-weight:900;
+  color:#111;
+}
+
+.notice-title.important{
+  color:red;
+}
+
+.notice-content{
+  margin-top:18px;
+  font-size:18px;
+  line-height:1.6;
+  white-space:pre-wrap;
+}
+
+.card-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:12px;
+  margin-top:28px;
+}
+
+.icon-btn{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:#e6ddd4;
+  font-size:18px;
+}
+
+.delete-btn{
+  background:#f3d6d6;
 }
 
 .ship-row{
@@ -187,30 +225,6 @@ textarea{
   margin-top:12px;
 }
 
-.delete-btn{
-  margin-top:10px;
-  background:#f2d6d6;
-  padding:8px 12px;
-  border-radius:10px;
-  font-weight:800;
-}
-
-.notice-title{
-  font-size:22px;
-  font-weight:900;
-}
-
-.notice-content{
-  margin-top:8px;
-  font-size:15px;
-  font-weight:700;
-  white-space:pre-wrap;
-}
-
-.important{
-  color:red;
-}
-
 .modal{
   display:none;
   position:fixed;
@@ -236,8 +250,8 @@ textarea{
 <h1>出荷管理</h1>
 
 <div class="top-tabs">
-  <button onclick="selectTab(this,'notice')">注意事項</button>
-  <button class="active" onclick="selectTab(this,'ship')">出荷予定</button>
+  <button class="active" onclick="selectTab(this,'notice')">注意事項</button>
+  <button onclick="selectTab(this,'ship')">出荷予定</button>
   <button onclick="selectTab(this,'today')">当日出荷</button>
   <button onclick="selectTab(this,'manage')">管理</button>
 </div>
@@ -261,7 +275,7 @@ textarea{
 </div>
 
 <script>
-let currentTab = "ship";
+let currentTab = "notice";
 let weekStart = new Date(2026, 4, 4);
 let currentDate = "";
 const photos = {};
@@ -282,13 +296,11 @@ function renderDates(){
 
   dates.style.display = "grid";
   weekNav.style.display = "grid";
-
   dates.innerHTML = "";
 
   for(let i=0; i<5; i++){
     const d = new Date(weekStart);
     d.setDate(weekStart.getDate()+i);
-
     const text = formatDate(d);
 
     if(!currentDate && i === 0){
@@ -320,7 +332,6 @@ function selectTab(button, tab){
   });
 
   button.classList.add("active");
-
   renderDates();
   renderContent();
 }
@@ -359,11 +370,9 @@ function changeDate(value){
 
 function toggleStatus(button){
   const group = button.parentElement;
-
   group.querySelectorAll("button").forEach(btn=>{
     btn.classList.remove("active");
   });
-
   button.classList.add("active");
 }
 
@@ -443,6 +452,58 @@ function deleteNotice(id){
   renderContent();
 }
 
+function editNotice(id){
+  const item = getNotices().find(x=>x.id === id);
+  if(!item) return;
+
+  currentTab = "manage";
+
+  document.querySelectorAll(".top-tabs button").forEach(btn=>btn.classList.remove("active"));
+  document.querySelectorAll(".top-tabs button")[3].classList.add("active");
+
+  renderDates();
+
+  document.getElementById("content").innerHTML = `
+    <div class="card">
+      <div class="ship-company">管理</div>
+      <div class="ship-place">注意事項を編集</div>
+
+      <input type="date" id="manageDate">
+      <input id="noticeTitle" placeholder="タイトル" value="${item.title}">
+      <textarea id="noticeContent" placeholder="内容">${item.content}</textarea>
+
+      <select id="noticeStatus">
+        <option value="通常" ${item.status === "通常" ? "selected" : ""}>通常</option>
+        <option value="重要" ${item.status === "重要" ? "selected" : ""}>重要</option>
+      </select>
+
+      <button class="save-btn" onclick="saveEditNotice(${id})">保存</button>
+    </div>
+  `;
+}
+
+function saveEditNotice(id){
+  const items = getNotices();
+  const item = items.find(x=>x.id === id);
+  if(!item) return;
+
+  item.title = document.getElementById("noticeTitle").value.trim();
+  item.content = document.getElementById("noticeContent").value.trim();
+  item.status = document.getElementById("noticeStatus").value;
+  item.date = formatDate(new Date(document.getElementById("manageDate").value));
+
+  saveNotices(items);
+
+  currentDate = item.date;
+  currentTab = "notice";
+
+  document.querySelectorAll(".top-tabs button").forEach(btn=>btn.classList.remove("active"));
+  document.querySelectorAll(".top-tabs button")[0].classList.add("active");
+
+  renderDates();
+  renderContent();
+}
+
 function row(name, floor, key, yesActive){
   return `
     <div class="ship-row">
@@ -492,28 +553,27 @@ function renderContent(){
     if(items.length === 0){
       content.innerHTML = `
         <div class="card">
-          <div class="ship-row">
-            <div class="ship-company">注意事項</div>
-            <div class="ship-place">この日の注意事項はありません</div>
-          </div>
+          <div class="notice-title">注意事項なし</div>
+          <div class="notice-content">この日の注意事項はありません</div>
         </div>
       `;
       return;
     }
 
-    content.innerHTML = `
+    content.innerHTML = items.map(item=>`
       <div class="card">
-        ${items.map(item=>`
-          <div class="ship-row">
-            <div class="notice-title ${item.status === "重要" ? "important" : ""}">
-              ${item.title}
-            </div>
-            <div class="notice-content">${item.content}</div>
-            <button class="delete-btn" onclick="deleteNotice(${item.id})">削除</button>
-          </div>
-        `).join("")}
+        <div class="notice-title ${item.status === "重要" ? "important" : ""}">
+          ${item.title}
+        </div>
+
+        <div class="notice-content">${item.content}</div>
+
+        <div class="card-actions">
+          <button class="icon-btn" onclick="editNotice(${item.id})">✏️</button>
+          <button class="icon-btn delete-btn" onclick="deleteNotice(${item.id})">🗑️</button>
+        </div>
       </div>
-    `;
+    `).join("");
     return;
   }
 
@@ -536,7 +596,6 @@ function renderContent(){
         <div class="ship-place">注意事項を追加</div>
 
         <input type="date" id="manageDate">
-
         <input id="noticeTitle" placeholder="タイトル">
         <textarea id="noticeContent" placeholder="内容"></textarea>
 
@@ -552,8 +611,6 @@ function renderContent(){
     const input = document.getElementById("manageDate");
     const today = new Date();
     input.value = today.toISOString().split("T")[0];
-
-    return;
   }
 }
 
