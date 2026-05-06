@@ -3,138 +3,125 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <title>出荷管理</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-* {
-  box-sizing: border-box;
+*{
+  box-sizing:border-box;
 }
 
-body {
-  margin: 0;
-  font-family: sans-serif;
-  background: #f3eadf;
-  color: #111;
+body{
+  margin:0;
+  font-family:sans-serif;
+  background:#f3eadf;
+  color:#111;
 }
 
-.app {
-  max-width: 430px;
-  margin: 0 auto;
-  padding: 18px 14px;
+.app{
+  max-width:430px;
+  margin:0 auto;
+  padding:44px 22px 24px;
 }
 
-h1 {
-  font-size: 24px;
-  margin: 0 0 14px;
-  font-weight: 900;
+h1{
+  font-size:34px;
+  margin:0 0 30px;
+  font-weight:900;
 }
 
-button {
-  border: none;
-  border-radius: 14px;
-  background: #ded6cd;
-  color: #111;
-  font-size: 13px;
-  font-weight: 800;
-  padding: 8px 6px;
-  cursor: pointer;
+button{
+  border:none;
+  border-radius:22px;
+  background:#ded6cd;
+  color:#111;
+  font-size:16px;
+  font-weight:900;
+  padding:12px 10px;
+  cursor:pointer;
 }
 
-button.active {
-  background: #bd8b55;
-  color: white;
+button.active{
+  background:#bd8b55;
+  color:white;
 }
 
 .tabs,
 .week-nav,
-.dates,
-.actions {
-  display: flex;
-  gap: 6px;
+.dates{
+  display:flex;
+  gap:12px;
 }
 
-.tabs {
-  margin-bottom: 10px;
+.tabs{
+  margin-bottom:18px;
 }
 
-.tabs button {
-  flex: 1;
-  height: 38px;
-  font-size: 12px;
+.tabs button{
+  flex:1;
+  height:58px;
 }
 
-.week-nav {
-  margin-bottom: 8px;
+.week-nav{
+  margin-bottom:14px;
 }
 
-.week-nav button {
-  flex: 1;
-  height: 36px;
+.week-nav button{
+  flex:1;
+  height:56px;
 }
 
-.dates {
-  margin-bottom: 10px;
+.dates{
+  margin-bottom:18px;
 }
 
-.dates button {
-  flex: 1;
-  height: 36px;
+.dates button{
+  flex:1;
+  height:56px;
 }
 
-.card {
-  background: white;
-  border-radius: 20px;
-  padding: 10px 14px;
+.card{
+  background:white;
+  border-radius:30px;
+  padding:18px 22px;
 }
 
-.row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  border-bottom: 1px solid #e8ddd2;
-  padding: 10px 0;
+.row{
+  border-bottom:1px solid #e8ddd2;
+  padding:26px 0;
 }
 
-.row:last-child {
-  border-bottom: none;
+.row:last-child{
+  border-bottom:none;
 }
 
-.info h2 {
-  font-size: 18px;
-  margin: 0 0 2px;
-  font-weight: 900;
+.info h2{
+  font-size:28px;
+  margin:0 0 10px;
+  font-weight:900;
 }
 
-.info p {
-  font-size: 14px;
-  margin: 0;
-  font-weight: 800;
+.info p{
+  font-size:22px;
+  margin:0;
+  font-weight:800;
 }
 
-.actions {
-  flex-shrink: 0;
+.actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:12px;
+  margin-top:18px;
 }
 
-.actions button {
-  min-width: 42px;
-  height: 34px;
-  font-size: 12px;
-  padding: 6px;
+.actions button{
+  min-width:72px;
+  height:52px;
 }
 
-.camera {
-  min-width: 38px !important;
-}
-
-.photo-area img {
-  width: 42px;
-  height: 42px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-left: 6px;
+.camera{
+  min-width:64px !important;
+  font-size:22px;
 }
 </style>
 </head>
@@ -146,86 +133,84 @@ button.active {
   <h1>出荷管理</h1>
 
   <div class="tabs">
-    <button onclick="selectTab(this)">注意事項</button>
-    <button class="active" onclick="selectTab(this)">出荷予定</button>
-    <button onclick="selectTab(this)">当日出荷</button>
-    <button onclick="selectTab(this)">管理</button>
+    <button>注意事項</button>
+    <button class="active">出荷予定</button>
+    <button>当日出荷</button>
+    <button>管理</button>
   </div>
 
   <div class="week-nav">
-    <button onclick="alert('前週')">前週</button>
-    <button onclick="alert('日付選択')">🗓️</button>
-    <button onclick="alert('次週')">次週</button>
+    <button>前週</button>
+    <button>🗓️</button>
+    <button>次週</button>
   </div>
 
   <div class="dates">
-    <button class="active" onclick="selectDate(this)">5/4</button>
-    <button onclick="selectDate(this)">5/5</button>
-    <button onclick="selectDate(this)">5/6</button>
-    <button onclick="selectDate(this)">5/7</button>
-    <button onclick="selectDate(this)">5/8</button>
+    <button class="active">5/4</button>
+    <button>5/5</button>
+    <button>5/6</button>
+    <button>5/7</button>
+    <button>5/8</button>
   </div>
 
   <div class="card">
 
     <div class="row">
+
       <div class="info">
         <h2>佐川急便</h2>
         <p>2F</p>
       </div>
 
       <div class="actions">
-        <button class="active" onclick="toggleYesNo(this)">あり</button>
-        <button onclick="toggleYesNo(this)">なし</button>
-        <button class="camera" onclick="selectPhoto('sagawa')">📷</button>
+        <button class="active">あり</button>
+        <button>なし</button>
+        <button class="camera">📷</button>
       </div>
 
-      <div class="photo-area" id="photo-sagawa"></div>
     </div>
 
     <div class="row">
+
       <div class="info">
         <h2>福山通運</h2>
         <p>2F</p>
       </div>
 
       <div class="actions">
-        <button class="active" onclick="toggleYesNo(this)">あり</button>
-        <button onclick="toggleYesNo(this)">なし</button>
-        <button class="camera" onclick="selectPhoto('fukuyama')">📷</button>
+        <button class="active">あり</button>
+        <button>なし</button>
+        <button class="camera">📷</button>
       </div>
 
-      <div class="photo-area" id="photo-fukuyama"></div>
     </div>
 
     <div class="row">
+
       <div class="info">
         <h2>梱包場</h2>
-        <p>-</p>
       </div>
 
       <div class="actions">
-        <button class="active" onclick="toggleYesNo(this)">あり</button>
-        <button onclick="toggleYesNo(this)">なし</button>
-        <button class="camera" onclick="selectPhoto('packing')">📷</button>
+        <button class="active">あり</button>
+        <button>なし</button>
+        <button class="camera">📷</button>
       </div>
 
-      <div class="photo-area" id="photo-packing"></div>
     </div>
 
     <div class="row">
+
       <div class="info">
         <h2>MJ倉庫</h2>
-        <p>-</p>
       </div>
 
       <div class="actions">
-        <button onclick="toggleYesNo(this)">あり</button>
-        <button class="active" onclick="toggleYesNo(this)">なし</button>
-        <button class="camera" onclick="selectPhoto('mj')">📷</button>
+        <button>あり</button>
+        <button class="active">なし</button>
+        <button class="camera">📷</button>
       </div>
 
-      <div class="photo-area" id="photo-mj"></div>
     </div>
 
   </div>
@@ -233,203 +218,11 @@ button.active {
 </div>
 
 <input
-  id="cameraInput"
   type="file"
   accept="image/*"
   capture="environment"
   style="display:none;"
 >
-
-<script>
-
-const SUPABASE_URL = "あなたのSUPABASE_URL";
-const SUPABASE_KEY = "あなたのSUPABASE_ANON_KEY";
-
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-
-const currentDate = "2026-05-04";
-
-let selectedPlaceKey = null;
-
-function selectTab(button) {
-
-  document
-    .querySelectorAll(".tabs button")
-    .forEach(b => b.classList.remove("active"));
-
-  button.classList.add("active");
-}
-
-function selectDate(button) {
-
-  document
-    .querySelectorAll(".dates button")
-    .forEach(b => b.classList.remove("active"));
-
-  button.classList.add("active");
-}
-
-function toggleYesNo(button) {
-
-  const group = button.parentElement;
-
-  group
-    .querySelectorAll("button:not(.camera)")
-    .forEach(b => b.classList.remove("active"));
-
-  button.classList.add("active");
-}
-
-function selectPhoto(placeKey) {
-
-  selectedPlaceKey = placeKey;
-
-  document
-    .getElementById("cameraInput")
-    .click();
-}
-
-document
-  .getElementById("cameraInput")
-  .addEventListener(
-    "change",
-    async function(event) {
-
-      const file =
-        event.target.files[0];
-
-      if (!file || !selectedPlaceKey) return;
-
-      await uploadPhoto(
-        file,
-        currentDate,
-        selectedPlaceKey
-      );
-
-      event.target.value = "";
-
-    }
-  );
-
-async function uploadPhoto(
-  file,
-  date,
-  placeKey
-) {
-
-  try {
-
-    const fileName =
-      `${Date.now()}-${file.name}`;
-
-    const {
-      error: uploadError
-    } =
-      await supabaseClient.storage
-        .from("shipment-photos")
-        .upload(fileName, file);
-
-    if (uploadError) {
-
-      alert(
-        "写真アップロードエラー: " +
-        uploadError.message
-      );
-
-      return;
-    }
-
-    const { data } =
-      supabaseClient.storage
-        .from("shipment-photos")
-        .getPublicUrl(fileName);
-
-    const publicUrl =
-      data.publicUrl;
-
-    const {
-      error: insertError
-    } =
-      await supabaseClient
-        .from("shipping_photos")
-        .insert([
-          {
-            date: date,
-            place_key: placeKey,
-            photo_url: publicUrl
-          }
-        ]);
-
-    if (insertError) {
-
-      alert(
-        "DB保存エラー: " +
-        insertError.message
-      );
-
-      return;
-    }
-
-    showPhoto(
-      placeKey,
-      publicUrl
-    );
-
-  } catch (e) {
-
-    console.error(e);
-
-    alert("エラー");
-
-  }
-}
-
-async function loadPhotos(date) {
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("shipping_photos")
-      .select("*")
-      .eq("date", date);
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-
-  data.forEach(item => {
-
-    showPhoto(
-      item.place_key,
-      item.photo_url
-    );
-
-  });
-}
-
-function showPhoto(placeKey, url) {
-
-  const area =
-    document.getElementById(
-      `photo-${placeKey}`
-    );
-
-  if (!area) return;
-
-  area.innerHTML =
-    `<img src="${url}">`;
-}
-
-loadPhotos(currentDate);
-
-</script>
 
 </body>
 </html>
