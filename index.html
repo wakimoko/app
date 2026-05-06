@@ -3,10 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <title>出荷管理</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -35,6 +40,7 @@ button {
   font-size: 16px;
   font-weight: 900;
   padding: 12px 10px;
+  cursor: pointer;
 }
 
 button.active {
@@ -42,7 +48,10 @@ button.active {
   color: white;
 }
 
-.tabs, .week-nav, .dates, .actions {
+.tabs,
+.week-nav,
+.dates,
+.actions {
   display: flex;
   gap: 10px;
 }
@@ -54,7 +63,6 @@ button.active {
 .tabs button {
   flex: 1;
   height: 52px;
-  font-size: 15px;
 }
 
 .week-nav {
@@ -117,11 +125,21 @@ button.active {
 .camera {
   font-size: 18px;
 }
+
+.photo-area img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 14px;
+  margin-top: 12px;
+}
 </style>
 </head>
 
 <body>
+
 <div class="app">
+
   <h1>出荷管理</h1>
 
   <div class="tabs">
@@ -148,76 +166,191 @@ button.active {
   </div>
 
   <div class="card">
+
     <div class="row">
       <h2>佐川急便</h2>
       <p>2F</p>
+
       <div class="actions">
         <button class="active">あり</button>
         <button>なし</button>
-        <button class="camera">📷</button>
+        <button class="camera" onclick="selectPhoto('sagawa')">📷</button>
       </div>
+
+      <div class="photo-area" id="photo-sagawa"></div>
     </div>
 
     <div class="row">
       <h2>福山通運</h2>
       <p>2F</p>
+
       <div class="actions">
         <button class="active">あり</button>
         <button>なし</button>
-        <button class="camera">📷</button>
+        <button class="camera" onclick="selectPhoto('fukuyama')">📷</button>
       </div>
+
+      <div class="photo-area" id="photo-fukuyama"></div>
     </div>
 
     <div class="row">
       <h2>梱包場</h2>
+
       <div class="actions">
         <button class="active">あり</button>
         <button>なし</button>
-        <button class="camera">📷</button>
+        <button class="camera" onclick="selectPhoto('packing')">📷</button>
       </div>
+
+      <div class="photo-area" id="photo-packing"></div>
     </div>
 
-    <div class="row">
-      <h2>MJ倉庫</h2>
-      <div class="actions">
-        <button>あり</button>
-        <button class="active">なし</button>
-        <button class="camera">📷</button>
-      </div>
-    </div>
   </div>
+
 </div>
 
-<input id="cameraInput" type="file" accept="image/*" capture="environment" style="display:none;">
+<input
+  id="cameraInput"
+  type="file"
+  accept="image/*"
+  capture="environment"
+  style="display:none;"
+  onchange="handlePhotoSelected(event)"
+>
 
 <script>
-document.querySelectorAll(".tabs button").forEach(button => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
-    button.classList.add("active");
-  });
-});
 
-document.querySelectorAll(".dates button").forEach(button => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll(".dates button").forEach(b => b.classList.remove("active"));
-    button.classList.add("active");
-  });
-});
+const SUPABASE_URL = "あなたのSUPABASE_URL";
+const SUPABASE_KEY = "あなたのSUPABASE_ANON_KEY";
 
-document.querySelectorAll(".actions button:not(.camera)").forEach(button => {
-  button.addEventListener("click", () => {
-    const group = button.parentElement;
-    group.querySelectorAll("button:not(.camera)").forEach(b => b.classList.remove("active"));
-    button.classList.add("active");
-  });
-});
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
-document.querySelectorAll(".camera").forEach(button => {
-  button.addEventListener("click", () => {
-    document.getElementById("cameraInput").click();
+const currentDate = "2026-05-04";
+
+let selectedPlaceKey = null;
+
+function selectPhoto(placeKey) {
+  selectedPlaceKey = placeKey;
+  document.getElementById("cameraInput").click();
+}
+
+async function handlePhotoSelected(event) {
+
+  const file = event.target.files[0];
+
+  if (!file || !selectedPlaceKey) return;
+
+  await uploadPhoto(
+    file,
+    currentDate,
+    selectedPlaceKey
+  );
+
+  event.target.value = "";
+}
+
+async function uploadPhoto(file, date, placeKey) {
+
+  try {
+
+    const fileName =
+      `${Date.now()}-${file.name}`;
+
+    const { error: uploadError } =
+      await supabase.storage
+        .from("shipment-photos")
+        .upload(fileName, file);
+
+    if (uploadError) {
+      alert(
+        "写真アップロードエラー : " +
+        uploadError.message
+      );
+      return;
+    }
+
+    const { data } =
+      supabase.storage
+        .from("shipment-photos")
+        .getPublicUrl(fileName);
+
+    const publicUrl =
+      data.publicUrl;
+
+    const { error: insertError } =
+      await supabase
+        .from("shipping_photos")
+        .insert([
+          {
+            date: date,
+            place_key: placeKey,
+            photo_url: publicUrl
+          }
+        ]);
+
+    if (insertError) {
+      alert(
+        "DB保存エラー : " +
+        insertError.message
+      );
+      return;
+    }
+
+    showPhoto(
+      placeKey,
+      publicUrl
+    );
+
+  } catch (e) {
+
+    console.error(e);
+
+    alert("エラー");
+
+  }
+}
+
+async function loadPhotos(date) {
+
+  const { data, error } =
+    await supabase
+      .from("shipping_photos")
+      .select("*")
+      .eq("date", date);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  data.forEach(item => {
+    showPhoto(
+      item.place_key,
+      item.photo_url
+    );
   });
-});
+}
+
+function showPhoto(placeKey, url) {
+
+  const area =
+    document.getElementById(
+      `photo-${placeKey}`
+    );
+
+  if (!area) return;
+
+  area.innerHTML = `
+    <img src="${url}">
+  `;
+}
+
+loadPhotos(currentDate);
+
 </script>
+
 </body>
 </html>
