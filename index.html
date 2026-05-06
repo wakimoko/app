@@ -7,6 +7,7 @@
 <title>出荷管理</title>
 
 <style>
+
 body{
   margin:0;
   background:#e9e3d9;
@@ -15,13 +16,13 @@ body{
 }
 
 .container{
-  padding:24px 18px 40px;
+  padding:22px 18px 40px;
 }
 
 .title{
   font-size:64px;
   font-weight:900;
-  margin-bottom:24px;
+  margin-bottom:26px;
 }
 
 .top-buttons,
@@ -37,7 +38,7 @@ body{
   border:none;
   border-radius:28px;
   background:#ddd6cf;
-  padding:22px 0;
+  height:118px;
   font-size:22px;
   font-weight:700;
 }
@@ -68,11 +69,11 @@ body{
 .card{
   background:#f4f4f4;
   border-radius:34px;
-  padding:22px 18px;
+  padding:16px 18px;
 }
 
 .row{
-  padding:18px 0;
+  padding:20px 0;
   border-bottom:1px solid #ddd0c2;
 }
 
@@ -87,7 +88,15 @@ body{
 }
 
 .place-wrap{
+  width:38%;
   padding-left:8px;
+}
+
+.status-wrap{
+  width:58%;
+  display:flex;
+  justify-content:center;
+  gap:18px;
 }
 
 .place{
@@ -102,19 +111,15 @@ body{
   margin-top:4px;
 }
 
-.status-wrap{
-  display:flex;
-  gap:14px;
-}
-
 .status-btn{
   width:150px;
-  height:70px;
+  height:74px;
   border:none;
   border-radius:999px;
-  font-size:28px;
+  font-size:30px;
   font-weight:800;
   background:#e6dfd7;
+  color:#111;
 }
 
 .status-active{
@@ -125,7 +130,7 @@ body{
 .bottom-links{
   display:flex;
   justify-content:flex-end;
-  gap:26px;
+  gap:24px;
   margin-top:12px;
   padding-right:8px;
 }
@@ -172,6 +177,7 @@ body{
   font-size:18px;
   font-weight:700;
 }
+
 </style>
 </head>
 
@@ -189,6 +195,7 @@ body{
 </div>
 
 <div class="week-buttons">
+
   <button class="menu-btn">前週</button>
 
   <button class="calendar-btn" onclick="openCalendar()">🗓️</button>
@@ -201,6 +208,7 @@ body{
   >
 
   <button class="menu-btn">次週</button>
+
 </div>
 
 <div class="date-buttons">
@@ -231,11 +239,13 @@ body{
     </div>
 
     <div class="bottom-links">
-      <button class="link-btn" onclick="showPhoto('https://picsum.photos/600/400?1')">
+      <button class="link-btn"
+        onclick="showPhoto('https://picsum.photos/600/400?1')">
         写真表示
       </button>
 
-      <button class="link-btn" onclick="uploadPhoto()">
+      <button class="link-btn"
+        onclick="uploadPhoto()">
         添付
       </button>
     </div>
@@ -260,11 +270,13 @@ body{
     </div>
 
     <div class="bottom-links">
-      <button class="link-btn" onclick="showPhoto('https://picsum.photos/600/400?2')">
+      <button class="link-btn"
+        onclick="showPhoto('https://picsum.photos/600/400?2')">
         写真表示
       </button>
 
-      <button class="link-btn" onclick="uploadPhoto()">
+      <button class="link-btn"
+        onclick="uploadPhoto()">
         添付
       </button>
     </div>
@@ -288,11 +300,13 @@ body{
     </div>
 
     <div class="bottom-links">
-      <button class="link-btn" onclick="showPhoto('https://picsum.photos/600/400?3')">
+      <button class="link-btn"
+        onclick="showPhoto('https://picsum.photos/600/400?3')">
         写真表示
       </button>
 
-      <button class="link-btn" onclick="uploadPhoto()">
+      <button class="link-btn"
+        onclick="uploadPhoto()">
         添付
       </button>
     </div>
@@ -316,11 +330,13 @@ body{
     </div>
 
     <div class="bottom-links">
-      <button class="link-btn" onclick="showPhoto('https://picsum.photos/600/400?4')">
+      <button class="link-btn"
+        onclick="showPhoto('https://picsum.photos/600/400?4')">
         写真表示
       </button>
 
-      <button class="link-btn" onclick="uploadPhoto()">
+      <button class="link-btn"
+        onclick="uploadPhoto()">
         添付
       </button>
     </div>
@@ -331,7 +347,8 @@ body{
 
 </div>
 
-<!-- モーダル -->
+<!-- 写真モーダル -->
+
 <div class="modal" id="photoModal">
 
   <div class="modal-content">
@@ -349,6 +366,7 @@ body{
 <script>
 
 function openCalendar(){
+
   const input = document.getElementById("calendarInput");
 
   if(input.showPicker){
