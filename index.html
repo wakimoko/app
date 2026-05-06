@@ -6,7 +6,10 @@
 <title>出荷管理</title>
 
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
 
 body{
   margin:0;
@@ -31,7 +34,9 @@ button{
   font-size:15px;
 }
 
-button:active{transform:scale(.96)}
+button:active{
+  transform:scale(.96);
+}
 
 .active{
   background:#b88a5a!important;
@@ -45,7 +50,9 @@ button:active{transform:scale(.96)}
   margin-bottom:16px;
 }
 
-.top-tabs button{padding:14px 0}
+.top-tabs button{
+  padding:14px 0;
+}
 
 #weekControls{
   display:grid;
@@ -54,7 +61,10 @@ button:active{transform:scale(.96)}
   margin-bottom:10px;
 }
 
-#weekControls button{padding:12px 0;width:100%}
+#weekControls button{
+  padding:12px 0;
+  width:100%;
+}
 
 #dates{
   display:grid;
@@ -63,118 +73,23 @@ button:active{transform:scale(.96)}
   margin-bottom:16px;
 }
 
-#dates button{padding:14px 0;width:100%}
+#dates button{
+  padding:14px 0;
+  width:100%;
+}
 
 .card{
   background:#fff;
   border-radius:24px;
   padding:18px;
   margin-top:14px;
-  position:relative;
-  min-height:120px;
-}
-
-.item-title{
-  font-size:24px;
-  font-weight:900;
-  margin-bottom:12px;
-  text-align:left;
-}
-
-.item-content{
-  font-size:19px;
-  line-height:1.7;
-  white-space:pre-wrap;
-  text-align:left;
-  padding-bottom:48px;
-}
-
-.important{color:red}
-
-.icon-btn{
-  position:absolute;
-  bottom:14px;
-  width:38px;
-  height:38px;
-  border-radius:50%;
-  padding:0;
-  font-size:18px;
-}
-
-.edit-btn{
-  right:60px;
-  background:#e6ddd4;
-}
-
-.delete-btn{
-  right:14px;
-  background:#f3d6d6;
-}
-
-input,textarea,select{
-  width:100%;
-  padding:14px;
-  margin-top:14px;
-  border-radius:14px;
-  border:1px solid #ddd;
-  font-size:16px;
-}
-
-textarea{height:120px}
-
-.save-btn{
-  width:100%;
-  padding:15px 0;
-  margin-top:16px;
-  background:#b88a5a;
-  color:#fff;
-}
-
-.cancel-btn{
-  width:100%;
-  padding:15px 0;
-  margin-top:10px;
-}
-
-#calendarBox{
-  display:none;
-  background:#fff;
-  border-radius:22px;
-  padding:16px;
-  margin-bottom:16px;
-}
-
-.cal-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
-}
-
-.cal-head button{padding:8px 14px}
-
-.cal-grid{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:6px;
-  text-align:center;
-}
-
-.cal-grid div{
-  padding:8px 0;
-  font-weight:800;
-}
-
-.cal-grid button{
-  padding:10px 0;
-  border-radius:12px;
 }
 
 .ship-row{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:14px 0;
+  padding:18px 0;
   border-bottom:1px solid #eadfd5;
 }
 
@@ -185,7 +100,7 @@ textarea{height:120px}
 .ship-left{
   display:flex;
   flex-direction:column;
-  gap:6px;
+  gap:8px;
 }
 
 .ship-company{
@@ -195,7 +110,7 @@ textarea{height:120px}
 
 .ship-place{
   font-size:20px;
-  font-weight:900;
+  font-weight:800;
 }
 
 .ship-buttons{
@@ -219,13 +134,32 @@ textarea{height:120px}
   align-items:center;
   justify-content:center;
   font-size:18px;
+  font-weight:900;
 }
 
-.ship-photo{
-  width:54px;
-  height:54px;
-  object-fit:cover;
-  border-radius:12px;
+.photo-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  z-index:9999;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.photo-modal img{
+  max-width:100%;
+  max-height:80vh;
+  border-radius:16px;
+}
+
+.photo-close{
+  position:absolute;
+  top:20px;
+  right:20px;
+  padding:12px 16px;
+  background:#fff;
 }
 </style>
 </head>
@@ -242,9 +176,13 @@ textarea{height:120px}
 </div>
 
 <div id="weekControls"></div>
-<div id="calendarBox"></div>
 <div id="dates"></div>
 <div id="view"></div>
+
+<div id="photoModal" class="photo-modal" onclick="closePhotoModal()">
+  <button class="photo-close">閉じる</button>
+  <img id="modalPhoto" src="">
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -257,19 +195,7 @@ const client = supabase.createClient(
 let currentTab = "ship";
 let currentDate = "";
 let weekStart = getMonday(new Date());
-let calendarMonth = new Date();
-let editId = null;
-let lastItems = [];
 let photoMap = {};
-
-function esc(text){
-  return String(text ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
 
 function getMonday(date){
   const d = new Date(date);
@@ -291,7 +217,6 @@ function setTab(tab){
   });
 
   document.getElementById("tab_" + tab).classList.add("active");
-  document.getElementById("calendarBox").style.display = "none";
 
   renderDates();
   render();
@@ -301,23 +226,13 @@ function renderDates(){
   const controls = document.getElementById("weekControls");
   const dates = document.getElementById("dates");
 
-  controls.innerHTML = "";
-  dates.innerHTML = "";
-
-  if(currentTab === "manage"){
-    controls.style.display = "none";
-    dates.style.display = "none";
-    return;
-  }
-
-  controls.style.display = "grid";
-  dates.style.display = "grid";
-
   controls.innerHTML = `
     <button onclick="moveWeek(-1)">前週</button>
-    <button onclick="toggleCalendar()">🗓️</button>
+    <button>🗓️</button>
     <button onclick="moveWeek(1)">次週</button>
   `;
+
+  dates.innerHTML = "";
 
   for(let i=0;i<5;i++){
     const d = new Date(weekStart);
@@ -338,7 +253,6 @@ function renderDates(){
 
     btn.onclick = ()=>{
       currentDate = text;
-      document.getElementById("calendarBox").style.display = "none";
       renderDates();
       render();
     };
@@ -348,373 +262,178 @@ function renderDates(){
 }
 
 function moveWeek(num){
-  weekStart.setDate(weekStart.getDate() + 7*num);
+  weekStart.setDate(weekStart.getDate()+7*num);
   currentDate = "";
   renderDates();
   render();
 }
 
-function toggleCalendar(){
-  const box = document.getElementById("calendarBox");
-
-  if(box.style.display === "block"){
-    box.style.display = "none";
-    return;
-  }
-
-  box.style.display = "block";
-  renderCalendar();
-}
-
-function renderCalendar(){
-  const box = document.getElementById("calendarBox");
-  const year = calendarMonth.getFullYear();
-  const month = calendarMonth.getMonth();
-
-  const first = new Date(year, month, 1);
-  const last = new Date(year, month + 1, 0);
-
-  let html = `
-    <div class="cal-head">
-      <button onclick="changeMonth(-1)">前月</button>
-      <b>${year}/${month+1}</b>
-      <button onclick="changeMonth(1)">次月</button>
-    </div>
-    <div class="cal-grid">
-      <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
-  `;
-
-  for(let i=0;i<first.getDay();i++){
-    html += `<div></div>`;
-  }
-
-  for(let day=1;day<=last.getDate();day++){
-    html += `<button onclick="pickDate(${year},${month},${day})">${day}</button>`;
-  }
-
-  html += `</div>`;
-  box.innerHTML = html;
-}
-
-function changeMonth(num){
-  calendarMonth.setMonth(calendarMonth.getMonth()+num);
-  renderCalendar();
-}
-
-function pickDate(year,month,day){
-  const selected = new Date(year,month,day);
-
-  weekStart = getMonday(selected);
-  currentDate = formatDate(selected);
-
-  document.getElementById("calendarBox").style.display = "none";
-
-  renderDates();
+function setShipStatus(key,value){
+  localStorage.setItem(currentDate + "_" + key, value);
   render();
 }
 
-function shipRow(company, place, key){
-  const status = localStorage.getItem(currentDate + "_" + key) || "なし";
+function openPhotoModal(url){
+  document.getElementById("modalPhoto").src = url;
+  document.getElementById("photoModal").style.display = "flex";
+}
+
+function closePhotoModal(){
+  document.getElementById("photoModal").style.display = "none";
+  document.getElementById("modalPhoto").src = "";
+}
+
+function shipRow(company,place,key){
+  const status =
+    localStorage.getItem(currentDate + "_" + key) || "なし";
+
   const photo = photoMap[key];
 
   return `
     <div class="ship-row">
+
       <div class="ship-left">
         <div class="ship-company">${company}</div>
         <div class="ship-place">${place}</div>
       </div>
 
       <div class="ship-buttons">
-        <button class="${status === "あり" ? "active" : ""}"
-          onclick="setShipStatus('${key}','あり')">あり</button>
 
-        <button class="${status === "なし" ? "active" : ""}"
-          onclick="setShipStatus('${key}','なし')">なし</button>
+        <button
+          class="${status === "あり" ? "active" : ""}"
+          onclick="setShipStatus('${key}','あり')">
+          あり
+        </button>
 
-        <label class="photo-btn">
-          ${photo ? `<img src="${photo}" class="ship-photo">` : "📷"}
-          <input type="file" accept="image/*" hidden onchange="savePhoto(event,'${key}')">
-        </label>
+        <button
+          class="${status === "なし" ? "active" : ""}"
+          onclick="setShipStatus('${key}','なし')">
+          なし
+        </button>
+
+        ${
+          photo
+          ?
+          `
+          <div
+            class="photo-btn"
+            onclick="openPhotoModal('${photo}')">
+            📷
+          </div>
+          `
+          :
+          `
+          <label class="photo-btn">
+            📷
+            <input
+              type="file"
+              accept="image/*"
+              hidden
+              onchange="savePhoto(event,'${key}')">
+          </label>
+          `
+        }
+
       </div>
+
     </div>
   `;
 }
 
-function setShipStatus(key, value){
-  localStorage.setItem(currentDate + "_" + key, value);
-  render();
-}
+async function savePhoto(event,key){
 
-async function savePhoto(event, key){
   const file = event.target.files[0];
+
   if(!file) return;
 
-  const fileName = `${currentDate}_${key}_${Date.now()}_${file.name}`;
+  const fileName =
+    `${currentDate}_${key}_${Date.now()}_${file.name}`;
 
-  const { error } = await client.storage
-    .from("shipment-photos")
-    .upload(fileName, file);
+  const { error } =
+    await client.storage
+      .from("shipment-photos")
+      .upload(fileName,file);
 
   if(error){
     alert("写真アップロードエラー：" + error.message);
     return;
   }
 
-  const { data } = client.storage
-    .from("shipment-photos")
-    .getPublicUrl(fileName);
+  const { data } =
+    client.storage
+      .from("shipment-photos")
+      .getPublicUrl(fileName);
 
   const photoUrl = data.publicUrl;
 
-  const { data: exists, error: selectError } = await client
-    .from("shipping_photos")
-    .select("id")
-    .eq("date", currentDate)
-    .eq("place_key", key)
-    .maybeSingle();
-
-  if(selectError){
-    alert("写真確認エラー：" + selectError.message);
-    return;
-  }
+  const { data: exists } =
+    await client
+      .from("shipping_photos")
+      .select("id")
+      .eq("date", currentDate)
+      .eq("place_key", key)
+      .maybeSingle();
 
   if(exists){
-    const { error: updateError } = await client
+    await client
       .from("shipping_photos")
       .update({ photo_url: photoUrl })
       .eq("id", exists.id);
-
-    if(updateError){
-      alert("写真更新エラー：" + updateError.message);
-      return;
-    }
   }else{
-    const { error: insertError } = await client
+    await client
       .from("shipping_photos")
       .insert({
         date: currentDate,
         place_key: key,
         photo_url: photoUrl
       });
-
-    if(insertError){
-      alert("写真保存エラー：" + insertError.message);
-      return;
-    }
   }
 
   photoMap[key] = photoUrl;
+
   render();
 }
 
 async function render(){
-  const view = document.getElementById("view");
-  view.innerHTML = "";
 
-  if(currentTab === "ship"){
-    const { data } = await client
+  const view = document.getElementById("view");
+
+  if(currentTab !== "ship"){
+    view.innerHTML = `
+      <div class="card">
+        開発中
+      </div>
+    `;
+    return;
+  }
+
+  const { data } =
+    await client
       .from("shipping_photos")
       .select("*")
       .eq("date", currentDate);
 
-    photoMap = {};
+  photoMap = {};
 
-    if(data){
-      data.forEach(item=>{
-        photoMap[item.place_key] = item.photo_url;
-      });
-    }
-
-    view.innerHTML = `
-      <div class="card">
-        ${shipRow("佐川急便", "2F", "sagawa_2f")}
-        ${shipRow("福山通運", "2F", "fukuyama_2f")}
-        ${shipRow("梱包場", "-", "packing")}
-        ${shipRow("MJ倉庫", "-", "mj")}
-      </div>
-    `;
-    return;
-  }
-
-  if(currentTab === "today"){
-    view.innerHTML = `
-      <div class="card">
-        <div class="item-title">当日出荷</div>
-        <div class="item-content">本日の出荷内容を確認してください。</div>
-      </div>
-    `;
-    return;
-  }
-
-  if(currentTab === "notice"){
-    const {data,error} = await client
-      .from("shipments")
-      .select("*")
-      .eq("date",currentDate)
-      .eq("category","notice")
-      .order("id",{ascending:false});
-
-    if(error){
-      view.innerHTML = `<div class="card">${esc(error.message)}</div>`;
-      return;
-    }
-
-    if(!data || data.length === 0){
-      view.innerHTML = `<div class="card">データなし</div>`;
-      return;
-    }
-
-    lastItems = data;
-
+  if(data){
     data.forEach(item=>{
-      view.innerHTML += `
-        <div class="card">
-          <div class="item-title ${item.status === "重要" ? "important" : ""}">
-            ${esc(item.title)}
-          </div>
-
-          <div class="item-content">${esc(item.content)}</div>
-
-          <button class="icon-btn edit-btn" onclick="startEditById(${item.id})">✏️</button>
-          <button class="icon-btn delete-btn" onclick="deleteItem(${item.id})">🗑️</button>
-        </div>
-      `;
+      photoMap[item.place_key] = item.photo_url;
     });
-
-    return;
   }
 
-  if(currentTab === "manage"){
-    view.innerHTML = `
-      <div class="card">
-        <select id="dateInput"></select>
+  view.innerHTML = `
+    <div class="card">
 
-        <input id="title" placeholder="タイトル">
+      ${shipRow("佐川急便","2F","sagawa_2f")}
 
-        <textarea id="content" placeholder="内容"></textarea>
+      ${shipRow("福山通運","2F","fukuyama_2f")}
 
-        <select id="status">
-          <option value="通常">通常</option>
-          <option value="重要">重要</option>
-        </select>
+      ${shipRow("梱包場","-","packing")}
 
-        <button class="save-btn" onclick="${editId ? "saveEdit()" : "addData()"}">
-          ${editId ? "保存" : "追加"}
-        </button>
+      ${shipRow("MJ倉庫","-","mj")}
 
-        ${editId ? `<button class="cancel-btn" onclick="cancelEdit()">キャンセル</button>` : ""}
-      </div>
-    `;
-
-    const select = document.getElementById("dateInput");
-
-    for(let i=0;i<5;i++){
-      const d = new Date(weekStart);
-      d.setDate(weekStart.getDate()+i);
-
-      const text = formatDate(d);
-      select.innerHTML += `<option>${text}</option>`;
-    }
-
-    select.value = currentDate;
-  }
-}
-
-async function addData(){
-  const title = document.getElementById("title").value.trim();
-  const content = document.getElementById("content").value.trim();
-  const status = document.getElementById("status").value;
-  const date = document.getElementById("dateInput").value;
-
-  if(!title || !content){
-    alert("タイトルと内容を入力してください");
-    return;
-  }
-
-  const {error} = await client
-    .from("shipments")
-    .insert({
-      date,
-      category:"notice",
-      title,
-      content,
-      status
-    });
-
-  if(error){
-    alert(error.message);
-    return;
-  }
-
-  currentDate = date;
-  setTab("notice");
-}
-
-function startEditById(id){
-  const item = lastItems.find(x => x.id === id);
-  if(!item) return;
-
-  editId = id;
-  setTab("manage");
-
-  setTimeout(()=>{
-    document.getElementById("dateInput").value = item.date || currentDate;
-    document.getElementById("title").value = item.title || "";
-    document.getElementById("content").value = item.content || "";
-    document.getElementById("status").value = item.status || "通常";
-  },100);
-}
-
-async function saveEdit(){
-  const title = document.getElementById("title").value.trim();
-  const content = document.getElementById("content").value.trim();
-  const status = document.getElementById("status").value;
-  const date = document.getElementById("dateInput").value;
-
-  if(!title || !content){
-    alert("タイトルと内容を入力してください");
-    return;
-  }
-
-  const {error} = await client
-    .from("shipments")
-    .update({
-      date,
-      title,
-      content,
-      status
-    })
-    .eq("id",editId);
-
-  if(error){
-    alert(error.message);
-    return;
-  }
-
-  editId = null;
-  currentDate = date;
-  setTab("notice");
-}
-
-function cancelEdit(){
-  editId = null;
-  setTab("notice");
-}
-
-async function deleteItem(id){
-  if(!confirm("削除しますか？")) return;
-
-  const {error} = await client
-    .from("shipments")
-    .delete()
-    .eq("id",id);
-
-  if(error){
-    alert(error.message);
-    return;
-  }
-
-  render();
+    </div>
+  `;
 }
 
 setTab("ship");
