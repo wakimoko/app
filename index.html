@@ -3,13 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>出荷注意アプリ</title>
+
+  <title>出荷注意（今週）</title>
 
   <style>
     body {
       font-family: sans-serif;
       background: #f5f5f5;
       margin: 0;
+      padding: 0;
     }
 
     header {
@@ -68,12 +70,26 @@
       background: #2563eb;
       color: white;
       font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .empty {
+      margin-top: 8px;
+      color: #666;
+      font-size: 15px;
     }
   </style>
 </head>
 
 <body>
-  <header>出荷注意（今週）</header>
+
+  <header>
+    出荷注意（今週）
+  </header>
 
   <div class="container" id="app"></div>
 
@@ -83,73 +99,124 @@
         date: "5/6（水）",
         today: true,
         notices: [
-          { level: "urgent", text: "大型ソファ出荷 / 2人作業必須" },
-          { level: "important", text: "搬入口B使用（午前便）" }
+          {
+            level: "urgent",
+            text: "大型ソファ出荷 / 2人作業必須"
+          },
+          {
+            level: "important",
+            text: "搬入口B使用（午前便）"
+          }
         ]
       },
+
       {
         date: "5/7（木）",
         notices: [
-          { level: "important", text: "ガラス製品あり" }
+          {
+            level: "important",
+            text: "ガラス製品あり"
+          }
         ]
       },
+
       {
         date: "5/8（金）",
         notices: [
-          { level: "normal", text: "通常出荷" }
+          {
+            level: "normal",
+            text: "通常出荷"
+          }
         ]
       },
+
       {
         date: "5/9（土）",
         notices: []
       },
+
       {
         date: "5/10（日）",
         notices: []
       },
+
       {
         date: "5/11（月）",
-        notices: []
+        notices: [
+          {
+            level: "important",
+            text: "大型テーブル出荷"
+          }
+        ]
       },
+
       {
         date: "5/12（火）",
-        notices: []
+        notices: [
+          {
+            level: "urgent",
+            text: "配送時間変更あり"
+          }
+        ]
       }
     ];
 
     const app = document.getElementById("app");
 
     data.forEach(day => {
+
       const card = document.createElement("div");
       card.className = "day-card";
 
       const title = document.createElement("div");
       title.className = "day-title";
-      title.innerText = day.today ? `${day.date}【今日】` : day.date;
+
+      title.innerText = day.today
+        ? `${day.date} 【今日】`
+        : day.date;
+
       card.appendChild(title);
 
       if (day.notices.length === 0) {
+
         const empty = document.createElement("div");
+        empty.className = "empty";
         empty.innerText = "注意事項なし";
+
         card.appendChild(empty);
+
+      } else {
+
+        day.notices.forEach(noticeData => {
+
+          const notice = document.createElement("div");
+
+          notice.className =
+            `notice ${noticeData.level}`;
+
+          notice.innerText =
+            noticeData.text;
+
+          card.appendChild(notice);
+
+        });
+
       }
 
-      day.notices.forEach(n => {
-        const notice = document.createElement("div");
-        notice.className = `notice ${n.level}`;
-        notice.innerText = n.text;
-        card.appendChild(notice);
-      });
-
       const button = document.createElement("button");
+
       button.innerText = "確認しました";
+
       button.onclick = () => {
         alert(`${day.date} を確認しました`);
       };
 
       card.appendChild(button);
+
       app.appendChild(card);
+
     });
   </script>
+
 </body>
 </html>
