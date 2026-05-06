@@ -6,7 +6,10 @@
 <title>出荷管理</title>
 
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
 
 body{
   margin:0;
@@ -21,17 +24,23 @@ body{
   padding:10px 16px 80px;
 }
 
+/* タイトル */
+
 h1{
   font-size:38px;
   font-weight:900;
   margin:8px 0 20px;
 }
 
+/* ボタン共通 */
+
 button{
   border:none;
   cursor:pointer;
   font-family:inherit;
 }
+
+/* 上メニュー */
 
 .top-tabs{
   display:grid;
@@ -50,11 +59,12 @@ button{
   line-height:1.15;
 }
 
-.top-tabs .active,
-.date-row .active{
+.top-tabs .active{
   background:#c99657;
   color:#fff;
 }
+
+/* 前週次週 */
 
 .week-row{
   display:grid;
@@ -72,6 +82,8 @@ button{
   font-weight:900;
 }
 
+/* 日付 */
+
 .date-row{
   display:grid;
   grid-template-columns:repeat(5,1fr);
@@ -88,51 +100,67 @@ button{
   font-weight:900;
 }
 
+.date-row .active{
+  background:#c99657;
+  color:#fff;
+}
+
+/* カード */
+
 .card{
   background:#fff;
-  border-radius:24px;
-  padding:24px 22px 58px;
+  border-radius:22px;
+  padding:18px 18px 52px;
   position:relative;
-  min-height:230px;
+  min-height:170px;
 }
 
 .notice-title{
-  font-size:28px;
+  font-size:22px;
   font-weight:900;
-  margin-bottom:22px;
+  margin-bottom:16px;
 }
 
 .notice-name{
-  font-size:20px;
-  margin-bottom:12px;
+  font-size:16px;
+  margin-bottom:10px;
 }
 
 .notice-body{
-  font-size:18px;
-  line-height:1.5;
+  font-size:15px;
+  line-height:1.4;
   white-space:pre-wrap;
 }
 
+/* 編集削除 */
+
 .card-actions{
   position:absolute;
-  right:18px;
-  bottom:18px;
+  right:14px;
+  bottom:14px;
   display:flex;
-  gap:10px;
+  gap:8px;
 }
 
 .icon-btn{
-  width:40px;
-  height:40px;
+  width:34px;
+  height:34px;
   border-radius:50%;
-  font-size:18px;
+  font-size:15px;
   display:flex;
   align-items:center;
   justify-content:center;
 }
 
-.edit-btn{background:#efe7dc}
-.delete-btn{background:#f8dede}
+.edit-btn{
+  background:#efe7dc;
+}
+
+.delete-btn{
+  background:#f8dede;
+}
+
+/* モーダル */
 
 .modal{
   position:fixed;
@@ -195,6 +223,8 @@ button{
 
 <h1>出荷管理</h1>
 
+<!-- 上タブ -->
+
 <div class="top-tabs">
   <button class="active">注意事項</button>
   <button>出荷予定</button>
@@ -202,75 +232,154 @@ button{
   <button id="manageBtn">管理</button>
 </div>
 
+<!-- 前週次週 -->
+
 <div class="week-row">
   <button id="prevWeek">前週</button>
+
   <button id="calendarBtn">🗓</button>
+
   <button id="nextWeek">次週</button>
 </div>
 
+<!-- 日付 -->
+
 <div class="date-row" id="dateRow"></div>
 
+<!-- カード -->
+
 <div class="card">
+
   <div class="notice-title">クレーム</div>
+
   <div class="notice-name">○○様</div>
+
   <div class="notice-body">要検品</div>
 
   <div class="card-actions">
-    <button class="icon-btn edit-btn" id="editBtn">✏️</button>
-    <button class="icon-btn delete-btn" id="deleteBtn">🗑️</button>
+
+    <button class="icon-btn edit-btn" id="editBtn">
+      ✏️
+    </button>
+
+    <button class="icon-btn delete-btn" id="deleteBtn">
+      🗑️
+    </button>
+
   </div>
+
 </div>
 
 </div>
+
+<!-- モーダル -->
 
 <div class="modal" id="modal">
+
   <div class="modal-content">
-    <input type="text" id="titleInput" placeholder="タイトル">
-    <input type="text" id="nameInput" placeholder="名前">
-    <textarea id="bodyInput" placeholder="内容"></textarea>
-    <button class="save-btn" id="saveBtn">保存</button>
-    <button class="close-btn" id="closeBtn">閉じる</button>
+
+    <input type="text"
+           id="titleInput"
+           placeholder="タイトル">
+
+    <input type="text"
+           id="nameInput"
+           placeholder="名前">
+
+    <textarea id="bodyInput"
+              placeholder="内容"></textarea>
+
+    <button class="save-btn" id="saveBtn">
+      保存
+    </button>
+
+    <button class="close-btn" id="closeBtn">
+      閉じる
+    </button>
+
   </div>
+
 </div>
 
-<input type="date" id="hiddenDate" style="display:none">
+<!-- hidden calendar -->
+
+<input type="date"
+       id="hiddenDate"
+       style="display:none">
 
 <script>
+
+/* 週開始 */
+
 let weekStart = new Date(2026,4,4);
 
+/* 月曜取得 */
+
 function getMonday(date){
+
   const d = new Date(date);
+
   const day = d.getDay();
+
   const diff = day === 0 ? -6 : 1 - day;
+
   d.setDate(d.getDate() + diff);
+
   return d;
 }
 
+/* 日付文字 */
+
 function formatDate(date){
-  return (date.getMonth()+1) + "/" + date.getDate();
+
+  return (date.getMonth()+1)
+    + "/"
+    + date.getDate();
 }
 
+/* 日付描画 */
+
 function renderDates(selectedDate){
-  const dateRow = document.getElementById("dateRow");
+
+  const dateRow =
+    document.getElementById("dateRow");
+
   dateRow.innerHTML = "";
 
   for(let i=0;i<5;i++){
-    const d = new Date(weekStart);
-    d.setDate(weekStart.getDate()+i);
 
-    const btn = document.createElement("button");
-    btn.textContent = formatDate(d);
+    const d = new Date(weekStart);
+
+    d.setDate(
+      weekStart.getDate()+i
+    );
+
+    const btn =
+      document.createElement("button");
+
+    btn.textContent =
+      formatDate(d);
 
     if(
       selectedDate
-        ? d.getMonth() === selectedDate.getMonth() && d.getDate() === selectedDate.getDate()
-        : i === 0
+      ?
+      d.getMonth() === selectedDate.getMonth()
+      &&
+      d.getDate() === selectedDate.getDate()
+      :
+      i === 0
     ){
       btn.classList.add("active");
     }
 
     btn.onclick = ()=>{
-      document.querySelectorAll("#dateRow button").forEach(b=>b.classList.remove("active"));
+
+      document
+      .querySelectorAll("#dateRow button")
+      .forEach(b=>{
+        b.classList.remove("active");
+      });
+
       btn.classList.add("active");
     };
 
@@ -278,66 +387,172 @@ function renderDates(selectedDate){
   }
 }
 
-document.getElementById("prevWeek").onclick = ()=>{
-  weekStart.setDate(weekStart.getDate()-7);
+/* 前週 */
+
+document
+.getElementById("prevWeek")
+.onclick = ()=>{
+
+  weekStart.setDate(
+    weekStart.getDate()-7
+  );
+
   renderDates();
 };
 
-document.getElementById("nextWeek").onclick = ()=>{
-  weekStart.setDate(weekStart.getDate()+7);
+/* 次週 */
+
+document
+.getElementById("nextWeek")
+.onclick = ()=>{
+
+  weekStart.setDate(
+    weekStart.getDate()+7
+  );
+
   renderDates();
 };
 
-document.getElementById("calendarBtn").onclick = ()=>{
-  const input = document.getElementById("hiddenDate");
-  if(input.showPicker){input.showPicker();}
-  else{input.click();}
-};
+/* カレンダー */
 
-document.getElementById("hiddenDate").onchange = (e)=>{
-  if(!e.target.value) return;
-  const selected = new Date(e.target.value);
-  weekStart = getMonday(selected);
-  renderDates(selected);
-};
+document
+.getElementById("calendarBtn")
+.onclick = ()=>{
 
-const modal = document.getElementById("modal");
-const titleEl = document.querySelector(".notice-title");
-const nameEl = document.querySelector(".notice-name");
-const bodyEl = document.querySelector(".notice-body");
+  const input =
+    document.getElementById("hiddenDate");
 
-document.getElementById("editBtn").onclick = ()=>{
-  document.getElementById("titleInput").value = titleEl.innerText;
-  document.getElementById("nameInput").value = nameEl.innerText;
-  document.getElementById("bodyInput").value = bodyEl.innerText;
-  modal.style.display = "flex";
-};
-
-document.getElementById("manageBtn").onclick = ()=>{
-  document.getElementById("titleInput").value = "";
-  document.getElementById("nameInput").value = "";
-  document.getElementById("bodyInput").value = "";
-  modal.style.display = "flex";
-};
-
-document.getElementById("closeBtn").onclick = ()=>{
-  modal.style.display = "none";
-};
-
-document.getElementById("saveBtn").onclick = ()=>{
-  titleEl.innerText = document.getElementById("titleInput").value || "無題";
-  nameEl.innerText = document.getElementById("nameInput").value || "";
-  bodyEl.innerText = document.getElementById("bodyInput").value || "";
-  modal.style.display = "none";
-};
-
-document.getElementById("deleteBtn").onclick = ()=>{
-  if(confirm("削除しますか？")){
-    document.querySelector(".card").remove();
+  if(input.showPicker){
+    input.showPicker();
+  }else{
+    input.click();
   }
 };
 
+/* 日付変更 */
+
+document
+.getElementById("hiddenDate")
+.onchange = (e)=>{
+
+  if(!e.target.value) return;
+
+  const selected =
+    new Date(e.target.value);
+
+  weekStart =
+    getMonday(selected);
+
+  renderDates(selected);
+};
+
+/* モーダル */
+
+const modal =
+  document.getElementById("modal");
+
+const titleEl =
+  document.querySelector(".notice-title");
+
+const nameEl =
+  document.querySelector(".notice-name");
+
+const bodyEl =
+  document.querySelector(".notice-body");
+
+/* 編集 */
+
+document
+.getElementById("editBtn")
+.onclick = ()=>{
+
+  document
+  .getElementById("titleInput")
+  .value = titleEl.innerText;
+
+  document
+  .getElementById("nameInput")
+  .value = nameEl.innerText;
+
+  document
+  .getElementById("bodyInput")
+  .value = bodyEl.innerText;
+
+  modal.style.display = "flex";
+};
+
+/* 管理 */
+
+document
+.getElementById("manageBtn")
+.onclick = ()=>{
+
+  document
+  .getElementById("titleInput")
+  .value = "";
+
+  document
+  .getElementById("nameInput")
+  .value = "";
+
+  document
+  .getElementById("bodyInput")
+  .value = "";
+
+  modal.style.display = "flex";
+};
+
+/* 閉じる */
+
+document
+.getElementById("closeBtn")
+.onclick = ()=>{
+
+  modal.style.display = "none";
+};
+
+/* 保存 */
+
+document
+.getElementById("saveBtn")
+.onclick = ()=>{
+
+  titleEl.innerText =
+    document
+    .getElementById("titleInput")
+    .value || "無題";
+
+  nameEl.innerText =
+    document
+    .getElementById("nameInput")
+    .value || "";
+
+  bodyEl.innerText =
+    document
+    .getElementById("bodyInput")
+    .value || "";
+
+  modal.style.display = "none";
+};
+
+/* 削除 */
+
+document
+.getElementById("deleteBtn")
+.onclick = ()=>{
+
+  if(confirm("削除しますか？")){
+
+    document
+    .querySelector(".card")
+    .remove();
+  }
+};
+
+/* 初期表示 */
+
 renderDates();
+
 </script>
 
 </body>
