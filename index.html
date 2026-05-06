@@ -116,7 +116,7 @@ button:active{
 .ship-buttons{
   display:flex;
   gap:8px;
-  align-items:center;
+  align-items:flex-end;
 }
 
 .ship-buttons button{
@@ -125,16 +125,26 @@ button:active{
   border-radius:14px;
 }
 
-.photo-btn{
-  width:64px;
-  height:46px;
-  border-radius:14px;
+.photo-mini-group{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  margin-left:4px;
+}
+
+.photo-mini-btn{
+  width:44px;
+  height:22px;
+  border:none;
+  border-radius:8px;
   background:#e6ddd4;
+  color:#111;
+  font-size:10px;
+  font-weight:800;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:13px;
-  font-weight:800;
+  padding:0;
 }
 
 .photo-modal{
@@ -335,26 +345,28 @@ function shipRow(company,place,key){
           なし
         </button>
 
-        <!-- 添付 -->
-        <label class="photo-btn">
-          添付
-          <input
-            type="file"
-            accept="image/*"
-            hidden
-            onchange="savePhoto(event,'${key}')">
-        </label>
+        <div class="photo-mini-group">
 
-        <!-- 表示 -->
-        <button
-          class="photo-btn"
-          onclick="${
-            photo
-            ? `openPhotoModal('${photo}')`
-            : `alert('写真なし')`
-          }">
-          表示
-        </button>
+          <label class="photo-mini-btn">
+            添付
+            <input
+              type="file"
+              accept="image/*"
+              hidden
+              onchange="savePhoto(event,'${key}')">
+          </label>
+
+          <button
+            class="photo-mini-btn"
+            onclick="${
+              photo
+              ? `openPhotoModal('${photo}')`
+              : `alert('写真なし')`
+            }">
+            表示
+          </button>
+
+        </div>
 
       </div>
 
