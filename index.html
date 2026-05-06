@@ -6,237 +6,721 @@
 <title>出荷管理</title>
 
 <style>
-* {
-  box-sizing: border-box;
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+body{
+  margin:0;
+  padding:20px;
+  background:#f6efe6;
+  color:#111;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
 }
 
-body {
-  margin: 0;
-  font-family: sans-serif;
-  background: #f3eadf;
-  color: #111;
+h1{
+  font-size:34px;
+  margin:28px 0;
+  font-weight:900;
 }
 
-.app {
-  max-width: 430px;
-  margin: 0 auto;
-  padding: 18px 14px;
+button{
+  border:none;
+  border-radius:18px;
+  background:#e6ddd4;
+  color:#111;
+  font-weight:800;
+  font-size:15px;
 }
 
-h1 {
-  font-size: 24px;
-  margin: 0 0 14px;
-  font-weight: 900;
+button:active{transform:scale(.96)}
+
+.active{
+  background:#b88a5a!important;
+  color:#fff!important;
 }
 
-button {
-  border: none;
-  border-radius: 14px;
-  background: #ded6cd;
-  color: #111;
-  font-size: 12px;
-  font-weight: 800;
-  padding: 8px 6px;
-  cursor: pointer;
+.top-tabs{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-bottom:16px;
 }
 
-button.active {
-  background: #bd8b55;
-  color: #fff;
+.top-tabs button{padding:14px 0}
+
+#weekControls{
+  display:grid;
+  grid-template-columns:1fr .7fr 1fr;
+  gap:8px;
+  margin-bottom:10px;
 }
 
-.tabs,
-.week-nav,
-.dates {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 8px;
+#weekControls button{padding:12px 0;width:100%}
+
+#dates{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+  margin-bottom:16px;
 }
 
-.tabs button,
-.week-nav button,
-.dates button {
-  flex: 1;
-  height: 36px;
+#dates button{padding:14px 0;width:100%}
+
+.card{
+  background:#fff;
+  border-radius:24px;
+  padding:18px;
+  margin-top:14px;
+  position:relative;
+  min-height:120px;
 }
 
-.card {
-  background: white;
-  border-radius: 20px;
-  padding: 8px 12px;
-  margin-top: 10px;
+.item-title{
+  font-size:24px;
+  font-weight:900;
+  margin-bottom:12px;
+  text-align:left;
 }
 
-.row {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  border-bottom: 1px solid #e8ddd2;
-  padding: 9px 0;
+.item-content{
+  font-size:19px;
+  line-height:1.7;
+  white-space:pre-wrap;
+  text-align:left;
+  padding-bottom:48px;
 }
 
-.row:last-child {
-  border-bottom: none;
+.important{color:red}
+
+.icon-btn{
+  position:absolute;
+  bottom:14px;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  padding:0;
+  font-size:18px;
 }
 
-.info h2 {
-  font-size: 18px;
-  margin: 0 0 2px;
-  font-weight: 900;
+.edit-btn{
+  right:60px;
+  background:#e6ddd4;
 }
 
-.info p {
-  font-size: 14px;
-  margin: 0;
-  font-weight: 800;
+.delete-btn{
+  right:14px;
+  background:#f3d6d6;
 }
 
-.actions {
-  display: flex;
-  gap: 6px;
+input,textarea,select{
+  width:100%;
+  padding:14px;
+  margin-top:14px;
+  border-radius:14px;
+  border:1px solid #ddd;
+  font-size:16px;
 }
 
-.actions button {
-  width: 42px;
-  height: 34px;
-  padding: 0;
+textarea{height:120px}
+
+.save-btn{
+  width:100%;
+  padding:15px 0;
+  margin-top:16px;
+  background:#b88a5a;
+  color:#fff;
 }
 
-.camera {
-  font-size: 16px;
+.cancel-btn{
+  width:100%;
+  padding:15px 0;
+  margin-top:10px;
+}
+
+#calendarBox{
+  display:none;
+  background:#fff;
+  border-radius:22px;
+  padding:16px;
+  margin-bottom:16px;
+}
+
+.cal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.cal-head button{padding:8px 14px}
+
+.cal-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:6px;
+  text-align:center;
+}
+
+.cal-grid div{
+  padding:8px 0;
+  font-weight:800;
+}
+
+.cal-grid button{
+  padding:10px 0;
+  border-radius:12px;
+}
+
+.ship-group{
+  margin-top:14px;
+}
+
+.ship-company{
+  font-size:22px;
+  font-weight:900;
+  margin-bottom:6px;
+}
+
+.ship-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  padding:8px 0;
+  border-bottom:1px solid #eadfd5;
+}
+
+.ship-left{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.ship-place{
+  font-size:18px;
+  font-weight:700;
+}
+
+.ship-photo{
+  width:90px;
+  height:90px;
+  object-fit:cover;
+  border-radius:14px;
+}
+
+.ship-buttons{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.ship-buttons button{
+  padding:8px 12px;
+  border-radius:12px;
+}
+
+.photo-btn{
+  width:40px;
+  height:40px;
+  border-radius:14px;
+  background:#e6ddd4;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  font-weight:800;
 }
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<h1>出荷管理</h1>
 
-  <h1>出荷管理</h1>
-
-  <div class="tabs">
-    <button onclick="selectTab(this)">注意事項</button>
-    <button class="active" onclick="selectTab(this)">出荷予定</button>
-    <button onclick="selectTab(this)">当日出荷</button>
-    <button onclick="selectTab(this)">管理</button>
-  </div>
-
-  <div class="week-nav">
-    <button onclick="alert('前週')">前週</button>
-    <button onclick="alert('日付選択')">🗓️</button>
-    <button onclick="alert('次週')">次週</button>
-  </div>
-
-  <div class="dates">
-    <button class="active" onclick="selectDate(this)">5/4</button>
-    <button onclick="selectDate(this)">5/5</button>
-    <button onclick="selectDate(this)">5/6</button>
-    <button onclick="selectDate(this)">5/7</button>
-    <button onclick="selectDate(this)">5/8</button>
-  </div>
-
-  <div class="card">
-
-    <div class="row">
-      <div class="info">
-        <h2>佐川急便</h2>
-        <p>2F</p>
-      </div>
-
-      <div class="actions">
-        <button class="active" onclick="toggleYesNo(this)">あり</button>
-        <button onclick="toggleYesNo(this)">なし</button>
-        <button class="camera" onclick="openCamera()">📷</button>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="info">
-        <h2>福山通運</h2>
-        <p>2F</p>
-      </div>
-
-      <div class="actions">
-        <button class="active" onclick="toggleYesNo(this)">あり</button>
-        <button onclick="toggleYesNo(this)">なし</button>
-        <button class="camera" onclick="openCamera()">📷</button>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="info">
-        <h2>梱包場</h2>
-        <p>-</p>
-      </div>
-
-      <div class="actions">
-        <button class="active" onclick="toggleYesNo(this)">あり</button>
-        <button onclick="toggleYesNo(this)">なし</button>
-        <button class="camera" onclick="openCamera()">📷</button>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="info">
-        <h2>MJ倉庫</h2>
-        <p>-</p>
-      </div>
-
-      <div class="actions">
-        <button onclick="toggleYesNo(this)">あり</button>
-        <button class="active" onclick="toggleYesNo(this)">なし</button>
-        <button class="camera" onclick="openCamera()">📷</button>
-      </div>
-    </div>
-
-  </div>
-
+<div class="top-tabs">
+  <button id="tab_notice" onclick="setTab('notice')">注意事項</button>
+  <button id="tab_ship" onclick="setTab('ship')">出荷予定</button>
+  <button id="tab_today" onclick="setTab('today')">当日出荷</button>
+  <button id="tab_manage" onclick="setTab('manage')">管理</button>
 </div>
 
-<input
-  id="cameraInput"
-  type="file"
-  accept="image/*"
-  capture="environment"
-  style="display:none;"
->
+<div id="weekControls"></div>
+<div id="calendarBox"></div>
+<div id="dates"></div>
+<div id="view"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-function selectTab(button) {
-  document.querySelectorAll(".tabs button").forEach(btn => {
+const client = supabase.createClient(
+  "https://bylottznuwuizncgfltd.supabase.co",
+  "sb_publishable_VDryMJYXIZUwumf5gxxqyw__ivv1upf"
+);
+
+let currentTab = "notice";
+let currentDate = "";
+let weekStart = getMonday(new Date());
+let calendarMonth = new Date();
+let editId = null;
+let lastItems = [];
+let photoMap = {};
+
+function esc(text){
+  return String(text ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function getMonday(date){
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  return d;
+}
+
+function formatDate(date){
+  return (date.getMonth()+1) + "/" + date.getDate();
+}
+
+function setTab(tab){
+  currentTab = tab;
+
+  document.querySelectorAll(".top-tabs button").forEach(btn=>{
     btn.classList.remove("active");
   });
 
-  button.classList.add("active");
+  document.getElementById("tab_" + tab).classList.add("active");
+  document.getElementById("calendarBox").style.display = "none";
+
+  renderDates();
+  render();
 }
 
-function selectDate(button) {
-  document.querySelectorAll(".dates button").forEach(btn => {
-    btn.classList.remove("active");
-  });
+function renderDates(){
+  const controls = document.getElementById("weekControls");
+  const dates = document.getElementById("dates");
 
-  button.classList.add("active");
+  controls.innerHTML = "";
+  dates.innerHTML = "";
+
+  if(currentTab === "manage"){
+    controls.style.display = "none";
+    dates.style.display = "none";
+    return;
+  }
+
+  controls.style.display = "grid";
+  dates.style.display = "grid";
+
+  controls.innerHTML = `
+    <button onclick="moveWeek(-1)">前週</button>
+    <button onclick="toggleCalendar()">🗓️</button>
+    <button onclick="moveWeek(1)">次週</button>
+  `;
+
+  for(let i=0;i<5;i++){
+    const d = new Date(weekStart);
+    d.setDate(weekStart.getDate()+i);
+
+    const text = formatDate(d);
+
+    if(!currentDate && i === 0){
+      currentDate = text;
+    }
+
+    const btn = document.createElement("button");
+    btn.textContent = text;
+
+    if(text === currentDate){
+      btn.classList.add("active");
+    }
+
+    btn.onclick = ()=>{
+      currentDate = text;
+      document.getElementById("calendarBox").style.display = "none";
+      renderDates();
+      render();
+    };
+
+    dates.appendChild(btn);
+  }
 }
 
-function toggleYesNo(button) {
+function moveWeek(num){
+  weekStart.setDate(weekStart.getDate() + 7*num);
+  currentDate = "";
+  renderDates();
+  render();
+}
 
-  const group =
-    button.parentElement;
+function toggleCalendar(){
+  const box = document.getElementById("calendarBox");
 
-  group
-    .querySelectorAll("button:not(.camera)")
-    .forEach(btn => {
-      btn.classList.remove("active");
+  if(box.style.display === "block"){
+    box.style.display = "none";
+    return;
+  }
+
+  box.style.display = "block";
+  renderCalendar();
+}
+
+function renderCalendar(){
+  const box = document.getElementById("calendarBox");
+  const year = calendarMonth.getFullYear();
+  const month = calendarMonth.getMonth();
+
+  const first = new Date(year, month, 1);
+  const last = new Date(year, month + 1, 0);
+
+  let html = `
+    <div class="cal-head">
+      <button onclick="changeMonth(-1)">前月</button>
+      <b>${year}/${month+1}</b>
+      <button onclick="changeMonth(1)">次月</button>
+    </div>
+    <div class="cal-grid">
+      <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
+  `;
+
+  for(let i=0;i<first.getDay();i++){
+    html += `<div></div>`;
+  }
+
+  for(let day=1;day<=last.getDate();day++){
+    html += `<button onclick="pickDate(${year},${month},${day})">${day}</button>`;
+  }
+
+  html += `</div>`;
+  box.innerHTML = html;
+}
+
+function changeMonth(num){
+  calendarMonth.setMonth(calendarMonth.getMonth()+num);
+  renderCalendar();
+}
+
+function pickDate(year,month,day){
+  const selected = new Date(year,month,day);
+
+  weekStart = getMonday(selected);
+  currentDate = formatDate(selected);
+
+  document.getElementById("calendarBox").style.display = "none";
+
+  renderDates();
+  render();
+}
+
+function shipRow(place, key){
+  const status = localStorage.getItem(currentDate + "_" + key) || "なし";
+  const photo = photoMap[key];
+
+  return `
+    <div class="ship-row">
+      <div class="ship-left">
+        <div class="ship-place">${place}</div>
+        ${photo ? `<img src="${photo}" class="ship-photo">` : ""}
+      </div>
+
+      <div class="ship-buttons">
+        <button class="${status === "あり" ? "active" : ""}"
+          onclick="setShipStatus('${key}','あり')">
+          あり
+        </button>
+
+        <button class="${status === "なし" ? "active" : ""}"
+          onclick="setShipStatus('${key}','なし')">
+          なし
+        </button>
+
+        <label class="photo-btn">
+          📷
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            onchange="savePhoto(event,'${key}')">
+        </label>
+      </div>
+    </div>
+  `;
+}
+
+function setShipStatus(key, value){
+  localStorage.setItem(currentDate + "_" + key, value);
+  render();
+}
+
+async function savePhoto(event, key){
+  const file = event.target.files[0];
+  if(!file) return;
+
+  const fileName = `${currentDate}_${key}_${Date.now()}_${file.name}`;
+
+  const { error } = await client.storage
+    .from("shipment-photos")
+    .upload(fileName, file);
+
+  if(error){
+    alert("写真アップロードエラー：" + error.message);
+    return;
+  }
+
+  const { data } = client.storage
+    .from("shipment-photos")
+    .getPublicUrl(fileName);
+
+  const photoUrl = data.publicUrl;
+
+  const { data: exists } = await client
+    .from("shipping_photos")
+    .select("id")
+    .eq("date", currentDate)
+    .eq("place_key", key)
+    .maybeSingle();
+
+  if(exists){
+    await client
+      .from("shipping_photos")
+      .update({ photo_url: photoUrl })
+      .eq("id", exists.id);
+  }else{
+    await client
+      .from("shipping_photos")
+      .insert({
+        date: currentDate,
+        place_key: key,
+        photo_url: photoUrl
+      });
+  }
+
+  render();
+}
+
+async function render(){
+  const view = document.getElementById("view");
+  view.innerHTML = "";
+
+  if(currentTab === "ship"){
+    const { data } = await client
+      .from("shipping_photos")
+      .select("*")
+      .eq("date", currentDate);
+
+    photoMap = {};
+
+    if(data){
+      data.forEach(item=>{
+        photoMap[item.place_key] = item.photo_url;
+      });
+    }
+
+    view.innerHTML = `
+      <div class="card">
+        <div class="ship-group">
+          <div class="ship-company">佐川急便</div>
+          ${shipRow("2F", "sagawa_2f")}
+        </div>
+
+        <div class="ship-group">
+          <div class="ship-company">福山通運</div>
+          ${shipRow("2F", "fukuyama_2f")}
+          ${shipRow("梱包場", "fukuyama_packing")}
+          ${shipRow("MJ倉庫", "fukuyama_mj")}
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  if(currentTab === "today"){
+    view.innerHTML = `
+      <div class="card">
+        <div class="item-title">当日出荷</div>
+        <div class="item-content">2F：あり / なし
+2Fテーブル：あり / なし
+梱包場：あり / なし
+MJ倉庫：あり / なし</div>
+      </div>
+    `;
+    return;
+  }
+
+  if(currentTab === "notice"){
+    const {data,error} = await client
+      .from("shipments")
+      .select("*")
+      .eq("date",currentDate)
+      .eq("category","notice")
+      .order("id",{ascending:false});
+
+    if(error){
+      view.innerHTML = `<div class="card">${esc(error.message)}</div>`;
+      return;
+    }
+
+    if(!data || data.length === 0){
+      view.innerHTML = `<div class="card">データなし</div>`;
+      return;
+    }
+
+    lastItems = data;
+
+    data.forEach(item=>{
+      view.innerHTML += `
+        <div class="card">
+          <div class="item-title ${item.status === "重要" ? "important" : ""}">
+            ${esc(item.title)}
+          </div>
+
+          <div class="item-content">${esc(item.content)}</div>
+
+          <button class="icon-btn edit-btn" onclick="startEditById(${item.id})">✏️</button>
+          <button class="icon-btn delete-btn" onclick="deleteItem(${item.id})">🗑️</button>
+        </div>
+      `;
     });
 
-  button.classList.add("active");
+    return;
+  }
+
+  if(currentTab === "manage"){
+    view.innerHTML = `
+      <div class="card">
+        <select id="dateInput"></select>
+
+        <input id="title" placeholder="タイトル">
+
+        <textarea id="content" placeholder="内容"></textarea>
+
+        <select id="status">
+          <option value="通常">通常</option>
+          <option value="重要">重要</option>
+        </select>
+
+        <button class="save-btn" onclick="${editId ? "saveEdit()" : "addData()"}">
+          ${editId ? "保存" : "追加"}
+        </button>
+
+        ${editId ? `<button class="cancel-btn" onclick="cancelEdit()">キャンセル</button>` : ""}
+      </div>
+    `;
+
+    const select = document.getElementById("dateInput");
+
+    for(let i=0;i<5;i++){
+      const d = new Date(weekStart);
+      d.setDate(weekStart.getDate()+i);
+
+      const text = formatDate(d);
+      select.innerHTML += `<option>${text}</option>`;
+    }
+
+    select.value = currentDate;
+  }
 }
 
-function openCamera() {
-  document
-    .getElementById("cameraInput")
-    .click();
+async function addData(){
+  const title = document.getElementById("title").value.trim();
+  const content = document.getElementById("content").value.trim();
+  const status = document.getElementById("status").value;
+  const date = document.getElementById("dateInput").value;
+
+  if(!title || !content){
+    alert("タイトルと内容を入力してください");
+    return;
+  }
+
+  const {error} = await client
+    .from("shipments")
+    .insert({
+      date,
+      category:"notice",
+      title,
+      content,
+      status
+    });
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  currentDate = date;
+  setTab("notice");
 }
+
+function startEditById(id){
+  const item = lastItems.find(x => x.id === id);
+  if(!item) return;
+
+  editId = id;
+  setTab("manage");
+
+  setTimeout(()=>{
+    document.getElementById("dateInput").value = item.date || currentDate;
+    document.getElementById("title").value = item.title || "";
+    document.getElementById("content").value = item.content || "";
+    document.getElementById("status").value = item.status || "通常";
+  },100);
+}
+
+async function saveEdit(){
+  const title = document.getElementById("title").value.trim();
+  const content = document.getElementById("content").value.trim();
+  const status = document.getElementById("status").value;
+  const date = document.getElementById("dateInput").value;
+
+  if(!title || !content){
+    alert("タイトルと内容を入力してください");
+    return;
+  }
+
+  const {error} = await client
+    .from("shipments")
+    .update({
+      date,
+      title,
+      content,
+      status
+    })
+    .eq("id",editId);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  editId = null;
+  currentDate = date;
+  setTab("notice");
+}
+
+function cancelEdit(){
+  editId = null;
+  setTab("notice");
+}
+
+async function deleteItem(id){
+  if(!confirm("削除しますか？")) return;
+
+  const {error} = await client
+    .from("shipments")
+    .delete()
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  render();
+}
+
+setTab("notice");
 </script>
 
 </body>
