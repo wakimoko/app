@@ -13,6 +13,7 @@ body{
   background:#f3eee6;
   font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
   color:#111;
+  font-size:14px;
 }
 
 .container{
@@ -22,9 +23,9 @@ body{
 }
 
 h1{
-  font-size:38px;
+  font-size:34px;
   font-weight:900;
-  margin:8px 0 20px;
+  margin:8px 0 18px;
 }
 
 button{
@@ -41,18 +42,17 @@ button{
 }
 
 .top-tabs button{
-  height:48px;
-  border-radius:18px;
+  height:44px;
+  border-radius:16px;
   background:#e6ddd4;
   color:#007aff;
-  font-size:13px;
+  font-size:12px;
   font-weight:900;
 }
 
-.top-tabs .active,
-.date-row .active{
-  background:#c99657;
-  color:#fff;
+.active{
+  background:#c99657!important;
+  color:#fff!important;
 }
 
 .week-row{
@@ -63,11 +63,11 @@ button{
 }
 
 .week-row button{
-  height:44px;
+  height:40px;
   border-radius:18px;
   background:#e6ddd4;
   color:#007aff;
-  font-size:15px;
+  font-size:14px;
   font-weight:900;
 }
 
@@ -79,36 +79,36 @@ button{
 }
 
 .date-row button{
-  height:44px;
+  height:40px;
   border-radius:16px;
   background:#e6ddd4;
   color:#007aff;
-  font-size:15px;
+  font-size:14px;
   font-weight:900;
 }
 
 .card{
   background:#fff;
-  border-radius:22px;
-  padding:18px 18px 52px;
+  border-radius:20px;
+  padding:16px;
   position:relative;
-  min-height:170px;
+  min-height:160px;
 }
 
 .notice-title{
-  font-size:22px;
+  font-size:20px;
   font-weight:900;
-  margin-bottom:16px;
+  margin-bottom:14px;
 }
 
 .notice-name{
-  font-size:16px;
+  font-size:15px;
   margin-bottom:10px;
 }
 
 .notice-body{
-  font-size:15px;
-  line-height:1.4;
+  font-size:14px;
+  line-height:1.5;
   white-space:pre-wrap;
 }
 
@@ -133,57 +133,97 @@ button{
 .edit-btn{background:#efe7dc}
 .delete-btn{background:#f8dede}
 
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.45);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:999;
-}
-
-.modal-content{
-  width:88%;
-  max-width:360px;
-  background:#fff;
-  border-radius:22px;
-  padding:18px;
-}
-
-.modal input,
-.modal textarea{
+.form-input,
+.form-textarea{
   width:100%;
   border:2px solid #e3ddd5;
   border-radius:14px;
   padding:12px;
   margin-bottom:10px;
-  font-size:16px;
+  font-size:15px;
 }
 
-.modal textarea{
-  height:150px;
-  resize:none;
-}
+.form-input{height:50px}
+.form-textarea{height:120px;resize:none}
 
 .save-btn{
   width:100%;
-  height:48px;
+  height:46px;
   border-radius:16px;
   background:#c99657;
   color:#fff;
-  font-size:17px;
+  font-size:16px;
   font-weight:900;
 }
 
-.close-btn{
-  margin-top:8px;
-  width:100%;
-  height:40px;
-  border-radius:14px;
-  background:#ece6df;
-  font-weight:700;
+/* 出荷予定 */
+
+.ship-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
 }
+
+.ship-name{
+  font-size:24px;
+  font-weight:900;
+  line-height:1.1;
+}
+
+.ship-name.small{
+  font-size:18px;
+}
+
+.ship-floor{
+  font-size:18px;
+  font-weight:900;
+  margin-top:6px;
+}
+
+.ship-right{
+  text-align:right;
+}
+
+.ship-status{
+  display:flex;
+  gap:10px;
+  margin-bottom:8px;
+}
+
+.ship-status button{
+  width:66px;
+  height:50px;
+  border-radius:22px;
+  font-size:18px;
+  font-weight:900;
+  background:#e6ddd4;
+  color:#111;
+  writing-mode:horizontal-tb;
+  text-orientation:mixed;
+  white-space:nowrap;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.ship-links{
+  display:flex;
+  justify-content:flex-end;
+  gap:14px;
+  font-size:13px;
+  font-weight:900;
+  color:#8b5d33;
+  text-decoration:underline;
+}
+
+.divider{
+  height:1px;
+  background:#e2d7ca;
+  margin:16px 0;
+}
+
+/* カレンダー */
 
 .calendar-bg{
   display:none;
@@ -215,7 +255,7 @@ button{
 }
 
 .calendar-title{
-  font-size:18px;
+  font-size:16px;
   font-weight:900;
 }
 
@@ -236,9 +276,7 @@ button{
   gap:6px;
 }
 
-.calendar-week{
-  margin-bottom:6px;
-}
+.calendar-week{margin-bottom:6px}
 
 .calendar-week div{
   text-align:center;
@@ -254,17 +292,12 @@ button{
   display:flex;
   align-items:center;
   justify-content:center;
+  font-size:14px;
   font-weight:800;
 }
 
-.calendar-day{
-  background:#e6ddd4;
-}
-
-.calendar-day.active{
-  background:#c99657;
-  color:#fff;
-}
+.calendar-day{background:#e6ddd4}
+.calendar-day.active{background:#c99657;color:#fff}
 
 .calendar-close{
   margin-top:14px;
@@ -290,35 +323,18 @@ button{
   <button id="manageBtn">管理</button>
 </div>
 
-<div class="week-row">
-  <button id="prevWeek">前週</button>
-  <button id="calendarBtn">🗓</button>
-  <button id="nextWeek">次週</button>
-</div>
-
-<div class="date-row" id="dateRow"></div>
-
-<div class="card">
-  <div class="notice-title">5/4</div>
-  <div class="notice-name">クレーム</div>
-  <div class="notice-body">要検品</div>
-
-  <div class="card-actions">
-    <button class="icon-btn edit-btn" id="editBtn">✏️</button>
-    <button class="icon-btn delete-btn" id="deleteBtn">🗑️</button>
+<div id="scheduleArea">
+  <div class="week-row">
+    <button id="prevWeek">前週</button>
+    <button id="calendarBtn">🗓</button>
+    <button id="nextWeek">次週</button>
   </div>
+
+  <div class="date-row" id="dateRow"></div>
 </div>
 
-</div>
+<div id="mainArea"></div>
 
-<div class="modal" id="modal">
-  <div class="modal-content" id="modalContent">
-    <input type="text" id="titleInput" placeholder="日付選択" readonly>
-    <input type="text" id="nameInput" placeholder="タイトル">
-    <textarea id="bodyInput" placeholder="内容"></textarea>
-    <button class="save-btn" id="saveBtn">保存</button>
-    <button class="close-btn" id="closeBtn">閉じる</button>
-  </div>
 </div>
 
 <div class="calendar-bg" id="calendarBg"></div>
@@ -341,20 +357,24 @@ button{
 
 <script>
 let weekStart = new Date(2026,4,4);
-let selectedDate = new Date(2026,4,4);
+let selectedDate = new Date(2026,4,5);
 let calendarMonth = new Date(2026,4,1);
 let calendarTarget = "week";
+
+let notices = JSON.parse(localStorage.getItem("noticesByDate") || "{}");
+let shipData = JSON.parse(localStorage.getItem("shipData") || "{}");
+
+function saveAll(){
+  localStorage.setItem("noticesByDate", JSON.stringify(notices));
+}
+
+function saveShipAll(){
+  localStorage.setItem("shipData", JSON.stringify(shipData));
+}
 
 function setActiveTab(btn){
   document.querySelectorAll(".top-tabs button").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
-}
-
-function getMonday(date){
-  const d = new Date(date);
-  const day = d.getDay();
-  d.setDate(d.getDate() + (day === 0 ? -6 : 1 - day));
-  return d;
 }
 
 function formatDate(date){
@@ -366,6 +386,19 @@ function sameDate(a,b){
     a.getFullYear()===b.getFullYear() &&
     a.getMonth()===b.getMonth() &&
     a.getDate()===b.getDate();
+}
+
+function getMonday(date){
+  const d = new Date(date);
+  const day = d.getDay();
+  d.setDate(d.getDate() + (day === 0 ? -6 : 1 - day));
+  return d;
+}
+
+function refreshCurrentTab(){
+  if(document.getElementById("noticeBtn").classList.contains("active")) renderNotice();
+  if(document.getElementById("shipBtn").classList.contains("active")) renderShip();
+  if(document.getElementById("todayBtn").classList.contains("active")) renderToday();
 }
 
 function renderDates(){
@@ -384,30 +417,242 @@ function renderDates(){
     btn.onclick = ()=>{
       selectedDate = new Date(d);
       renderDates();
+      refreshCurrentTab();
     };
 
     row.appendChild(btn);
   }
 }
 
+/* 注意事項 */
+
+function renderNotice(){
+  setActiveTab(document.getElementById("noticeBtn"));
+  document.getElementById("scheduleArea").style.display = "block";
+
+  const key = formatDate(selectedDate);
+  const item = notices[key];
+
+  if(!item){
+    document.getElementById("mainArea").innerHTML = `
+      <div class="card">
+        <div class="notice-title">${key}</div>
+        <div class="notice-name">注意事項なし</div>
+        <div class="notice-body">この日の注意事項はありません</div>
+        <div class="card-actions">
+          <button class="icon-btn edit-btn" onclick="renderManage()">✏️</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  document.getElementById("mainArea").innerHTML = `
+    <div class="card">
+      <div class="notice-title">${key}</div>
+      <div class="notice-name">${item.title}</div>
+      <div class="notice-body">${item.body}</div>
+
+      <div class="card-actions">
+        <button class="icon-btn edit-btn" onclick="renderManage()">✏️</button>
+        <button class="icon-btn delete-btn" onclick="deleteNotice()">🗑️</button>
+      </div>
+    </div>
+  `;
+}
+
+/* 管理 */
+
+function renderManage(){
+  setActiveTab(document.getElementById("manageBtn"));
+  document.getElementById("scheduleArea").style.display = "none";
+
+  const key = formatDate(selectedDate);
+  const item = notices[key] || {title:"", body:""};
+
+  document.getElementById("mainArea").innerHTML = `
+    <div class="card">
+      <input class="form-input" id="dateInput" placeholder="日付選択" readonly value="${key}">
+      <input class="form-input" id="titleInput" placeholder="タイトル" value="${item.title}">
+      <textarea class="form-textarea" id="bodyInput" placeholder="内容">${item.body}</textarea>
+      <button class="save-btn" onclick="saveNotice()">保存</button>
+    </div>
+  `;
+
+  document.getElementById("dateInput").onclick = ()=>{
+    openCalendar("input");
+  };
+}
+
+function saveNotice(){
+  const key = document.getElementById("dateInput").value;
+
+  notices[key] = {
+    title: document.getElementById("titleInput").value || "",
+    body: document.getElementById("bodyInput").value || ""
+  };
+
+  saveAll();
+
+  selectedDate = parseDateKey(key);
+  weekStart = getMonday(selectedDate);
+  renderDates();
+  renderNotice();
+}
+
+function deleteNotice(){
+  const key = formatDate(selectedDate);
+
+  if(confirm("削除しますか？")){
+    delete notices[key];
+    saveAll();
+    renderNotice();
+  }
+}
+
+function parseDateKey(key){
+  const [m,d] = key.split("/").map(Number);
+  return new Date(selectedDate.getFullYear(), m-1, d);
+}
+
+/* 出荷予定・当日出荷 */
+
+function shipKey(type){
+  return type + "_" + formatDate(selectedDate);
+}
+
+function getShipStatus(type,name){
+  const key = shipKey(type);
+
+  if(!shipData[key]){
+    shipData[key] = {};
+  }
+
+  if(!shipData[key][name]){
+    shipData[key][name] = "なし";
+  }
+
+  return shipData[key][name];
+}
+
+function saveShipStatus(type,name,status){
+  const key = shipKey(type);
+
+  if(!shipData[key]){
+    shipData[key] = {};
+  }
+
+  shipData[key][name] = status;
+  saveShipAll();
+}
+
+function renderShip(){
+  setActiveTab(document.getElementById("shipBtn"));
+  document.getElementById("scheduleArea").style.display = "block";
+
+  document.getElementById("mainArea").innerHTML = `
+    <div class="card">
+      ${shipmentRow("ship","佐川急便","2F")}
+      <div class="divider"></div>
+      ${shipmentRow("ship","福山通運","2F")}
+      <div class="divider"></div>
+      ${shipmentRow("ship","梱包場","")}
+      <div class="divider"></div>
+      ${shipmentRow("ship","MJ倉庫","")}
+    </div>
+  `;
+}
+
+function renderToday(){
+  setActiveTab(document.getElementById("todayBtn"));
+  document.getElementById("scheduleArea").style.display = "block";
+
+  document.getElementById("mainArea").innerHTML = `
+    <div class="card">
+      ${shipmentRow("today","佐川急便","2F")}
+      <div class="divider"></div>
+      ${shipmentRow("today","福山通運","2F")}
+      <div class="divider"></div>
+      ${shipmentRow("today","梱包場","")}
+      <div class="divider"></div>
+      ${shipmentRow("today","MJ倉庫","")}
+    </div>
+  `;
+}
+
+function shipmentRow(type,name,floor){
+  const status = getShipStatus(type,name);
+
+  const smallClass =
+    name === "梱包場" || name === "MJ倉庫"
+      ? "small"
+      : "";
+
+  return `
+    <div class="ship-row">
+      <div>
+        <div class="ship-name ${smallClass}">${name}</div>
+        ${floor ? `<div class="ship-floor">${floor}</div>` : ""}
+      </div>
+
+      <div class="ship-right">
+        <div class="ship-status" data-type="${type}" data-name="${name}">
+          <button class="${status === "あり" ? "active" : ""}" onclick="toggleShip(this,'あり')">あり</button>
+          <button class="${status === "なし" ? "active" : ""}" onclick="toggleShip(this,'なし')">なし</button>
+        </div>
+
+        <div class="ship-links">
+          <span onclick="alert('写真表示')">写真表示</span>
+          <span onclick="alert('添付')">添付</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function toggleShip(btn,status){
+  const group = btn.parentElement;
+  const type = group.dataset.type;
+  const name = group.dataset.name;
+
+  group.querySelectorAll("button").forEach(b=>{
+    b.classList.remove("active");
+  });
+
+  btn.classList.add("active");
+
+  saveShipStatus(type,name,status);
+}
+
+/* タブ */
+
+document.getElementById("noticeBtn").onclick = renderNotice;
+document.getElementById("shipBtn").onclick = renderShip;
+document.getElementById("todayBtn").onclick = renderToday;
+document.getElementById("manageBtn").onclick = renderManage;
+
+/* 週移動 */
+
 document.getElementById("prevWeek").onclick = ()=>{
   weekStart.setDate(weekStart.getDate()-7);
   selectedDate = new Date(weekStart);
   renderDates();
+  refreshCurrentTab();
 };
 
 document.getElementById("nextWeek").onclick = ()=>{
   weekStart.setDate(weekStart.getDate()+7);
   selectedDate = new Date(weekStart);
   renderDates();
+  refreshCurrentTab();
 };
 
-function openCalendar(target){
-  calendarTarget = target;
+/* カレンダー */
 
+function openCalendar(target="week"){
+  calendarTarget = target;
   document.getElementById("calendarBg").style.display = "block";
   document.getElementById("calendarPopup").style.display = "block";
-
   calendarMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
   renderCalendar();
 }
@@ -420,7 +665,6 @@ function closeCalendar(){
 function renderCalendar(){
   const grid = document.getElementById("calendarGrid");
   const title = document.getElementById("calendarTitle");
-
   grid.innerHTML = "";
 
   const year = calendarMonth.getFullYear();
@@ -448,12 +692,13 @@ function renderCalendar(){
 
     cell.onclick = ()=>{
       selectedDate = new Date(d);
+      weekStart = getMonday(selectedDate);
 
       if(calendarTarget === "input"){
-        document.getElementById("titleInput").value = formatDate(selectedDate);
+        document.getElementById("dateInput").value = formatDate(selectedDate);
       }else{
-        weekStart = getMonday(selectedDate);
         renderDates();
+        refreshCurrentTab();
       }
 
       closeCalendar();
@@ -463,14 +708,7 @@ function renderCalendar(){
   }
 }
 
-document.getElementById("calendarBtn").onclick = ()=>{
-  openCalendar("week");
-};
-
-document.getElementById("titleInput").onclick = ()=>{
-  openCalendar("input");
-};
-
+document.getElementById("calendarBtn").onclick = ()=>openCalendar("week");
 document.getElementById("calendarBg").onclick = closeCalendar;
 document.getElementById("calendarClose").onclick = closeCalendar;
 
@@ -484,63 +722,8 @@ document.getElementById("calNext").onclick = ()=>{
   renderCalendar();
 };
 
-const modal = document.getElementById("modal");
-const modalContent = document.getElementById("modalContent");
-const titleEl = document.querySelector(".notice-title");
-const nameEl = document.querySelector(".notice-name");
-const bodyEl = document.querySelector(".notice-body");
-
-modalContent.onclick = e=>e.stopPropagation();
-modal.onclick = ()=>modal.style.display = "none";
-
-document.getElementById("editBtn").onclick = ()=>{
-  document.getElementById("titleInput").value = titleEl.innerText;
-  document.getElementById("nameInput").value = nameEl.innerText;
-  document.getElementById("bodyInput").value = bodyEl.innerText;
-  modal.style.display = "flex";
-};
-
-document.getElementById("manageBtn").onclick = ()=>{
-  setActiveTab(document.getElementById("manageBtn"));
-
-  document.getElementById("titleInput").value = "";
-  document.getElementById("nameInput").value = "";
-  document.getElementById("bodyInput").value = "";
-
-  modal.style.display = "flex";
-};
-
-document.getElementById("noticeBtn").onclick = ()=>{
-  setActiveTab(document.getElementById("noticeBtn"));
-};
-
-document.getElementById("shipBtn").onclick = ()=>{
-  setActiveTab(document.getElementById("shipBtn"));
-};
-
-document.getElementById("todayBtn").onclick = ()=>{
-  setActiveTab(document.getElementById("todayBtn"));
-};
-
-document.getElementById("closeBtn").onclick = ()=>{
-  modal.style.display = "none";
-};
-
-document.getElementById("saveBtn").onclick = ()=>{
-  titleEl.innerText = document.getElementById("titleInput").value || "日付未選択";
-  nameEl.innerText = document.getElementById("nameInput").value || "";
-  bodyEl.innerText = document.getElementById("bodyInput").value || "";
-  modal.style.display = "none";
-  setActiveTab(document.getElementById("noticeBtn"));
-};
-
-document.getElementById("deleteBtn").onclick = ()=>{
-  if(confirm("削除しますか？")){
-    document.querySelector(".card").remove();
-  }
-};
-
 renderDates();
+renderNotice();
 </script>
 
 </body>
