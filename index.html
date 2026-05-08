@@ -7,394 +7,74 @@
 
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#f3eee6;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;color:#111}
+.container{max-width:430px;margin:auto;padding:12px 16px 70px}
+h1{font-size:34px;font-weight:900;margin:8px 0 18px}
+button{border:none;cursor:pointer;font-family:inherit}
 
-body{
-  margin:0;
-  background:#f3eee6;
-  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
-  color:#111;
-}
+.top-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.top-tabs button{height:44px;border-radius:16px;background:#e6ddd4;color:#007aff;font-size:13px;font-weight:900}
+#todayBtn{line-height:1.2;font-size:12px}
+.active{background:#c99657!important;color:#fff!important}
 
-.container{
-  max-width:430px;
-  margin:auto;
-  padding:12px 16px 70px;
-}
+.week-row{display:grid;grid-template-columns:1fr .7fr 1fr;gap:10px;margin-bottom:10px}
+.week-row button{height:40px;border-radius:16px;background:#e6ddd4;color:#007aff;font-size:13px;font-weight:900}
 
-h1{
-  font-size:34px;
-  font-weight:900;
-  margin:8px 0 18px;
-}
+.date-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px}
+.date-row button{height:40px;border-radius:16px;background:#e6ddd4;color:#007aff;font-size:16px;font-weight:900}
 
-button{
-  border:none;
-  cursor:pointer;
-  font-family:inherit;
-}
+.card{background:#fff;border-radius:22px;padding:14px;position:relative}
+.group-title{font-size:20px;font-weight:900;margin-bottom:8px}
 
-.top-tabs{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
-  margin-bottom:12px;
-}
+.place-row{display:grid;grid-template-columns:1fr 126px;align-items:center;gap:8px;margin:8px 0}
+.place-name{font-size:15px;font-weight:900}
+.place-status{display:flex;justify-content:flex-end;gap:8px}
+.place-status button{width:54px;height:34px;border-radius:15px;background:#e6ddd4;color:#111;font-size:13px;font-weight:900}
 
-.top-tabs button{
-  height:44px;
-  border-radius:16px;
-  background:#e6ddd4;
-  color:#007aff;
-  font-size:13px;
-  font-weight:900;
-}
+.ship-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:16px 0}
+.ship-name{font-size:20px;font-weight:900}
+.ship-right{width:160px;margin-right:12px;text-align:right}
+.ship-status{display:flex;justify-content:flex-end;gap:8px}
+.ship-status button{width:58px;height:40px;border-radius:18px;background:#e6ddd4;color:#111;font-size:14px;font-weight:900}
 
-#todayBtn{
-  line-height:1.2;
-  font-size:12px;
-}
+.divider{height:1px;background:#e2d7ca;margin:12px 0}
 
-.active{
-  background:#c99657!important;
-  color:#fff!important;
-}
+.today-info{text-align:center;font-size:15px;font-weight:900;line-height:1.7;margin:26px 0 20px;color:#3b332a}
+.today-info .blue,.today-date-title .blue{color:#007aff}
+.today-date-title{text-align:center;font-size:22px;font-weight:900;margin-bottom:20px}
 
-.week-row{
-  display:grid;
-  grid-template-columns:1fr .7fr 1fr;
-  gap:10px;
-  margin-bottom:10px;
-}
+.notice-title{font-size:20px;font-weight:900;margin-bottom:12px}
+.notice-name{font-size:15px;margin-bottom:8px}
+.notice-body{font-size:14px;line-height:1.5;white-space:pre-wrap}
 
-.week-row button{
-  height:40px;
-  border-radius:16px;
-  background:#e6ddd4;
-  color:#007aff;
-  font-size:13px;
-  font-weight:900;
-}
-
-.date-row{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:10px;
-  margin-bottom:12px;
-}
-
-.date-row button{
-  height:40px;
-  border-radius:16px;
-  background:#e6ddd4;
-  color:#007aff;
-  font-size:16px;
-  font-weight:900;
-}
-
-.card{
-  background:#fff;
-  border-radius:22px;
-  padding:14px;
-  position:relative;
-}
-
-.group-title{
-  font-size:20px;
-  font-weight:900;
-  margin-bottom:8px;
-}
-
-.place-row{
-  display:grid;
-  grid-template-columns:1fr 126px 120px;
-  align-items:center;
-  gap:8px;
-  margin:6px 0;
-}
-
-.place-name{
-  font-size:15px;
-  font-weight:900;
-}
-
-.place-status{
-  display:flex;
-  justify-content:flex-end;
-  gap:8px;
-}
-
-.place-status button{
-  width:54px;
-  height:34px;
-  border-radius:15px;
-  background:#e6ddd4;
-  color:#111;
-  font-size:13px;
-  font-weight:900;
-}
-
-.place-links{
-  display:flex;
-  justify-content:flex-end;
-  align-items:center;
-  gap:8px;
-  font-size:10px;
-  font-weight:800;
-  color:#8b5d33;
-  text-decoration:underline;
-  white-space:nowrap;
-}
-
-.place-links span{
-  cursor:pointer;
-  padding:6px 1px;
-}
-
-.photo-attached{
-  color:#cf9a57!important;
-  font-weight:900!important;
-}
-
-.delete-photo{
-  color:#d84b4b!important;
-  font-weight:900!important;
-  cursor:pointer;
-}
-
-.ship-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  padding:16px 0;
-}
-
-.ship-name{
-  font-size:20px;
-  font-weight:900;
-}
-
-.ship-right{
-  width:160px;
-  margin-right:12px;
-  text-align:right;
-}
-
-.ship-status{
-  display:flex;
-  justify-content:flex-end;
-  gap:8px;
-}
-
-.ship-status button{
-  width:58px;
-  height:40px;
-  border-radius:18px;
-  background:#e6ddd4;
-  color:#111;
-  font-size:14px;
-  font-weight:900;
-}
-
-.divider{
-  height:1px;
-  background:#e2d7ca;
-  margin:12px 0;
-}
-
-.today-info{
-  text-align:center;
-  font-size:15px;
-  font-weight:900;
-  line-height:1.7;
-  margin:26px 0 20px;
-  color:#3b332a;
-}
-
-.today-info .blue,
-.today-date-title .blue{
-  color:#007aff;
-}
-
-.today-date-title{
-  text-align:center;
-  font-size:22px;
-  font-weight:900;
-  margin-bottom:20px;
-}
-
-.notice-title{
-  font-size:20px;
-  font-weight:900;
-  margin-bottom:12px;
-}
-
-.notice-name{
-  font-size:15px;
-  margin-bottom:8px;
-}
-
-.notice-body{
-  font-size:14px;
-  line-height:1.5;
-  white-space:pre-wrap;
-}
-
-.card-actions{
-  position:absolute;
-  right:14px;
-  bottom:14px;
-  display:flex;
-  gap:8px;
-}
-
-.icon-btn{
-  width:34px;
-  height:34px;
-  border-radius:50%;
-  font-size:15px;
-}
-
+.card-actions{position:absolute;right:14px;bottom:14px;display:flex;gap:8px}
+.icon-btn{width:34px;height:34px;border-radius:50%;font-size:15px}
 .edit-btn{background:#efe7dc}
 .delete-btn{background:#f8dede}
 
-.form-input,
-.form-textarea{
-  width:100%;
-  border:2px solid #e3ddd5;
-  border-radius:14px;
-  padding:12px;
-  margin-bottom:10px;
-  font-size:15px;
-}
-
+.form-input,.form-textarea{width:100%;border:2px solid #e3ddd5;border-radius:14px;padding:12px;margin-bottom:10px;font-size:15px}
 .form-input{height:50px}
 .form-textarea{height:120px;resize:none}
+.save-btn{width:100%;height:46px;border-radius:16px;background:#c99657;color:#fff;font-size:16px;font-weight:900}
 
-.save-btn{
-  width:100%;
-  height:46px;
-  border-radius:16px;
-  background:#c99657;
-  color:#fff;
-  font-size:16px;
-  font-weight:900;
-}
-
-.calendar-bg,
-.photo-bg{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.25);
-  z-index:1000;
-}
-
-.calendar-popup{
-  display:none;
-  position:fixed;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  width:340px;
-  background:#f3eee6;
-  border-radius:26px;
-  padding:18px;
-  z-index:1001;
-}
-
-.calendar-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:14px;
-}
-
-.calendar-title{
-  font-size:16px;
-  font-weight:900;
-}
-
-.calendar-header button{
-  width:34px;
-  height:34px;
-  border-radius:50%;
-  background:#c99657;
-  color:#fff;
-  font-size:20px;
-  font-weight:900;
-}
-
-.calendar-week,
-.calendar-grid{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:6px;
-}
-
-.calendar-week{
-  margin-bottom:6px;
-}
-
-.calendar-week div{
-  text-align:center;
-  font-size:12px;
-  font-weight:900;
-  color:#8b7b6b;
-}
-
-.calendar-day,
-.calendar-empty{
-  height:38px;
-  border-radius:12px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:14px;
-  font-weight:800;
-}
-
-.calendar-day{
-  background:#e6ddd4;
-}
-
-.calendar-day.active{
-  background:#c99657;
-  color:#fff;
-}
-
-.calendar-close{
-  margin-top:14px;
-  width:100%;
-  height:40px;
-  border-radius:14px;
-  background:#e6ddd4;
-  font-weight:900;
-}
-
-.photo-modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:1001;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-}
-
-.photo-modal img{
-  max-width:100%;
-  max-height:85vh;
-  border-radius:14px;
-  background:#fff;
-}
+.calendar-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:1000}
+.calendar-popup{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:340px;background:#f3eee6;border-radius:26px;padding:18px;z-index:1001}
+.calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.calendar-title{font-size:16px;font-weight:900}
+.calendar-header button{width:34px;height:34px;border-radius:50%;background:#c99657;color:#fff;font-size:20px;font-weight:900}
+.calendar-week,.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.calendar-week{margin-bottom:6px}
+.calendar-week div{text-align:center;font-size:12px;font-weight:900;color:#8b7b6b}
+.calendar-day,.calendar-empty{height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800}
+.calendar-day{background:#e6ddd4}
+.calendar-day.active{background:#c99657;color:#fff}
+.calendar-close{margin-top:14px;width:100%;height:40px;border-radius:14px;background:#e6ddd4;font-weight:900}
 </style>
 </head>
 
 <body>
 
 <div class="container">
-
 <h1>出荷管理</h1>
 
 <div class="top-tabs">
@@ -414,10 +94,7 @@ button{
 </div>
 
 <div id="mainArea"></div>
-
 </div>
-
-<input type="file" id="photoInput" accept="image/*" style="display:none">
 
 <div class="calendar-bg" id="calendarBg"></div>
 
@@ -433,35 +110,38 @@ button{
   </div>
 
   <div class="calendar-grid" id="calendarGrid"></div>
-
   <button class="calendar-close" id="calendarClose">閉じる</button>
 </div>
 
-<div class="photo-bg" id="photoBg"></div>
-
-<div class="photo-modal" id="photoModal">
-  <img id="photoPreview">
-</div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
 <script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBTv3sXmIwGmg5iVBRjfwwqA6djwYO2CJQ",
+  authDomain: "shipment-app-b45dd.firebaseapp.com",
+  databaseURL: "https://shipment-app-b45dd-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "shipment-app-b45dd",
+  storageBucket: "shipment-app-b45dd.firebasestorage.app",
+  messagingSenderId: "995150359566",
+  appId: "1:995150359566:web:01e3ef86eec27ea66ae05f"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
 let weekStart = getMonday(new Date());
 let selectedDate = new Date();
 let baseDate = new Date();
 let calendarMonth = new Date();
-let currentPhotoKey = "";
 let calendarTarget = "week";
 
-let shipData = JSON.parse(localStorage.getItem("shipData") || "{}");
-let photoData = JSON.parse(localStorage.getItem("photoData") || "{}");
-let notices = JSON.parse(localStorage.getItem("noticesByDate") || "{}");
+let shipData = {};
+let notices = {};
 
-function formatDate(d){
-  return (d.getMonth()+1)+"/"+d.getDate();
-}
-
-function weekday(d){
-  return ["日","月","火","水","木","金","土"][d.getDay()];
-}
+function formatDate(d){return (d.getMonth()+1)+"/"+d.getDate();}
+function safeDateKey(d){return formatDate(d).replace("/","-");}
+function weekday(d){return ["日","月","火","水","木","金","土"][d.getDay()];}
 
 function getMonday(date){
   const d = new Date(date);
@@ -497,9 +177,7 @@ function renderDates(){
     const btn = document.createElement("button");
     btn.textContent = formatDate(d);
 
-    if(sameDate(d,selectedDate)){
-      btn.classList.add("active");
-    }
+    if(sameDate(d,selectedDate)) btn.classList.add("active");
 
     btn.onclick = ()=>{
       selectedDate = new Date(d);
@@ -519,85 +197,21 @@ function refreshCurrentTab(){
 }
 
 function dataKey(type,name){
-  return type+"_"+formatDate(selectedDate)+"_"+name;
+  return type+"_"+safeDateKey(selectedDate)+"_"+name;
 }
 
 function getStatus(type,name){
   const key = dataKey(type,name);
-  if(!shipData[key]){
-    shipData[key] = "なし";
-  }
-  return shipData[key];
+  return shipData[key] || "なし";
 }
 
 function saveStatus(type,name,status){
   const key = dataKey(type,name);
-  shipData[key] = status;
-  localStorage.setItem("shipData",JSON.stringify(shipData));
+  db.ref("shipData/"+key).set(status);
 }
-
-function photoKey(type,name){
-  return type+"_"+formatDate(selectedDate)+"_"+name;
-}
-
-function attachPhoto(type,name){
-  currentPhotoKey = photoKey(type,name);
-  photoInput.value = "";
-  photoInput.click();
-}
-
-photoInput.onchange = e=>{
-  const file = e.target.files[0];
-  if(!file) return;
-
-  const reader = new FileReader();
-
-  reader.onload = ev=>{
-    photoData[currentPhotoKey] = ev.target.result;
-    localStorage.setItem("photoData",JSON.stringify(photoData));
-    refreshCurrentTab();
-  };
-
-  reader.readAsDataURL(file);
-};
-
-function showPhoto(type,name){
-  const img = photoData[photoKey(type,name)];
-
-  if(!img){
-    alert("写真がありません");
-    return;
-  }
-
-  photoPreview.src = img;
-  photoBg.style.display = "block";
-  photoModal.style.display = "flex";
-}
-
-function deletePhoto(type,name){
-  const key = photoKey(type,name);
-
-  if(!photoData[key]) return;
-
-  if(confirm("写真を削除しますか？")){
-    delete photoData[key];
-    localStorage.setItem("photoData",JSON.stringify(photoData));
-    refreshCurrentTab();
-  }
-}
-
-function closePhoto(){
-  photoBg.style.display = "none";
-  photoModal.style.display = "none";
-  photoPreview.src = "";
-}
-
-photoBg.onclick = closePhoto;
-photoModal.onclick = closePhoto;
 
 function placeRow(type,label){
   const status = getStatus(type,label);
-  const hasPhoto = !!photoData[photoKey(type,label)];
 
   return `
     <div class="place-row">
@@ -606,12 +220,6 @@ function placeRow(type,label){
       <div class="place-status" data-type="${type}" data-name="${label}">
         <button class="${status==="あり"?"active":""}" onclick="togglePlace(this,'あり')">あり</button>
         <button class="${status==="なし"?"active":""}" onclick="togglePlace(this,'なし')">なし</button>
-      </div>
-
-      <div class="place-links">
-        <span onclick="showPhoto('${type}','${label}')">写真表示</span>
-        <span class="${hasPhoto?"photo-attached":""}" onclick="attachPhoto('${type}','${label}')">${hasPhoto ? "添付済" : "添付"}</span>
-        ${hasPhoto ? `<span class="delete-photo" onclick="deletePhoto('${type}','${label}')">削除</span>` : ""}
       </div>
     </div>
   `;
@@ -707,6 +315,10 @@ function toggleShip(btn,status){
   saveStatus(group.dataset.type,group.dataset.name,status);
 }
 
+function noticeKey(){
+  return safeDateKey(selectedDate);
+}
+
 function renderNotice(){
   setActiveTab(noticeBtn);
   scheduleArea.style.display = "block";
@@ -715,14 +327,14 @@ function renderNotice(){
   weekStart = getMonday(selectedDate);
   renderDates();
 
-  const key = formatDate(selectedDate);
+  const key = noticeKey();
   const item = notices[key];
 
   mainArea.innerHTML = item ? `
     <div class="card">
-      <div class="notice-title">${key}</div>
-      <div class="notice-name">${item.title}</div>
-      <div class="notice-body">${item.body}</div>
+      <div class="notice-title">${formatDate(selectedDate)}</div>
+      <div class="notice-name">${item.title || ""}</div>
+      <div class="notice-body">${item.body || ""}</div>
       <div class="card-actions">
         <button class="icon-btn edit-btn" onclick="renderManage()">✏️</button>
         <button class="icon-btn delete-btn" onclick="deleteNotice()">🗑️</button>
@@ -730,7 +342,7 @@ function renderNotice(){
     </div>
   ` : `
     <div class="card">
-      <div class="notice-title">${key}</div>
+      <div class="notice-title">${formatDate(selectedDate)}</div>
       <div class="notice-name">注意事項なし</div>
       <div class="notice-body">この日の注意事項はありません</div>
       <div class="card-actions">
@@ -744,14 +356,14 @@ function renderManage(){
   setActiveTab(manageBtn);
   scheduleArea.style.display = "none";
 
-  const key = formatDate(selectedDate);
+  const key = noticeKey();
   const item = notices[key] || {title:"",body:""};
 
   mainArea.innerHTML = `
     <div class="card">
-      <input class="form-input" id="dateInput" placeholder="日付選択" readonly value="${key}">
-      <input class="form-input" id="titleInput" placeholder="タイトル" value="${item.title}">
-      <textarea class="form-textarea" id="bodyInput" placeholder="内容">${item.body}</textarea>
+      <input class="form-input" id="dateInput" placeholder="日付選択" readonly value="${formatDate(selectedDate)}">
+      <input class="form-input" id="titleInput" placeholder="タイトル" value="${item.title || ""}">
+      <textarea class="form-textarea" id="bodyInput" placeholder="内容">${item.body || ""}</textarea>
       <button class="save-btn" onclick="saveNotice()">保存</button>
     </div>
   `;
@@ -760,35 +372,22 @@ function renderManage(){
 }
 
 function saveNotice(){
-  const key = dateInput.value;
+  const key = noticeKey();
 
-  notices[key] = {
+  db.ref("notices/"+key).set({
     title:titleInput.value || "",
     body:bodyInput.value || ""
-  };
+  });
 
-  localStorage.setItem("noticesByDate",JSON.stringify(notices));
-
-  selectedDate = parseDateKey(key);
-  baseDate = new Date(selectedDate);
-  weekStart = getMonday(selectedDate);
-  renderDates();
   renderNotice();
 }
 
 function deleteNotice(){
-  const key = formatDate(selectedDate);
+  const key = noticeKey();
 
   if(confirm("削除しますか？")){
-    delete notices[key];
-    localStorage.setItem("noticesByDate",JSON.stringify(notices));
-    renderNotice();
+    db.ref("notices/"+key).remove();
   }
-}
-
-function parseDateKey(key){
-  const [m,d] = key.split("/").map(Number);
-  return new Date(selectedDate.getFullYear(),m-1,d);
 }
 
 function openCalendar(target="week"){
@@ -834,9 +433,7 @@ function renderCalendar(){
     cell.className = "calendar-day";
     cell.textContent = day;
 
-    if(sameDate(d,selectedDate)){
-      cell.classList.add("active");
-    }
+    if(sameDate(d,selectedDate)) cell.classList.add("active");
 
     cell.onclick = ()=>{
       selectedDate = new Date(d);
@@ -891,6 +488,16 @@ calNext.onclick = ()=>{
   calendarMonth.setMonth(calendarMonth.getMonth()+1);
   renderCalendar();
 };
+
+db.ref("shipData").on("value", snapshot=>{
+  shipData = snapshot.val() || {};
+  refreshCurrentTab();
+});
+
+db.ref("notices").on("value", snapshot=>{
+  notices = snapshot.val() || {};
+  refreshCurrentTab();
+});
 
 renderDates();
 renderShip();
