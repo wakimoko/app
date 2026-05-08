@@ -96,6 +96,7 @@ button{
   border-radius:22px;
   padding:14px;
   position:relative;
+  min-height:120px;
 }
 
 .group-title{
@@ -193,36 +194,54 @@ button{
   font-size:20px;
   font-weight:900;
   margin-bottom:12px;
+  padding-right:120px;
 }
 
 .notice-name{
   font-size:15px;
   margin-bottom:8px;
+  padding-right:120px;
 }
 
 .notice-body{
   font-size:14px;
   line-height:1.5;
   white-space:pre-wrap;
+  padding-right:120px;
 }
 
 .card-actions{
   position:absolute;
-  right:14px;
-  bottom:14px;
+  top:50%;
+  right:20px;
+  transform:translateY(-50%);
   display:flex;
-  gap:8px;
+  align-items:center;
+  gap:10px;
+  z-index:10;
 }
 
 .icon-btn{
-  width:34px;
-  height:34px;
+  width:44px;
+  height:44px;
+  border:none;
   border-radius:50%;
-  font-size:15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  font-weight:900;
+  cursor:pointer;
+  flex-shrink:0;
 }
 
-.edit-btn{background:#efe7dc}
-.delete-btn{background:#f8dede}
+.edit-btn{
+  background:#efe7dc;
+}
+
+.delete-btn{
+  background:#f8dede;
+}
 
 .form-input,
 .form-textarea{
@@ -433,6 +452,16 @@ function isClosedDay(d){
   return d.getDay()===0 || d.getDay()===6 || isHoliday(d);
 }
 
+function getNextShipDate(fromDate){
+  const d = new Date(fromDate);
+
+  do{
+    d.setDate(d.getDate()+1);
+  }while(isClosedDay(d));
+
+  return d;
+}
+
 function getMonday(date){
   const d = new Date(date);
   const day = d.getDay();
@@ -444,14 +473,6 @@ function sameDate(a,b){
   return a.getFullYear()===b.getFullYear()
     && a.getMonth()===b.getMonth()
     && a.getDate()===b.getDate();
-}
-
-function getNextShipDate(){
-  const d = new Date(baseDate);
-  do{
-    d.setDate(d.getDate()+1);
-  }while(isClosedDay(d));
-  return d;
 }
 
 function setActiveTab(btn){
@@ -564,8 +585,8 @@ function renderToday(){
   setActiveTab(todayBtn);
   scheduleArea.style.display = "none";
 
-  const today = new Date(baseDate);
-  const shipDate = getNextShipDate();
+  const today = new Date();
+  const shipDate = getNextShipDate(today);
 
   selectedDate = new Date(shipDate);
 
@@ -637,6 +658,7 @@ function renderNotice(){
       <div class="notice-body">この日の注意事項はありません</div>
       <div class="card-actions">
         <button class="icon-btn edit-btn" onclick="renderManage()">✏️</button>
+        <button class="icon-btn delete-btn" onclick="deleteNotice()">🗑️</button>
       </div>
     </div>
   `;
