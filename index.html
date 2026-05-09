@@ -11,7 +11,9 @@
 body{
   margin:0;
   background:#f3eee6;
-  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+  font-family:"Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",-apple-system,BlinkMacSystemFont,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:geometricPrecision;
   color:#111;
   overflow-x:hidden;
 }
@@ -24,21 +26,12 @@ body{
   transform-origin:top center;
 }
 
-h1{
-  font-size:32px;
-  font-weight:900;
-  margin:6px 0 16px;
-}
-
-button{
-  border:none;
-  cursor:pointer;
-  font-family:inherit;
-}
+h1{font-size:32px;font-weight:900;margin:6px 0 16px}
+button{border:none;cursor:pointer;font-family:inherit}
 
 .top-tabs{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
+  grid-template-columns:repeat(3,1fr);
   gap:8px;
   margin-bottom:10px;
 }
@@ -52,15 +45,8 @@ button{
   font-weight:900;
 }
 
-#todayBtn{
-  line-height:1.2;
-  font-size:11px;
-}
-
-.active{
-  background:#c99657!important;
-  color:#fff!important;
-}
+#todayBtn{line-height:1.2;font-size:11px}
+.active{background:#c99657!important;color:#fff!important}
 
 .week-row{
   display:grid;
@@ -103,11 +89,7 @@ button{
   margin-bottom:10px;
 }
 
-.group-title{
-  font-size:19px;
-  font-weight:900;
-  margin-bottom:8px;
-}
+.group-title{font-size:19px;font-weight:900;margin-bottom:8px}
 
 .place-row{
   display:grid;
@@ -117,13 +99,9 @@ button{
   margin:7px 0;
 }
 
-.place-name{
-  font-size:14px;
-  font-weight:900;
-}
+.place-name{font-size:14px;font-weight:900}
 
-.place-status,
-.ship-status{
+.place-status,.ship-status{
   display:flex;
   justify-content:flex-end;
   gap:7px;
@@ -147,15 +125,8 @@ button{
   padding:14px 0;
 }
 
-.ship-name{
-  font-size:19px;
-  font-weight:900;
-}
-
-.ship-right{
-  width:150px;
-  margin-right:8px;
-}
+.ship-name{font-size:19px;font-weight:900}
+.ship-right{width:150px;margin-right:8px}
 
 .ship-status button{
   width:56px;
@@ -165,6 +136,11 @@ button{
   color:#111;
   font-size:13px;
   font-weight:900;
+}
+
+.locked button{
+  pointer-events:none;
+  opacity:.88;
 }
 
 .divider{
@@ -182,10 +158,7 @@ button{
   color:#3b332a;
 }
 
-.today-info .blue,
-.today-date-title .blue{
-  color:#007aff;
-}
+.today-info .blue,.today-date-title .blue{color:#007aff}
 
 .today-date-title{
   text-align:center;
@@ -239,39 +212,56 @@ button{
 .edit-btn{background:#efe7dc}
 .delete-btn{background:#f8dede}
 
-.add-btn{
+.add-btn,.save-btn,.mode-btn,.line-btn{
   width:100%;
   height:44px;
   border-radius:15px;
-  background:#c99657;
-  color:#fff;
   font-size:15px;
   font-weight:900;
-  margin-top:4px;
+  margin-top:8px;
 }
 
-.form-input,
-.form-textarea{
+.add-btn,.save-btn,.mode-btn{
+  background:#c99657;
+  color:#fff;
+}
+
+.line-btn{
+  background:#06c755;
+  color:#fff;
+}
+
+.cancel-btn{
+  width:100%;
+  height:40px;
+  border-radius:14px;
+  background:#e6ddd4;
+  color:#111;
+  font-size:14px;
+  font-weight:900;
+  margin-top:8px;
+}
+
+.meta{
+  text-align:center;
+  font-size:12px;
+  font-weight:900;
+  color:#7b6b5e;
+  margin-top:12px;
+}
+
+.form-input,.form-textarea{
   width:100%;
   border:2px solid #e3ddd5;
   border-radius:14px;
   padding:12px;
   margin-bottom:10px;
   font-size:15px;
+  font-family:inherit;
 }
 
 .form-input{height:48px}
 .form-textarea{height:115px;resize:none}
-
-.save-btn{
-  width:100%;
-  height:44px;
-  border-radius:15px;
-  background:#c99657;
-  color:#fff;
-  font-size:15px;
-  font-weight:900;
-}
 
 .calendar-bg{
   display:none;
@@ -301,10 +291,7 @@ button{
   margin-bottom:14px;
 }
 
-.calendar-title{
-  font-size:16px;
-  font-weight:900;
-}
+.calendar-title{font-size:16px;font-weight:900}
 
 .calendar-header button{
   width:34px;
@@ -316,8 +303,7 @@ button{
   font-weight:900;
 }
 
-.calendar-week,
-.calendar-grid{
+.calendar-week,.calendar-grid{
   display:grid;
   grid-template-columns:repeat(7,1fr);
   gap:6px;
@@ -332,8 +318,7 @@ button{
   color:#8b7b6b;
 }
 
-.calendar-day,
-.calendar-empty{
+.calendar-day,.calendar-empty{
   height:38px;
   border-radius:12px;
   display:flex;
@@ -366,7 +351,6 @@ button{
     <button id="noticeBtn">注意事項</button>
     <button id="shipBtn" class="active">出荷場所</button>
     <button id="todayBtn">当日送り状<br>貼り残し</button>
-    <button id="manageBtn">管理</button>
   </div>
 
   <div id="scheduleArea">
@@ -389,11 +373,9 @@ button{
     <div class="calendar-title" id="calendarTitle"></div>
     <button id="calNext">›</button>
   </div>
-
   <div class="calendar-week">
     <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
   </div>
-
   <div class="calendar-grid" id="calendarGrid"></div>
   <button class="calendar-close" id="calendarClose">閉じる</button>
 </div>
@@ -424,6 +406,13 @@ let editingNoticeId = null;
 
 let shipData = {};
 let notices = {};
+let metaData = {};
+
+let shipEditMode = false;
+let todayEditMode = false;
+let tempShipData = {};
+let tempTodayData = {};
+let lastLineText = "";
 
 const holidays = [
   "2025-01-01","2025-01-13","2025-02-11","2025-02-23",
@@ -453,6 +442,11 @@ function weekday(d){
   return ["日","月","火","水","木","金","土"][d.getDay()];
 }
 
+function nowText(){
+  const d = new Date();
+  return `${formatDate(d)} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+}
+
 function isHoliday(d){
   return holidays.includes(fullDateKey(d));
 }
@@ -468,14 +462,13 @@ function getBusinessToday(fromDate){
   }
   return d;
 }
-  function getNextShipDate(fromDate){
+
+function getNextShipDate(fromDate){
   const d = new Date(fromDate);
   d.setDate(d.getDate()+1);
-
   while(isClosedDay(d)){
     d.setDate(d.getDate()+1);
   }
-
   return d;
 }
 
@@ -513,6 +506,8 @@ function renderDates(){
       selectedDate = new Date(d);
       baseDate = new Date(d);
       editingNoticeId = null;
+      shipEditMode = false;
+      todayEditMode = false;
       renderDates();
       refreshCurrentTab();
     };
@@ -531,23 +526,55 @@ function dataKey(type,name){
   return type+"_"+fullDateKey(selectedDate)+"_"+name;
 }
 
-function getStatus(type,name){
+function getStatus(type,name,temp){
   const key = dataKey(type,name);
+  if(temp && temp[key]) return temp[key];
   return shipData[key] || "なし";
 }
 
-function saveStatus(type,name,status){
+function setTempStatus(type,name,status,temp){
   const key = dataKey(type,name);
-  db.ref("shipData/"+key).set(status);
+  temp[key] = status;
+}
+
+function getMetaKey(type){
+  return type+"_"+fullDateKey(selectedDate);
+}
+
+function getLastUpdate(type){
+  return metaData[getMetaKey(type)]?.updatedAt || "未保存";
+}
+
+function lineShare(text){
+  location.href = "https://line.me/R/msg/text/?" + encodeURIComponent(text);
+}
+
+function controlArea(type,pageName){
+  const last = getLastUpdate(type);
+
+  return `
+    <div class="meta">最終更新：${last}</div>
+
+    ${type==="ship" && !shipEditMode ? `<button class="mode-btn" onclick="startShipEdit()">編集</button>` : ""}
+    ${type==="ship" && shipEditMode ? `<button class="save-btn" onclick="saveShipEdit()">保存</button><button class="cancel-btn" onclick="cancelShipEdit()">キャンセル</button>` : ""}
+
+    ${type==="today" && !todayEditMode ? `<button class="mode-btn" onclick="startTodayEdit()">編集</button>` : ""}
+    ${type==="today" && todayEditMode ? `<button class="save-btn" onclick="saveTodayEdit()">保存</button><button class="cancel-btn" onclick="cancelTodayEdit()">キャンセル</button>` : ""}
+
+    <button class="line-btn" onclick="lineShare('出荷管理が更新されました\\nページ：${pageName}\\n日付：${formatDate(selectedDate)}\\n最終更新：${last}')">
+      LINEで共有
+    </button>
+  `;
 }
 
 function placeRow(type,label){
-  const status = getStatus(type,label);
+  const status = getStatus(type,label,tempShipData);
+  const lockedClass = shipEditMode ? "" : "locked";
 
   return `
     <div class="place-row">
       <div class="place-name">${label.split("_").pop()}</div>
-      <div class="place-status" data-type="${type}" data-name="${label}">
+      <div class="place-status ${lockedClass}" data-type="${type}" data-name="${label}">
         <button class="${status==="あり"?"active":""}" onclick="togglePlace(this,'あり')">あり</button>
         <button class="${status==="なし"?"active":""}" onclick="togglePlace(this,'なし')">なし</button>
       </div>
@@ -579,18 +606,44 @@ function renderShip(){
       ${shipGroup("福山通運",["2F","梱包場","MJ倉庫"])}
       <div class="divider"></div>
       ${shipGroup("フレックス来社",["2F","梱包場","MJ倉庫"])}
+      ${controlArea("ship","出荷場所")}
     </div>
   `;
 }
 
+function startShipEdit(){
+  tempShipData = {};
+  shipEditMode = true;
+  renderShip();
+}
+
+function cancelShipEdit(){
+  tempShipData = {};
+  shipEditMode = false;
+  renderShip();
+}
+
+function saveShipEdit(){
+  const updates = {};
+  Object.keys(tempShipData).forEach(key=>{
+    updates["shipData/"+key] = tempShipData[key];
+  });
+  updates["meta/"+getMetaKey("ship")] = {updatedAt:nowText()};
+
+  db.ref().update(updates);
+  tempShipData = {};
+  shipEditMode = false;
+}
+
 function todayRow(type,name){
-  const status = getStatus(type,name);
+  const status = getStatus(type,name,tempTodayData);
+  const lockedClass = todayEditMode ? "" : "locked";
 
   return `
     <div class="ship-row">
       <div class="ship-name">${name}</div>
       <div class="ship-right">
-        <div class="ship-status" data-type="${type}" data-name="${name}">
+        <div class="ship-status ${lockedClass}" data-type="${type}" data-name="${name}">
           <button class="${status==="あり"?"active":""}" onclick="toggleShip(this,'あり')">あり</button>
           <button class="${status==="なし"?"active":""}" onclick="toggleShip(this,'なし')">なし</button>
         </div>
@@ -626,22 +679,47 @@ function renderToday(){
       ${todayRow("today","梱包場")}
       <div class="divider"></div>
       ${todayRow("today","MJ倉庫")}
+      ${controlArea("today","当日送り状貼り残し")}
     </div>
   `;
 }
 
+function startTodayEdit(){
+  tempTodayData = {};
+  todayEditMode = true;
+  renderToday();
+}
+
+function cancelTodayEdit(){
+  tempTodayData = {};
+  todayEditMode = false;
+  renderToday();
+}
+
+function saveTodayEdit(){
+  const updates = {};
+  Object.keys(tempTodayData).forEach(key=>{
+    updates["shipData/"+key] = tempTodayData[key];
+  });
+  updates["meta/"+getMetaKey("today")] = {updatedAt:nowText()};
+
+  db.ref().update(updates);
+  tempTodayData = {};
+  todayEditMode = false;
+}
+
 function togglePlace(btn,status){
+  if(!shipEditMode) return;
   const group = btn.parentElement;
-  group.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-  saveStatus(group.dataset.type,group.dataset.name,status);
+  setTempStatus(group.dataset.type,group.dataset.name,status,tempShipData);
+  renderShip();
 }
 
 function toggleShip(btn,status){
+  if(!todayEditMode) return;
   const group = btn.parentElement;
-  group.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-  saveStatus(group.dataset.type,group.dataset.name,status);
+  setTempStatus(group.dataset.type,group.dataset.name,status,tempTodayData);
+  renderToday();
 }
 
 function noticeKey(){
@@ -673,15 +751,8 @@ function renderNotice(){
         <div class="notice-date">${formatDate(selectedDate)}</div>
         <div class="notice-name">注意事項なし</div>
         <div class="notice-body">この日の注意事項はありません</div>
-
-        <div class="card-actions">
-          <button class="icon-btn edit-btn" onclick="renderManage()">✏️</button>
-        </div>
       </div>
-
-      <button class="add-btn" onclick="renderManage()">
-        ＋ 新規追加
-      </button>
+      <button class="add-btn" onclick="renderNoticeForm()">＋ 新規追加</button>
     `;
     return;
   }
@@ -692,24 +763,17 @@ function renderNotice(){
         <div class="notice-date">${formatDate(selectedDate)}</div>
         <div class="notice-name">${item.title || ""}</div>
         <div class="notice-body">${item.body || ""}</div>
-
         <div class="card-actions">
           <button class="icon-btn edit-btn" onclick="editNotice('${item.id}')">✏️</button>
           <button class="icon-btn delete-btn" onclick="deleteNotice('${item.id}')">🗑️</button>
         </div>
       </div>
     `).join("")}
-
-    <button class="add-btn" onclick="renderManage()">
-      ＋ 新規追加
-    </button>
+    <button class="add-btn" onclick="renderNoticeForm()">＋ 新規追加</button>
   `;
 }
 
-function renderManage(){
-  setActiveTab(manageBtn);
-  scheduleArea.style.display = "none";
-
+function renderNoticeForm(){
   const key = noticeKey();
 
   const item =
@@ -721,25 +785,22 @@ function renderManage(){
 
   mainArea.innerHTML = `
     <div class="card">
-      <input class="form-input"
-        id="titleInput"
-        placeholder="タイトル"
-        value="${item.title || ""}">
-
-      <textarea class="form-textarea"
-        id="bodyInput"
-        placeholder="内容">${item.body || ""}</textarea>
-
-      <button class="save-btn" onclick="saveNotice()">
-        保存
-      </button>
+      <input class="form-input" id="titleInput" placeholder="タイトル" value="${item.title || ""}">
+      <textarea class="form-textarea" id="bodyInput" placeholder="内容">${item.body || ""}</textarea>
+      <button class="save-btn" onclick="saveNotice()">保存</button>
+      <button class="cancel-btn" onclick="cancelNoticeForm()">キャンセル</button>
     </div>
   `;
 }
 
 function editNotice(id){
   editingNoticeId = id;
-  renderManage();
+  renderNoticeForm();
+}
+
+function cancelNoticeForm(){
+  editingNoticeId = null;
+  renderNotice();
 }
 
 function saveNotice(){
@@ -772,19 +833,77 @@ function deleteNotice(id){
   }
 }
 
+function openCalendar(target="week"){
+  calendarTarget = target;
+  calendarBg.style.display = "block";
+  calendarPopup.style.display = "block";
+
+  calendarMonth = new Date(
+    selectedDate.getFullYear(),
+    selectedDate.getMonth(),
+    1
+  );
+
+  renderCalendar();
+}
+
+function closeCalendar(){
+  calendarBg.style.display = "none";
+  calendarPopup.style.display = "none";
+}
+
+function renderCalendar(){
+  calendarGrid.innerHTML = "";
+
+  const y = calendarMonth.getFullYear();
+  const m = calendarMonth.getMonth();
+
+  calendarTitle.textContent = `${y}年 ${m+1}月`;
+
+  const first = new Date(y,m,1).getDay();
+  const last = new Date(y,m+1,0).getDate();
+
+  for(let i=0;i<first;i++){
+    const e = document.createElement("div");
+    e.className = "calendar-empty";
+    calendarGrid.appendChild(e);
+  }
+
+  for(let day=1;day<=last;day++){
+    const d = new Date(y,m,day);
+
+    const cell = document.createElement("div");
+    cell.className = "calendar-day";
+    cell.textContent = day;
+
+    if(sameDate(d,selectedDate)) cell.classList.add("active");
+
+    cell.onclick = ()=>{
+      selectedDate = new Date(d);
+      baseDate = new Date(d);
+      weekStart = getMonday(selectedDate);
+      editingNoticeId = null;
+      shipEditMode = false;
+      todayEditMode = false;
+
+      renderDates();
+      refreshCurrentTab();
+      closeCalendar();
+    };
+
+    calendarGrid.appendChild(cell);
+  }
+}
+
 noticeBtn.onclick = renderNotice;
 shipBtn.onclick = renderShip;
 todayBtn.onclick = renderToday;
-
-manageBtn.onclick = ()=>{
-  editingNoticeId = null;
-  renderManage();
-};
 
 prevWeek.onclick = ()=>{
   weekStart.setDate(weekStart.getDate()-7);
   selectedDate = new Date(weekStart);
   baseDate = new Date(selectedDate);
+  editingNoticeId = null;
   renderDates();
   refreshCurrentTab();
 };
@@ -793,8 +912,23 @@ nextWeek.onclick = ()=>{
   weekStart.setDate(weekStart.getDate()+7);
   selectedDate = new Date(weekStart);
   baseDate = new Date(selectedDate);
+  editingNoticeId = null;
   renderDates();
   refreshCurrentTab();
+};
+
+calendarBtn.onclick = ()=>openCalendar("week");
+calendarBg.onclick = closeCalendar;
+calendarClose.onclick = closeCalendar;
+
+calPrev.onclick = ()=>{
+  calendarMonth.setMonth(calendarMonth.getMonth()-1);
+  renderCalendar();
+};
+
+calNext.onclick = ()=>{
+  calendarMonth.setMonth(calendarMonth.getMonth()+1);
+  renderCalendar();
 };
 
 db.ref("shipData").on("value", snapshot=>{
@@ -807,9 +941,14 @@ db.ref("notices").on("value", snapshot=>{
   refreshCurrentTab();
 });
 
+db.ref("meta").on("value", snapshot=>{
+  metaData = snapshot.val() || {};
+  refreshCurrentTab();
+});
+
 renderDates();
 renderShip();
-
 </script>
+
 </body>
 </html>
