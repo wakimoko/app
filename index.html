@@ -97,6 +97,7 @@ button{
   padding:14px;
   position:relative;
   min-height:120px;
+  margin-bottom:12px;
 }
 
 .group-title{
@@ -190,31 +191,29 @@ button{
   margin-bottom:20px;
 }
 
-.notice-title{
+.notice-date{
   font-size:20px;
   font-weight:900;
   margin-bottom:12px;
-  padding-right:120px;
 }
 
 .notice-name{
   font-size:15px;
   margin-bottom:8px;
-  padding-right:120px;
+  padding-right:105px;
 }
 
 .notice-body{
   font-size:14px;
   line-height:1.5;
   white-space:pre-wrap;
-  padding-right:120px;
+  padding-right:105px;
 }
 
 .card-actions{
   position:absolute;
-  top:50%;
-  right:20px;
-  transform:translateY(-50%);
+  right:22px;
+  bottom:20px;
   display:flex;
   align-items:center;
   gap:10px;
@@ -222,10 +221,10 @@ button{
 }
 
 .icon-btn{
-  width:44px;
-  height:44px;
+  width:38px;
+  height:38px;
   border-radius:50%;
-  font-size:20px;
+  font-size:18px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -234,6 +233,17 @@ button{
 
 .edit-btn{background:#efe7dc}
 .delete-btn{background:#f8dede}
+
+.add-btn{
+  width:100%;
+  height:46px;
+  border-radius:16px;
+  background:#c99657;
+  color:#fff;
+  font-size:16px;
+  font-weight:900;
+  margin-top:6px;
+}
 
 .form-input,
 .form-textarea{
@@ -405,6 +415,7 @@ let selectedDate = new Date();
 let baseDate = new Date();
 let calendarMonth = new Date();
 let calendarTarget = "week";
+let editingNoticeId = null;
 
 let shipData = {};
 let notices = {};
@@ -415,7 +426,6 @@ const holidays = [
   "2025-05-05","2025-05-06","2025-07-21","2025-08-11",
   "2025-09-15","2025-09-23","2025-10-13","2025-11-03",
   "2025-11-23","2025-11-24",
-
   "2026-01-01","2026-01-12","2026-02-11","2026-02-23",
   "2026-03-20","2026-04-29","2026-05-03","2026-05-04",
   "2026-05-05","2026-05-06","2026-07-20","2026-08-11",
@@ -448,23 +458,18 @@ function isClosedDay(d){
 
 function getBusinessToday(fromDate){
   const d = new Date(fromDate);
-
   while(isClosedDay(d)){
     d.setDate(d.getDate() - 1);
   }
-
   return d;
 }
 
 function getNextShipDate(fromDate){
   const d = new Date(fromDate);
-
   d.setDate(d.getDate()+1);
-
   while(isClosedDay(d)){
     d.setDate(d.getDate()+1);
   }
-
   return d;
 }
 
@@ -501,6 +506,7 @@ function renderDates(){
     btn.onclick = ()=>{
       selectedDate = new Date(d);
       baseDate = new Date(d);
+      editingNoticeId = null;
       renderDates();
       refreshCurrentTab();
     };
@@ -636,6 +642,14 @@ function noticeKey(){
   return fullDateKey(selectedDate);
 }
 
+function getNoticeList(){
+  const key = noticeKey();
+  const dayNotices = notices[key] || {};
+  return Object.entries(dayNotices)
+    .map(([id,item])=>({id,...item}))
+    .sort((a,b)=>(a.createdAt || 0) - (b.createdAt || 0));
+}
+
 function renderNotice(){
   setActiveTab(noticeBtn);
   scheduleArea.style.display = "block";
@@ -644,29 +658,36 @@ function renderNotice(){
   weekStart = getMonday(selectedDate);
   renderDates();
 
-  const key = noticeKey();
-  const item = notices[key];
+  const list = getNoticeList();
 
-  mainArea.innerHTML = item ? `
-    <div class="card">
-      <div class="notice-title">${formatDate(selectedDate)}</div>
-      <div class="notice-name">${item.title || ""}</div>
-      <div class="notice-body">${item.body || ""}</div>
-      <div class="card-actions">
-        <button class="icon-btn edit-btn" onclick="renderManage()">✏️</button>
-        <button class="icon-btn delete-btn" onclick="deleteNotice()">🗑️</button>
+  if(list.length === 0){
+    mainArea.innerHTML = `
+      <div class="card">
+        <div class="notice-date">${formatDate(selectedDate)}</div>
+        <div class="notice-name">注意事項なし</div>
+        <div class="notice-body">この日の注意事項はありません</div>
+        <div class="card-actions">
+          <button class="icon-btn edit-btn" onclick="renderManage()">✏️</button>
+        </div>
       </div>
-    </div>
-  ` : `
-    <div class="card">
-      <div class="notice-title">${formatDate(selectedDate)}</div>
-      <div class="notice-name">注意事項なし</div>
-      <div class="notice-body">この日の注意事項はありません</div>
-      <div class="card-actions">
-        <button class="icon-btn edit-btn" onclick="renderManage()">✏️</button>
-        <button class="icon-btn delete-btn" onclick="deleteNotice()">🗑️</button>
+      <button class="add-btn" onclick="renderManage()">＋ 新規追加</button>
+    `;
+    return;
+  }
+
+  mainArea.innerHTML = `
+    ${list.map(item=>`
+      <div class="card">
+        <div class="notice-date">${formatDate(selectedDate)}</div>
+        <div class="notice-name">${item.title || ""}</div>
+        <div class="notice-body">${item.body || ""}</div>
+        <div class="card-actions">
+          <button class="icon-btn edit-btn" onclick="editNotice('${item.id}')">✏️</button>
+          <button class="icon-btn delete-btn" onclick="deleteNotice('${item.id}')">🗑️</button>
+        </div>
       </div>
-    </div>
+    `).join("")}
+    <button class="add-btn" onclick="renderManage()">＋ 新規追加</button>
   `;
 }
 
@@ -675,7 +696,9 @@ function renderManage(){
   scheduleArea.style.display = "none";
 
   const key = noticeKey();
-  const item = notices[key] || {title:"",body:""};
+  const item = editingNoticeId && notices[key] && notices[key][editingNoticeId]
+    ? notices[key][editingNoticeId]
+    : {title:"",body:""};
 
   mainArea.innerHTML = `
     <div class="card">
@@ -689,22 +712,36 @@ function renderManage(){
   dateInput.onclick = ()=>openCalendar("input");
 }
 
+function editNotice(id){
+  editingNoticeId = id;
+  renderManage();
+}
+
 function saveNotice(){
   const key = noticeKey();
 
-  db.ref("notices/"+key).set({
+  const id = editingNoticeId || db.ref("notices/"+key).push().key;
+
+  const oldItem =
+    notices[key] && notices[key][id]
+      ? notices[key][id]
+      : {};
+
+  db.ref("notices/"+key+"/"+id).set({
     title:titleInput.value || "",
-    body:bodyInput.value || ""
+    body:bodyInput.value || "",
+    createdAt:oldItem.createdAt || Date.now()
   });
 
+  editingNoticeId = null;
   renderNotice();
 }
 
-function deleteNotice(){
+function deleteNotice(id){
   const key = noticeKey();
 
   if(confirm("削除しますか？")){
-    db.ref("notices/"+key).remove();
+    db.ref("notices/"+key+"/"+id).remove();
   }
 }
 
@@ -757,6 +794,7 @@ function renderCalendar(){
       selectedDate = new Date(d);
       baseDate = new Date(d);
       weekStart = getMonday(selectedDate);
+      editingNoticeId = null;
 
       if(calendarTarget==="input"){
         dateInput.value = formatDate(selectedDate);
@@ -775,12 +813,16 @@ function renderCalendar(){
 noticeBtn.onclick = renderNotice;
 shipBtn.onclick = renderShip;
 todayBtn.onclick = renderToday;
-manageBtn.onclick = renderManage;
+manageBtn.onclick = ()=>{
+  editingNoticeId = null;
+  renderManage();
+};
 
 prevWeek.onclick = ()=>{
   weekStart.setDate(weekStart.getDate()-7);
   selectedDate = new Date(weekStart);
   baseDate = new Date(selectedDate);
+  editingNoticeId = null;
   renderDates();
   refreshCurrentTab();
 };
@@ -789,6 +831,7 @@ nextWeek.onclick = ()=>{
   weekStart.setDate(weekStart.getDate()+7);
   selectedDate = new Date(weekStart);
   baseDate = new Date(selectedDate);
+  editingNoticeId = null;
   renderDates();
   refreshCurrentTab();
 };
