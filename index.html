@@ -836,15 +836,11 @@ ${esc(report)}
     </div>
 
     <button
-      class="line-btn"
-      onclick="lineShare(
-        formatDate(selectedDate) +
-        ' 出荷\\n\\n' +
-        getReportText()
-      )"
-    >
-      LINEで日報共有
-    </button>
+  class="line-btn"
+  onclick="downloadPDF()"
+>
+  PDFでLINE報告
+</button>
 
   `;
 }
