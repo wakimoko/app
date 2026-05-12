@@ -954,19 +954,24 @@ async function downloadPDF(){
 
   const element=document.querySelector(".card");
 
-  const opt={
-    margin:0.05,
-    filename:`日報_${formatDate(selectedDate)}.pdf`,
-    image:{ type:"jpeg", quality:1 },
-    html2canvas:{ scale:2 },
-    jsPDF:{
-      unit:"in",
-      format:[4,7],
-      orientation:"portrait"
-    }
-  };
+  const canvas=await html2canvas(element,{
+    scale:3,
+    backgroundColor:"#ffffff"
+  });
 
-  await html2pdf().set(opt).from(element).save();
+  const imgData=canvas.toDataURL("image/jpeg",1.0);
+
+  const pdfWidth=390;
+  const pdfHeight=canvas.height * pdfWidth / canvas.width;
+
+  const pdf=new jspdf.jsPDF({
+    orientation:"portrait",
+    unit:"px",
+    format:[pdfWidth,pdfHeight]
+  });
+
+  pdf.addImage(imgData,"JPEG",0,0,pdfWidth,pdfHeight);
+  pdf.save(`日報_${formatDate(selectedDate)}.pdf`);
 }
   
 </script>
