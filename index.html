@@ -955,13 +955,13 @@ async function downloadPDF(){
   const element=document.querySelector(".card");
 
   const opt={
-    margin:0.3,
+    margin:0.05,
     filename:`日報_${formatDate(selectedDate)}.pdf`,
     image:{ type:"jpeg", quality:1 },
     html2canvas:{ scale:2 },
     jsPDF:{
       unit:"in",
-      format:"a4",
+      format:[4,7],
       orientation:"portrait"
     }
   };
