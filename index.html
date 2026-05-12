@@ -450,7 +450,7 @@ function fullDateKey(d){
   const day=String(d.getDate()).padStart(2,"0");
   return `${y}-${m}-${day}`;
 }
-<!-- 2/2 -->
+  <!-- 2/2 -->
 
 function weekday(d){
   return ["日","月","火","水","木","金","土"][d.getDay()];
@@ -497,6 +497,7 @@ function setActiveTab(btn){
 }
 
 function renderDates(){
+
   dateRow.innerHTML="";
 
   for(let i=0;i<5;i++){
@@ -505,6 +506,7 @@ function renderDates(){
     d.setDate(weekStart.getDate()+i);
 
     const btn=document.createElement("button");
+
     btn.textContent=formatDate(d);
 
     if(sameDate(d,selectedDate)){
@@ -512,13 +514,17 @@ function renderDates(){
     }
 
     btn.onclick=()=>{
+
       selectedDate=new Date(d);
       baseDate=new Date(d);
+
       editingNoticeId=null;
       shipEditMode=false;
       todayEditMode=false;
+
       renderDates();
       refreshCurrentTab();
+
     };
 
     dateRow.appendChild(btn);
@@ -572,7 +578,9 @@ function getLastUpdate(type){
 }
 
 function lineShare(text){
-  location.href="https://line.me/R/msg/text/?"+encodeURIComponent(text);
+  location.href=
+    "https://line.me/R/msg/text/?"+
+    encodeURIComponent(text);
 }
 
 function getReportText(){
@@ -640,6 +648,7 @@ function renderReport(){
   const report=getReportText();
 
   mainArea.innerHTML=`
+
     <div class="card">
 
       <div class="report-title">
@@ -652,17 +661,23 @@ ${esc(report)}
 
     </div>
 
-    <button class="line-btn"
+    <button
+      class="line-btn"
       onclick="lineShare(
         '日報 ' +
         formatDate(selectedDate) +
         ' 出荷\\n\\n' +
         getReportText()
-      )">
+      )"
+    >
       LINEで日報共有
     </button>
+
   `;
 }
+
+renderReport();
+
 </script>
 
 </body>
