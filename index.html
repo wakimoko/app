@@ -219,9 +219,6 @@ button{border:none;cursor:pointer;font-family:inherit}
   font-size:15px;
   font-weight:900;
   margin-top:8px;
-}
-
-.add-btn,.save-btn,.mode-btn,.line-btn{
   background:#c99657;
   color:#fff;
 }
@@ -453,8 +450,11 @@ function fullDateKey(d){
   const day=String(d.getDate()).padStart(2,"0");
   return `${y}-${m}-${day}`;
 }
+<!-- 2/2 -->
 
-function weekday(d){return ["日","月","火","水","木","金","土"][d.getDay()]}
+function weekday(d){
+  return ["日","月","火","水","木","金","土"][d.getDay()];
+}
 
 function nowText(){
   const d=new Date();
@@ -498,12 +498,19 @@ function setActiveTab(btn){
 
 function renderDates(){
   dateRow.innerHTML="";
+
   for(let i=0;i<5;i++){
+
     const d=new Date(weekStart);
     d.setDate(weekStart.getDate()+i);
+
     const btn=document.createElement("button");
     btn.textContent=formatDate(d);
-    if(sameDate(d,selectedDate)) btn.classList.add("active");
+
+    if(sameDate(d,selectedDate)){
+      btn.classList.add("active");
+    }
+
     btn.onclick=()=>{
       selectedDate=new Date(d);
       baseDate=new Date(d);
@@ -513,15 +520,28 @@ function renderDates(){
       renderDates();
       refreshCurrentTab();
     };
+
     dateRow.appendChild(btn);
   }
 }
 
 function refreshCurrentTab(){
-  if(shipBtn.classList.contains("active")) renderShip();
-  if(todayBtn.classList.contains("active")) renderToday();
-  if(noticeBtn.classList.contains("active")) renderNotice();
-  if(reportBtn.classList.contains("active")) renderReport();
+
+  if(shipBtn.classList.contains("active")){
+    renderShip();
+  }
+
+  if(todayBtn.classList.contains("active")){
+    renderToday();
+  }
+
+  if(noticeBtn.classList.contains("active")){
+    renderNotice();
+  }
+
+  if(reportBtn.classList.contains("active")){
+    renderReport();
+  }
 }
 
 function dataKey(type,name){
@@ -529,8 +549,13 @@ function dataKey(type,name){
 }
 
 function getStatus(type,name,temp){
+
   const key=dataKey(type,name);
-  if(temp && temp[key]) return temp[key];
+
+  if(temp && temp[key]){
+    return temp[key];
+  }
+
   return shipData[key] || "なし";
 }
 
@@ -550,256 +575,49 @@ function lineShare(text){
   location.href="https://line.me/R/msg/text/?"+encodeURIComponent(text);
 }
 
-function controlArea(type,pageName){
-  const last=getLastUpdate(type);
-  return `
-    <div class="meta">最終更新：${esc(last)}</div>
-    ${type==="ship"&&!shipEditMode?`<button class="mode-btn" onclick="startShipEdit()">編集</button>`:""}
-    ${type==="ship"&&shipEditMode?`<button class="save-btn" onclick="saveShipEdit()">保存</button><button class="cancel-btn" onclick="cancelShipEdit()">キャンセル</button>`:""}
-    ${type==="today"&&!todayEditMode?`<button class="mode-btn" onclick="startTodayEdit()">編集</button>`:""}
-    ${type==="today"&&todayEditMode?`<button class="save-btn" onclick="saveTodayEdit()">保存</button><button class="cancel-btn" onclick="cancelTodayEdit()">キャンセル</button>`:""}
-    <button class="line-btn" onclick="lineShare('出荷管理が更新されました\\nページ：${pageName}\\n日付：${formatDate(selectedDate)}\\n最終更新：${last}')">LINEで共有</button>
-  `;
-}
-
-function placeRow(type,label){
-  const status=getStatus(type,label,tempShipData);
-  const lockedClass=shipEditMode?"":"locked";
-  return `
-    <div class="place-row">
-      <div class="place-name">${esc(label.split("_").pop())}</div>
-      <div class="place-status ${lockedClass}" data-type="${type}" data-name="${esc(label)}">
-        <button class="${status==="あり"?"active":""}" onclick="togglePlace(this,'あり')">あり</button>
-        <button class="${status==="なし"?"active":""}" onclick="togglePlace(this,'なし')">なし</button>
-      </div>
-    </div>
-  `;
-}
-
-function shipGroup(title,items){
-  return `<div><div class="group-title">${esc(title)}</div>${items.map(item=>placeRow("ship",title+"_"+item)).join("")}</div>`;
-}
-
-function renderShip(){
-  setActiveTab(shipBtn);
-  scheduleArea.style.display="block";
-  selectedDate=new Date(baseDate);
-  weekStart=getMonday(selectedDate);
-  renderDates();
-  mainArea.innerHTML=`
-    <div class="card">
-      ${shipGroup("佐川急便",["2F"])}
-      <div class="divider"></div>
-      ${shipGroup("福山通運",["2F","梱包場","MJ倉庫"])}
-      <div class="divider"></div>
-      ${shipGroup("フレックス来社",["2F","梱包場","MJ倉庫"])}
-      ${controlArea("ship","出荷場所")}
-    </div>
-  `;
-}
-
-function startShipEdit(){tempShipData={};shipEditMode=true;renderShip()}
-function cancelShipEdit(){tempShipData={};shipEditMode=false;renderShip()}
-
-function saveShipEdit(){
-  const updates={};
-  Object.keys(tempShipData).forEach(key=>updates["shipData/"+key]=tempShipData[key]);
-  updates["meta/"+getMetaKey("ship")]={updatedAt:nowText()};
-  db.ref().update(updates);
-  tempShipData={};
-  shipEditMode=false;
-}
-
-function todayRow(type,name){
-  const status=getStatus(type,name,tempTodayData);
-  const lockedClass=todayEditMode?"":"locked";
-  return `
-    <div class="ship-row">
-      <div class="ship-name">${esc(name)}</div>
-      <div class="ship-right">
-        <div class="ship-status ${lockedClass}" data-type="${type}" data-name="${esc(name)}">
-          <button class="${status==="あり"?"active":""}" onclick="toggleShip(this,'あり')">あり</button>
-          <button class="${status==="なし"?"active":""}" onclick="toggleShip(this,'なし')">なし</button>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderToday(){
-  setActiveTab(todayBtn);
-  scheduleArea.style.display="none";
-  const today=getBusinessToday(new Date());
-  const shipDate=getNextShipDate(today);
-  selectedDate=new Date(shipDate);
-  mainArea.innerHTML=`
-    <div class="today-info">
-      このページは翌日の出荷日を表示しています<br>
-      （本日：${formatDate(today)} → 出荷日：<span class="blue">${formatDate(shipDate)}</span>）
-    </div>
-    <div class="today-date-title">
-      出荷日：<span class="blue">${formatDate(shipDate)}（${weekday(shipDate)}）</span>
-    </div>
-    <div class="card">
-      ${todayRow("today","2F（家具）")}
-      <div class="divider"></div>
-      ${todayRow("today","2F（テーブル）")}
-      <div class="divider"></div>
-      ${todayRow("today","梱包場")}
-      <div class="divider"></div>
-      ${todayRow("today","MJ倉庫")}
-      ${controlArea("today","当日送り状貼り残し")}
-    </div>
-  `;
-}
-
-function startTodayEdit(){tempTodayData={};todayEditMode=true;renderToday()}
-function cancelTodayEdit(){tempTodayData={};todayEditMode=false;renderToday()}
-
-function saveTodayEdit(){
-  const updates={};
-  Object.keys(tempTodayData).forEach(key=>updates["shipData/"+key]=tempTodayData[key]);
-  updates["meta/"+getMetaKey("today")]={updatedAt:nowText()};
-  db.ref().update(updates);
-  tempTodayData={};
-  todayEditMode=false;
-}
-
-function togglePlace(btn,status){
-  if(!shipEditMode)return;
-  const group=btn.parentElement;
-  setTempStatus(group.dataset.type,group.dataset.name,status,tempShipData);
-  renderShip();
-}
-
-function toggleShip(btn,status){
-  if(!todayEditMode)return;
-  const group=btn.parentElement;
-  setTempStatus(group.dataset.type,group.dataset.name,status,tempTodayData);
-  renderToday();
-}
-
-function noticeKey(){return fullDateKey(selectedDate)}
-
-function getNoticeList(){
-  const dayNotices=notices[noticeKey()] || {};
-  return Object.entries(dayNotices).map(([id,item])=>({id,...item})).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
-}
-
-function renderNotice(){
-  setActiveTab(noticeBtn);
-  scheduleArea.style.display="block";
-  selectedDate=new Date(baseDate);
-  weekStart=getMonday(selectedDate);
-  renderDates();
-
-  const list=getNoticeList();
-
-  if(list.length===0){
-    mainArea.innerHTML=`
-      <div class="card">
-        <div class="notice-date">${formatDate(selectedDate)}</div>
-        <div class="notice-name">注意事項なし</div>
-        <div class="notice-body">この日の注意事項はありません</div>
-      </div>
-      <button class="add-btn" onclick="renderNoticeForm()">＋ 新規追加</button>
-    `;
-    return;
-  }
-
-  mainArea.innerHTML=`
-    ${list.map(item=>`
-      <div class="card">
-        <div class="notice-date">${formatDate(selectedDate)}</div>
-        <div class="notice-name">${esc(item.title)}</div>
-        <div class="notice-body">${esc(item.body)}</div>
-        <div class="card-actions">
-          <button class="icon-btn edit-btn" onclick="editNotice('${item.id}')">✏️</button>
-          <button class="icon-btn delete-btn" onclick="deleteNotice('${item.id}')">🗑️</button>
-        </div>
-      </div>
-    `).join("")}
-    <button class="add-btn" onclick="renderNoticeForm()">＋ 新規追加</button>
-  `;
-}
-
-function renderNoticeForm(){
-  const key=noticeKey();
-  const item=editingNoticeId && notices[key] && notices[key][editingNoticeId]
-    ? notices[key][editingNoticeId]
-    : {title:"",body:""};
-
-  mainArea.innerHTML=`
-    <div class="card">
-      <input class="form-input" id="titleInput" placeholder="タイトル" value="${esc(item.title)}">
-      <textarea class="form-textarea" id="bodyInput" placeholder="内容">${esc(item.body)}</textarea>
-      <button class="save-btn" onclick="saveNotice()">保存</button>
-      <button class="cancel-btn" onclick="cancelNoticeForm()">キャンセル</button>
-    </div>
-  `;
-}
-
-function editNotice(id){
-  editingNoticeId=id;
-  renderNoticeForm();
-}
-
-function cancelNoticeForm(){
-  editingNoticeId=null;
-  renderNotice();
-}
-
-function saveNotice(){
-  const key=noticeKey();
-  const id=editingNoticeId || db.ref("notices/"+key).push().key;
-  const oldItem=notices[key] && notices[key][id] ? notices[key][id] : {};
-
-  db.ref("notices/"+key+"/"+id).set({
-    title:titleInput.value || "",
-    body:bodyInput.value || "",
-    createdAt:oldItem.createdAt || Date.now()
-  });
-
-  editingNoticeId=null;
-  renderNotice();
-}
-
-function deleteNotice(id){
-  if(confirm("削除しますか？")){
-    db.ref("notices/"+noticeKey()+"/"+id).remove();
-  }
-}
-
 function getReportText(){
-  const d=selectedDate;
+
   const list=getNoticeList();
 
-  let text=`日報\n${formatDate(d)}\n\n`;
+  let text=``;
 
   text+=`【出荷場所】\n`;
-  text+=`佐川急便\n2F：${getStatus("ship","佐川急便_2F")}\n\n`;
+
+  text+=`佐川急便\n`;
+  text+=`2F：${getStatus("ship","佐川急便_2F")}\n\n`;
+
   text+=`福山通運\n`;
   text+=`2F：${getStatus("ship","福山通運_2F")}\n`;
   text+=`梱包場：${getStatus("ship","福山通運_梱包場")}\n`;
   text+=`MJ倉庫：${getStatus("ship","福山通運_MJ倉庫")}\n\n`;
+
   text+=`フレックス来社\n`;
   text+=`2F：${getStatus("ship","フレックス来社_2F")}\n`;
   text+=`梱包場：${getStatus("ship","フレックス来社_梱包場")}\n`;
   text+=`MJ倉庫：${getStatus("ship","フレックス来社_MJ倉庫")}\n\n`;
 
   text+=`【当日送り状貼り残し】\n`;
+
   text+=`2F（家具）：${getStatus("today","2F（家具）")}\n`;
   text+=`2F（テーブル）：${getStatus("today","2F（テーブル）")}\n`;
   text+=`梱包場：${getStatus("today","梱包場")}\n`;
   text+=`MJ倉庫：${getStatus("today","MJ倉庫")}\n\n`;
 
   text+=`【注意事項】\n`;
+
   if(list.length===0){
+
     text+=`なし\n`;
+
   }else{
+
     list.forEach(item=>{
-      text+=`${item.title || ""}\n${item.body || ""}\n\n`;
+
+      text+=`${item.title || ""}\n`;
+      text+=`${item.body || ""}\n\n`;
+
     });
+
   }
 
   text+=`\n出荷場所更新：${getLastUpdate("ship")}`;
@@ -809,128 +627,42 @@ function getReportText(){
 }
 
 function renderReport(){
+
   setActiveTab(reportBtn);
+
   scheduleArea.style.display="block";
 
   selectedDate=new Date(baseDate);
   weekStart=getMonday(selectedDate);
+
   renderDates();
 
   const report=getReportText();
 
   mainArea.innerHTML=`
     <div class="card">
-      <div class="report-title">日報 ${formatDate(selectedDate)}</div>
-      <div class="report-line">${esc(report)}</div>
+
+      <div class="report-title">
+        日報 ${formatDate(selectedDate)} 出荷
+      </div>
+
+      <div class="report-line">
+${esc(report)}
+      </div>
+
     </div>
-    <button class="line-btn" onclick="lineShare(getReportText())">LINEで日報共有</button>
+
+    <button class="line-btn"
+      onclick="lineShare(
+        '日報 ' +
+        formatDate(selectedDate) +
+        ' 出荷\\n\\n' +
+        getReportText()
+      )">
+      LINEで日報共有
+    </button>
   `;
 }
-
-function openCalendar(){
-  calendarBg.style.display="block";
-  calendarPopup.style.display="block";
-  calendarMonth=new Date(selectedDate.getFullYear(),selectedDate.getMonth(),1);
-  renderCalendar();
-}
-
-function closeCalendar(){
-  calendarBg.style.display="none";
-  calendarPopup.style.display="none";
-}
-
-function renderCalendar(){
-  calendarGrid.innerHTML="";
-  const y=calendarMonth.getFullYear();
-  const m=calendarMonth.getMonth();
-  calendarTitle.textContent=`${y}年 ${m+1}月`;
-
-  const first=new Date(y,m,1).getDay();
-  const last=new Date(y,m+1,0).getDate();
-
-  for(let i=0;i<first;i++){
-    const e=document.createElement("div");
-    e.className="calendar-empty";
-    calendarGrid.appendChild(e);
-  }
-
-  for(let day=1;day<=last;day++){
-    const d=new Date(y,m,day);
-    const cell=document.createElement("div");
-    cell.className="calendar-day";
-    cell.textContent=day;
-    if(sameDate(d,selectedDate)) cell.classList.add("active");
-
-    cell.onclick=()=>{
-      selectedDate=new Date(d);
-      baseDate=new Date(d);
-      weekStart=getMonday(selectedDate);
-      editingNoticeId=null;
-      shipEditMode=false;
-      todayEditMode=false;
-      renderDates();
-      refreshCurrentTab();
-      closeCalendar();
-    };
-
-    calendarGrid.appendChild(cell);
-  }
-}
-
-noticeBtn.onclick=renderNotice;
-shipBtn.onclick=renderShip;
-todayBtn.onclick=renderToday;
-reportBtn.onclick=renderReport;
-
-prevWeek.onclick=()=>{
-  weekStart.setDate(weekStart.getDate()-7);
-  selectedDate=new Date(weekStart);
-  baseDate=new Date(selectedDate);
-  editingNoticeId=null;
-  renderDates();
-  refreshCurrentTab();
-};
-
-nextWeek.onclick=()=>{
-  weekStart.setDate(weekStart.getDate()+7);
-  selectedDate=new Date(weekStart);
-  baseDate=new Date(selectedDate);
-  editingNoticeId=null;
-  renderDates();
-  refreshCurrentTab();
-};
-
-calendarBtn.onclick=openCalendar;
-calendarBg.onclick=closeCalendar;
-calendarClose.onclick=closeCalendar;
-
-calPrev.onclick=()=>{
-  calendarMonth.setMonth(calendarMonth.getMonth()-1);
-  renderCalendar();
-};
-
-calNext.onclick=()=>{
-  calendarMonth.setMonth(calendarMonth.getMonth()+1);
-  renderCalendar();
-};
-
-db.ref("shipData").on("value", snapshot=>{
-  shipData=snapshot.val() || {};
-  refreshCurrentTab();
-});
-
-db.ref("notices").on("value", snapshot=>{
-  notices=snapshot.val() || {};
-  refreshCurrentTab();
-});
-
-db.ref("meta").on("value", snapshot=>{
-  metaData=snapshot.val() || {};
-  refreshCurrentTab();
-});
-
-renderDates();
-renderShip();
 </script>
 
 </body>
