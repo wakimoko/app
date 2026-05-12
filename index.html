@@ -1,3 +1,5 @@
+<!-- 1/2 -->
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -6,12 +8,23 @@
 <title>出荷管理</title>
 
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
 
 body{
   margin:0;
   background:#f3eee6;
-  font-family:"Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",-apple-system,BlinkMacSystemFont,sans-serif;
+  font-family:
+    "Hiragino Maru Gothic ProN",
+    "Hiragino Sans",
+    "Noto Sans JP",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+
   -webkit-font-smoothing:antialiased;
   text-rendering:geometricPrecision;
   color:#111;
@@ -26,8 +39,17 @@ body{
   transform-origin:top center;
 }
 
-h1{font-size:32px;font-weight:900;margin:6px 0 16px}
-button{border:none;cursor:pointer;font-family:inherit}
+h1{
+  font-size:32px;
+  font-weight:900;
+  margin:6px 0 16px;
+}
+
+button{
+  border:none;
+  cursor:pointer;
+  font-family:inherit;
+}
 
 .top-tabs{
   display:grid;
@@ -45,8 +67,15 @@ button{border:none;cursor:pointer;font-family:inherit}
   font-weight:900;
 }
 
-#todayBtn{line-height:1.2;font-size:11px}
-.active{background:#c99657!important;color:#fff!important}
+#todayBtn{
+  line-height:1.2;
+  font-size:11px;
+}
+
+.active{
+  background:#c99657!important;
+  color:#fff!important;
+}
 
 .week-row{
   display:grid;
@@ -89,7 +118,11 @@ button{border:none;cursor:pointer;font-family:inherit}
   margin-bottom:10px;
 }
 
-.group-title{font-size:19px;font-weight:900;margin-bottom:8px}
+.group-title{
+  font-size:19px;
+  font-weight:900;
+  margin-bottom:8px;
+}
 
 .place-row{
   display:grid;
@@ -99,7 +132,10 @@ button{border:none;cursor:pointer;font-family:inherit}
   margin:7px 0;
 }
 
-.place-name{font-size:14px;font-weight:900}
+.place-name{
+  font-size:14px;
+  font-weight:900;
+}
 
 .place-status,.ship-status{
   display:flex;
@@ -125,8 +161,15 @@ button{border:none;cursor:pointer;font-family:inherit}
   padding:14px 0;
 }
 
-.ship-name{font-size:19px;font-weight:900}
-.ship-right{width:150px;margin-right:8px}
+.ship-name{
+  font-size:19px;
+  font-weight:900;
+}
+
+.ship-right{
+  width:150px;
+  margin-right:8px;
+}
 
 .ship-status button{
   width:56px;
@@ -158,7 +201,10 @@ button{border:none;cursor:pointer;font-family:inherit}
   color:#3b332a;
 }
 
-.today-info .blue,.today-date-title .blue{color:#007aff}
+.today-info .blue,
+.today-date-title .blue{
+  color:#007aff;
+}
 
 .today-date-title{
   text-align:center;
@@ -209,10 +255,18 @@ button{border:none;cursor:pointer;font-family:inherit}
   flex-shrink:0;
 }
 
-.edit-btn{background:#efe7dc}
-.delete-btn{background:#f8dede}
+.edit-btn{
+  background:#efe7dc;
+}
 
-.add-btn,.save-btn,.mode-btn,.line-btn{
+.delete-btn{
+  background:#f8dede;
+}
+
+.add-btn,
+.save-btn,
+.mode-btn,
+.line-btn{
   width:100%;
   height:44px;
   border-radius:15px;
@@ -242,7 +296,8 @@ button{border:none;cursor:pointer;font-family:inherit}
   margin-top:12px;
 }
 
-.form-input,.form-textarea{
+.form-input,
+.form-textarea{
   width:100%;
   border:2px solid #e3ddd5;
   border-radius:14px;
@@ -252,10 +307,20 @@ button{border:none;cursor:pointer;font-family:inherit}
   font-family:inherit;
 }
 
-.form-input{height:46px}
-.form-textarea{height:100px;resize:none}
+.form-input{
+  height:46px;
+}
 
-input,textarea,select{font-size:16px!important}
+.form-textarea{
+  height:100px;
+  resize:none;
+}
+
+input,
+textarea,
+select{
+  font-size:16px!important;
+}
 
 .report-title{
   font-size:20px;
@@ -270,88 +335,13 @@ input,textarea,select{font-size:16px!important}
   white-space:pre-wrap;
 }
 
-.calendar-bg{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.25);
-  z-index:1000;
-}
-
-.calendar-popup{
-  display:none;
-  position:fixed;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  width:340px;
-  background:#f3eee6;
-  border-radius:26px;
-  padding:18px;
-  z-index:1001;
-}
-
-.calendar-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:14px;
-}
-
-.calendar-title{font-size:16px;font-weight:900}
-
-.calendar-header button{
-  width:34px;
-  height:34px;
-  border-radius:50%;
-  background:#c99657;
-  color:#fff;
-  font-size:20px;
-  font-weight:900;
-}
-
-.calendar-week,.calendar-grid{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:6px;
-}
-
-.calendar-week{margin-bottom:6px}
-
-.calendar-week div{
-  text-align:center;
-  font-size:12px;
-  font-weight:900;
-  color:#8b7b6b;
-}
-
-.calendar-day,.calendar-empty{
-  height:38px;
-  border-radius:12px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:14px;
-  font-weight:800;
-}
-
-.calendar-day{background:#e6ddd4}
-.calendar-day.active{background:#c99657;color:#fff}
-
-.calendar-close{
-  margin-top:14px;
-  width:100%;
-  height:40px;
-  border-radius:14px;
-  background:#e6ddd4;
-  font-weight:900;
-}
 </style>
 </head>
 
 <body>
 
 <div class="container">
+
   <h1>出荷管理</h1>
 
   <div class="top-tabs">
@@ -362,120 +352,55 @@ input,textarea,select{font-size:16px!important}
   </div>
 
   <div id="scheduleArea">
+
     <div class="week-row">
       <button id="prevWeek">前週</button>
       <button id="calendarBtn">🗓</button>
       <button id="nextWeek">次週</button>
     </div>
+
     <div class="date-row" id="dateRow"></div>
+
   </div>
 
   <div id="mainArea"></div>
-</div>
 
-<div class="calendar-bg" id="calendarBg"></div>
-
-<div class="calendar-popup" id="calendarPopup">
-  <div class="calendar-header">
-    <button id="calPrev">‹</button>
-    <div class="calendar-title" id="calendarTitle"></div>
-    <button id="calNext">›</button>
-  </div>
-  <div class="calendar-week">
-    <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
-  </div>
-  <div class="calendar-grid" id="calendarGrid"></div>
-  <button class="calendar-close" id="calendarClose">閉じる</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
 <script>
+
 const firebaseConfig = {
-  apiKey: "AIzaSyBTv3sXmIwGmg5iVBRjfwwqA6djwYO2CJQ",
-  authDomain: "shipment-app-b45dd.firebaseapp.com",
-  databaseURL: "https://shipment-app-b45dd-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "shipment-app-b45dd",
-  storageBucket: "shipment-app-b45dd.firebasestorage.app",
-  messagingSenderId: "995150359566",
-  appId: "1:995150359566:web:01e3ef86eec27ea66ae05f"
+  apiKey: "AIzaSyBT",
+  authDomain: "shipment-app.firebaseapp.com",
+  databaseURL: "https://shipment-app-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "shipment-app"
 };
 
 firebase.initializeApp(firebaseConfig);
+
 const db = firebase.database();
+  <!-- 2/2 -->
 
 let weekStart = getMonday(new Date());
 let selectedDate = new Date();
 let baseDate = new Date();
-let calendarMonth = new Date();
-let editingNoticeId = null;
 
 let shipData = {};
 let notices = {};
 let metaData = {};
 
-let shipEditMode = false;
-let todayEditMode = false;
-let tempShipData = {};
-let tempTodayData = {};
-
-const holidays = [
-  "2025-01-01","2025-01-13","2025-02-11","2025-02-23",
-  "2025-03-20","2025-04-29","2025-05-03","2025-05-04",
-  "2025-05-05","2025-05-06","2025-07-21","2025-08-11",
-  "2025-09-15","2025-09-23","2025-10-13","2025-11-03",
-  "2025-11-23","2025-11-24",
-  "2026-01-01","2026-01-12","2026-02-11","2026-02-23",
-  "2026-03-20","2026-04-29","2026-05-03","2026-05-04",
-  "2026-05-05","2026-05-06","2026-07-20","2026-08-11",
-  "2026-09-21","2026-09-22","2026-09-23","2026-10-12",
-  "2026-11-03","2026-11-23"
-];
-
-function esc(str){
-  return String(str ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
+function formatDate(d){
+  return (d.getMonth()+1)+"/"+d.getDate();
 }
-
-function formatDate(d){return (d.getMonth()+1)+"/"+d.getDate()}
 
 function fullDateKey(d){
   const y=d.getFullYear();
   const m=String(d.getMonth()+1).padStart(2,"0");
   const day=String(d.getDate()).padStart(2,"0");
   return `${y}-${m}-${day}`;
-}
-  <!-- 2/2 -->
-
-function weekday(d){
-  return ["日","月","火","水","木","金","土"][d.getDay()];
-}
-
-function nowText(){
-  const d=new Date();
-  return `${formatDate(d)} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
-}
-
-function isClosedDay(d){
-  return d.getDay()===0 || d.getDay()===6 || holidays.includes(fullDateKey(d));
-}
-
-function getBusinessToday(fromDate){
-  const d=new Date(fromDate);
-  while(isClosedDay(d)) d.setDate(d.getDate()-1);
-  return d;
-}
-
-function getNextShipDate(fromDate){
-  const d=new Date(fromDate);
-  d.setDate(d.getDate()+1);
-  while(isClosedDay(d)) d.setDate(d.getDate()+1);
-  return d;
 }
 
 function getMonday(date){
@@ -485,101 +410,31 @@ function getMonday(date){
   return d;
 }
 
-function sameDate(a,b){
-  return a.getFullYear()===b.getFullYear() &&
-         a.getMonth()===b.getMonth() &&
-         a.getDate()===b.getDate();
+function esc(str){
+  return String(str ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;");
 }
 
-function setActiveTab(btn){
-  document.querySelectorAll(".top-tabs button").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-}
-
-function renderDates(){
-
-  dateRow.innerHTML="";
-
-  for(let i=0;i<5;i++){
-
-    const d=new Date(weekStart);
-    d.setDate(weekStart.getDate()+i);
-
-    const btn=document.createElement("button");
-
-    btn.textContent=formatDate(d);
-
-    if(sameDate(d,selectedDate)){
-      btn.classList.add("active");
-    }
-
-    btn.onclick=()=>{
-
-      selectedDate=new Date(d);
-      baseDate=new Date(d);
-
-      editingNoticeId=null;
-      shipEditMode=false;
-      todayEditMode=false;
-
-      renderDates();
-      refreshCurrentTab();
-
-    };
-
-    dateRow.appendChild(btn);
-  }
-}
-
-function refreshCurrentTab(){
-
-  if(shipBtn.classList.contains("active")){
-    renderShip();
-  }
-
-  if(todayBtn.classList.contains("active")){
-    renderToday();
-  }
-
-  if(noticeBtn.classList.contains("active")){
-    renderNotice();
-  }
-
-  if(reportBtn.classList.contains("active")){
-    renderReport();
-  }
-}
-
-function dataKey(type,name){
-  return type+"_"+fullDateKey(selectedDate)+"_"+name;
-}
-
-function getStatus(type,name,temp){
-
-  const key=dataKey(type,name);
-
-  if(temp && temp[key]){
-    return temp[key];
-  }
-
-  return shipData[key] || "なし";
-}
-
-function setTempStatus(type,name,status,temp){
-  temp[dataKey(type,name)] = status;
-}
-
-function getMetaKey(type){
-  return type+"_"+fullDateKey(selectedDate);
+function getStatus(type,name){
+  return shipData[type+"_"+fullDateKey(selectedDate)+"_"+name] || "なし";
 }
 
 function getLastUpdate(type){
-  return metaData[getMetaKey(type)]?.updatedAt || "未保存";
+  return metaData[type+"_"+fullDateKey(selectedDate)]?.updatedAt || "未保存";
+}
+
+function getNoticeList(){
+  const key=fullDateKey(selectedDate);
+  const dayNotices=notices[key] || {};
+
+  return Object.values(dayNotices);
 }
 
 function lineShare(text){
-  location.href=
-    "https://line.me/R/msg/text/?"+
+  location.href =
+    "https://line.me/R/msg/text/?" +
     encodeURIComponent(text);
 }
 
@@ -634,16 +489,39 @@ function getReportText(){
   return text;
 }
 
+function renderDates(){
+
+  dateRow.innerHTML="";
+
+  for(let i=0;i<5;i++){
+
+    const d=new Date(weekStart);
+
+    d.setDate(weekStart.getDate()+i);
+
+    const btn=document.createElement("button");
+
+    btn.textContent=formatDate(d);
+
+    if(fullDateKey(d)===fullDateKey(selectedDate)){
+      btn.classList.add("active");
+    }
+
+    btn.onclick=()=>{
+
+      selectedDate=new Date(d);
+      baseDate=new Date(d);
+
+      renderDates();
+      renderReport();
+
+    };
+
+    dateRow.appendChild(btn);
+  }
+}
+
 function renderReport(){
-
-  setActiveTab(reportBtn);
-
-  scheduleArea.style.display="block";
-
-  selectedDate=new Date(baseDate);
-  weekStart=getMonday(selectedDate);
-
-  renderDates();
 
   const report=getReportText();
 
@@ -676,6 +554,57 @@ ${esc(report)}
   `;
 }
 
+prevWeek.onclick=()=>{
+
+  weekStart.setDate(
+    weekStart.getDate()-7
+  );
+
+  selectedDate=new Date(weekStart);
+
+  renderDates();
+  renderReport();
+
+};
+
+nextWeek.onclick=()=>{
+
+  weekStart.setDate(
+    weekStart.getDate()+7
+  );
+
+  selectedDate=new Date(weekStart);
+
+  renderDates();
+  renderReport();
+
+};
+
+db.ref("shipData").on("value",snapshot=>{
+
+  shipData=snapshot.val() || {};
+
+  renderReport();
+
+});
+
+db.ref("notices").on("value",snapshot=>{
+
+  notices=snapshot.val() || {};
+
+  renderReport();
+
+});
+
+db.ref("meta").on("value",snapshot=>{
+
+  metaData=snapshot.val() || {};
+
+  renderReport();
+
+});
+
+renderDates();
 renderReport();
 
 </script>
