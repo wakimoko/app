@@ -1057,9 +1057,12 @@ async function downloadPDF(){
     margin:0,
     filename:`日報_${formatDate(selectedDate)}.pdf`,
     image:{type:"jpeg",quality:1},
-    html2canvas:{scale:3,backgroundColor:"#f3eee6"},
-    jsPDF:{unit:"px",format:[390,760],orientation:"portrait"}
-  };
+    html2canvas:{
+  scale:3,
+  backgroundColor:"#f3eee6",
+  windowWidth:390
+}
+    jsPDF:{unit:"px",format:[390,1300],orientation:"portrait"};
 
   await html2pdf().set(opt).from(pdf).save();
 
