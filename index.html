@@ -5,6 +5,30 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>出荷管理</title>
 
+let pinCode="";
+
+function pressPin(num){
+
+  if(pinCode.length>=4)return;
+
+  pinCode+=num;
+
+  updatePinDisplay();
+}
+
+function clearPin(){
+
+  pinCode="";
+
+  updatePinDisplay();
+}
+
+function updatePinDisplay(){
+
+  pinDisplay.textContent=
+    "●".repeat(pinCode.length);
+}
+  
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 
