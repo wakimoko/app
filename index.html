@@ -993,6 +993,39 @@ db.ref("meta").on("value", snapshot=>{
 
 renderDates();
 renderShip();
+
+function loginApp(){
+
+  const password=passwordInput.value;
+
+  if(password==="1234"){
+
+    loginScreen.style.display="none";
+
+    localStorage.setItem(
+      "shipment-login",
+      "ok"
+    );
+
+  }else{
+
+    alert("パスワードが違います");
+
+  }
+}
+
+window.onload=()=>{
+
+  if(
+    localStorage.getItem(
+      "shipment-login"
+    )==="ok"
+  ){
+    loginScreen.style.display="none";
+  }
+
+};
+
 </script>
 
 </body>
