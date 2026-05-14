@@ -381,21 +381,45 @@ padding:20px;
       出荷管理
     </div>
 
-    <input
-      id="passwordInput"
-      type="password"
-      placeholder="パスワード"
-      style="
-        width:100%;
-        height:48px;
-        border:none;
-        background:#f3eee6;
-        border-radius:14px;
-        padding:0 14px;
-        font-size:16px;
-        margin-bottom:14px;
-      "
-    >
+    <div id="pinDisplay" style="
+height:54px;
+background:#f3eee6;
+border-radius:14px;
+margin-bottom:14px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:26px;
+font-weight:900;
+letter-spacing:8px;
+">
+●●●●
+</div>
+
+<div style="
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:10px;
+margin-bottom:12px;
+">
+
+<button onclick="pressPin('1')" class="pin-btn">1</button>
+<button onclick="pressPin('2')" class="pin-btn">2</button>
+<button onclick="pressPin('3')" class="pin-btn">3</button>
+
+<button onclick="pressPin('4')" class="pin-btn">4</button>
+<button onclick="pressPin('5')" class="pin-btn">5</button>
+<button onclick="pressPin('6')" class="pin-btn">6</button>
+
+<button onclick="pressPin('7')" class="pin-btn">7</button>
+<button onclick="pressPin('8')" class="pin-btn">8</button>
+<button onclick="pressPin('9')" class="pin-btn">9</button>
+
+<button onclick="clearPin()" class="pin-btn">×</button>
+<button onclick="pressPin('0')" class="pin-btn">0</button>
+<button onclick="loginApp()" class="pin-btn">✓</button>
+
+</div>
 
     <button
       onclick="loginApp()"
