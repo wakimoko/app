@@ -820,7 +820,7 @@ function renderReport(){
 
   mainArea.innerHTML=`
     <div class="card">
-      <div class="report-title">日報 ${formatDate(selectedDate)}</div>
+      <div class="report-title">${formatDate(selectedDate)} 出荷</div>
       <div class="report-line">${esc(report)}</div>
     </div>
     <button class="line-btn" onclick="lineShare(getReportText())">LINEで日報共有</button>
