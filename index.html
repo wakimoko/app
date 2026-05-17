@@ -1017,9 +1017,36 @@ db.ref("meta").on("value", snapshot=>{
 renderDates();
 renderShip();
 
+let pinCode="";
+
+function pressPin(num){
+
+  if(pinCode.length>=4)return;
+
+  pinCode+=num;
+
+  updatePinDisplay();
+
+}
+
+function clearPin(){
+
+  pinCode="";
+
+  updatePinDisplay();
+
+}
+
+function updatePinDisplay(){
+
+  pinDisplay.textContent=
+    "●".repeat(pinCode.length);
+
+}
+
 function loginApp(){
 
-  const password=passwordInput.value;
+  const password=pinCode;
 
   if(password==="0714"){
 
@@ -1034,10 +1061,23 @@ function loginApp(){
 
     alert("パスワードが違います");
 
+    clearPin();
+
   }
+
 }
 
 window.onload=()=>{
+
+  if(
+    localStorage.getItem(
+      "shipment-login"
+    )==="ok"
+  ){
+    loginScreen.style.display="none";
+  }
+
+};
 
   if(
     localStorage.getItem(
