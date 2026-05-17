@@ -1039,8 +1039,14 @@ function clearPin(){
 
 function updatePinDisplay(){
 
-  pinDisplay.textContent=
-    "●".repeat(pinCode.length);
+  function updatePinDisplay(){
+
+  pinDisplay.textContent =
+    pinCode.length === 0
+      ? "パスコード"
+      : "●".repeat(pinCode.length);
+
+}
 
 }
 
