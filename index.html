@@ -1049,7 +1049,27 @@ window.onload=()=>{
   }
 
 };
+const DROPBOX_LINK =
+"https://www.dropbox.com/scl/fo/fquqg1cjqv0aq0y6fdy31/ABvsncXfzuukneSRy_qiBeo?rlkey=390kzz8a0cmuaf7xdclh3twtv&st=4mxiq5q8&dl=0";
 
+function showAttachMenu(){
+  attachMenu.style.display="flex";
+}
+
+function closeAttachMenu(){
+  attachMenu.style.display="none";
+}
+
+function openDropbox(){
+  closeAttachMenu();
+  window.open(DROPBOX_LINK,"_blank");
+}
+
+attachMenu.onclick=function(e){
+  if(e.target.id==="attachMenu"){
+    closeAttachMenu();
+  }
+}
 </script>
 <div id="attachMenu" style="
 display:none;position:fixed;inset:0;background:rgba(0,0,0,.25);
