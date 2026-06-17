@@ -114,7 +114,7 @@ function getReportText(){const list=getNoticeList();let text=`${formatDate(selec
 `;text+=`--------------------
 
 `;text+=`【注意事項】
-`;if(list.length===0)text+=`なし
+`;if(list.length===0)text+=`　なし
 `;else list.forEach(item=>{text+=`${item.title||""}
 ${item.body||""}
 
