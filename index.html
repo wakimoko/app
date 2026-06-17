@@ -11,15 +11,15 @@
 <meta property="og:description" content="出荷場所・送り状貼り残し・注意事項確認">
 <meta property="og:url" content="https://wakimoko.github.io/app/">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://wakimoko.github.io/app/73A68501-2B5C-430B-83D3-CB135B88C4CD.png?v=2026061702">
-<meta property="og:image:secure_url" content="https://wakimoko.github.io/app/73A68501-2B5C-430B-83D3-CB135B88C4CD.png?v=2026061702">
+<meta property="og:image" content="https://wakimoko.github.io/app/73A68501-2B5C-430B-83D3-CB135B88C4CD.png?v=2026061703">
+<meta property="og:image:secure_url" content="https://wakimoko.github.io/app/73A68501-2B5C-430B-83D3-CB135B88C4CD.png?v=2026061703">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="1200">
 <meta property="og:image:type" content="image/png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="出荷管理">
 <meta name="twitter:description" content="出荷場所・送り状貼り残し・注意事項確認">
-<meta name="twitter:image" content="https://wakimoko.github.io/app/73A68501-2B5C-430B-83D3-CB135B88C4CD.png?v=2026061702">
+<meta name="twitter:image" content="https://wakimoko.github.io/app/73A68501-2B5C-430B-83D3-CB135B88C4CD.png?v=2026061703">
 
 
 <style>
@@ -55,7 +55,7 @@ const firebaseConfig = {
   appId: "1:947921216753:web:777f7eaac0ada1adcbb550"
 };
 firebase.initializeApp(firebaseConfig);const db=firebase.database();
-const APP_URL="https://wakimoko.github.io/app/?v=2026061702";
+const APP_URL="https://wakimoko.github.io/app/?v=2026061703";
 const MAX_SHIP_PHOTOS=5;
 let weekStart=getMonday(new Date()),selectedDate=new Date(),baseDate=new Date(),calendarMonth=new Date(),editingNoticeId=null;
 let shipData={},notices={},metaData={},photoData={};let shipEditMode=false,todayEditMode=false,tempShipData={},tempTodayData={},noticePhotoData="",currentPhotoTarget="ship",currentPhotoKey="";
@@ -82,8 +82,46 @@ function renderNotice(){setActiveTab(noticeBtn);scheduleArea.style.display="bloc
 function renderNoticeForm(){const key=noticeKey();const item=editingNoticeId&&notices[key]&&notices[key][editingNoticeId]?notices[key][editingNoticeId]:{title:"",body:"",photo:""};noticePhotoData=item.photo||"";mainArea.innerHTML=`<div class="card"><input class="form-input" id="titleInput" placeholder="タイトル" value="${esc(item.title)}"><textarea class="form-textarea" id="bodyInput" placeholder="内容">${esc(item.body)}</textarea><button class="cancel-btn" onclick="showAttachMenu('notice','')">写真を添付</button><div id="noticePhotoPreview" style="margin:10px 0;">${noticePhotoData?`<img src="${noticePhotoData}" class="notice-photo">`:""}</div><button class="save-btn" onclick="saveNotice()">保存</button><button class="cancel-btn" onclick="cancelNoticeForm()">キャンセル</button></div>`}
 function editNotice(id){editingNoticeId=id;renderNoticeForm()}function cancelNoticeForm(){editingNoticeId=null;renderNotice()}function saveNotice(){const key=noticeKey();const id=editingNoticeId||db.ref("notices/"+key).push().key;const oldItem=notices[key]&&notices[key][id]?notices[key][id]:{};db.ref("notices/"+key+"/"+id).set({title:titleInput.value||"",body:bodyInput.value||"",photo:noticePhotoData||"",createdAt:oldItem.createdAt||Date.now()}).then(()=>{editingNoticeId=null;renderNotice()}).catch(err=>alert("保存エラー\n"+err.message))}function deleteNotice(id){if(confirm("削除しますか？")){db.ref("notices/"+noticeKey()+"/"+id).remove()}}
 function getShipShareText(){let text=`出荷日：${formatDate(selectedDate)}（${weekday(selectedDate)}）\n\n`;text+=`【出荷場所】\n\n`;text+=`佐川急便\n　2F：${getStatus("ship","佐川急便_2F")}\n\n`;text+=`--------------------\n\n`;text+=`福山通運\n　2F：${getStatus("ship","福山通運_2F")}\n　梱包場：${getStatus("ship","福山通運_梱包場")}\n　MJ倉庫：${getStatus("ship","福山通運_MJ倉庫")}\n\n`;text+=`--------------------\n\n`;text+=`フレックス来社\n　2F：${getStatus("ship","フレックス来社_2F")}\n　梱包場：${getStatus("ship","フレックス来社_梱包場")}\n　MJ倉庫：${getStatus("ship","フレックス来社_MJ倉庫")}\n\n`;text+=`--------------------\n\n`;text+=`出荷管理\n${APP_URL}`;return text}
-function getTodayShareText(){let text=`出荷日：${formatDate(selectedDate)}（${weekday(selectedDate)}）\n\n`;text+=`【当日送り状貼り残し】\n`;text+=`2F（家具）：${getStatus("today","2F（家具）")}\n`;text+=`2F（テーブル）：${getStatus("today","2F（テーブル）")}\n`;text+=`梱包場：${getStatus("today","梱包場")}\n`;text+=`MJ倉庫：${getStatus("today","MJ倉庫")}\n\n`;text+=`送り状更新：${getLastUpdate("today")}`;text+=`\n\n出荷管理\n${APP_URL}`;return text}
-function getReportText(){const list=getNoticeList();let text=`${formatDate(selectedDate)}（${weekday(selectedDate)}） 出荷\n\n`;text+=getShipShareText().replace(/^出荷日：.*\n\n/,"")+"\n\n";text+=getTodayShareText().replace(/^出荷日：.*\n\n/,"")+"\n\n";text+=`【注意事項】\n`;if(list.length===0)text+=`なし\n`;else list.forEach(item=>{text+=`${item.title||""}\n${item.body||""}\n\n`});text+=`\n出荷管理\n${APP_URL}`;return text}
+function getTodayShareText(){let text=`出荷日：${formatDate(selectedDate)}（${weekday(selectedDate)}）
+
+`;text+=`【当日送り状貼り残し】
+`;text+=`　2F（家具）：${getStatus("today","2F（家具）")}
+`;text+=`　2F（テーブル）：${getStatus("today","2F（テーブル）")}
+`;text+=`　梱包場：${getStatus("today","梱包場")}
+`;text+=`　MJ倉庫：${getStatus("today","MJ倉庫")}
+
+`;text+=`--------------------
+
+`;text+=`出荷管理
+${APP_URL}`;return text}
+function getReportText(){const list=getNoticeList();let text=`${formatDate(selectedDate)}（${weekday(selectedDate)}） 出荷
+
+`;text+=getTodayShareText().replace(/^出荷日：.*
+
+/,"").replace(/
+
+出荷管理
+.*$/,"")+"
+
+";text+=`--------------------
+
+`;text+=`【注意事項】
+`;if(list.length===0)text+=`なし
+`;else list.forEach(item=>{text+=`${item.title||""}
+${item.body||""}
+
+`});text+=`
+--------------------
+
+`;text+=getShipShareText().replace(/^出荷日：.*
+
+/,"").replace(/
+
+出荷管理
+.*$/,"")+"
+
+";text+=`出荷管理
+${APP_URL}`;return text}
 function renderReport(){setActiveTab(reportBtn);scheduleArea.style.display="block";selectedDate=new Date(baseDate);weekStart=getMonday(selectedDate);renderDates();const report=getReportText();mainArea.innerHTML=`<div class="card"><div class="report-title">${formatDate(selectedDate)}（${weekday(selectedDate)}） 出荷</div><div class="report-line">${esc(report).replace(/^.*出荷\n\n/,"")}</div></div><button class="line-btn" onclick="lineShare(getReportText())">日報をLINE共有</button>`}
 function openCalendar(){calendarBg.style.display="block";calendarPopup.style.display="block";calendarMonth=new Date(selectedDate.getFullYear(),selectedDate.getMonth(),1);renderCalendar()}function closeCalendar(){calendarBg.style.display="none";calendarPopup.style.display="none"}function renderCalendar(){calendarGrid.innerHTML="";const y=calendarMonth.getFullYear(),m=calendarMonth.getMonth();calendarTitle.textContent=`${y}年 ${m+1}月`;const first=new Date(y,m,1).getDay(),last=new Date(y,m+1,0).getDate();for(let i=0;i<first;i++){const e=document.createElement("div");e.className="calendar-empty";calendarGrid.appendChild(e)}for(let day=1;day<=last;day++){const d=new Date(y,m,day),cell=document.createElement("div");cell.className="calendar-day";cell.textContent=day;if(sameDate(d,selectedDate))cell.classList.add("active");cell.onclick=()=>{selectedDate=new Date(d);baseDate=new Date(d);weekStart=getMonday(selectedDate);editingNoticeId=null;shipEditMode=false;todayEditMode=false;renderDates();refreshCurrentTab();closeCalendar()};calendarGrid.appendChild(cell)}}
 noticeBtn.onclick=renderNotice;shipBtn.onclick=renderShip;todayBtn.onclick=renderToday;reportBtn.onclick=renderReport;prevWeek.onclick=()=>{weekStart.setDate(weekStart.getDate()-7);selectedDate=new Date(weekStart);baseDate=new Date(selectedDate);editingNoticeId=null;renderDates();refreshCurrentTab()};nextWeek.onclick=()=>{weekStart.setDate(weekStart.getDate()+7);selectedDate=new Date(weekStart);baseDate=new Date(selectedDate);editingNoticeId=null;renderDates();refreshCurrentTab()};calendarBtn.onclick=openCalendar;calendarBg.onclick=closeCalendar;calendarClose.onclick=closeCalendar;calPrev.onclick=()=>{calendarMonth.setMonth(calendarMonth.getMonth()-1);renderCalendar()};calNext.onclick=()=>{calendarMonth.setMonth(calendarMonth.getMonth()+1);renderCalendar()};
