@@ -11,15 +11,15 @@
 <meta property="og:description" content="出荷場所・送り状貼り残し・注意事項確認">
 <meta property="og:url" content="https://wakimoko.github.io/app/">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://wakimoko.github.io/app/73A68501-2B5C-430B-83D3-CB135B88C4CD.png?v=2026061706">
-<meta property="og:image:secure_url" content="https://wakimoko.github.io/app/73A68501-2B5C-430B-83D3-CB135B88C4CD.png?v=2026061706">
+<meta property="og:image" content="https://wakimoko.github.io/app/73A68501-2B5C-430B-83D3-CB135B88C4CD.png?v=2026061707">
+<meta property="og:image:secure_url" content="https://wakimoko.github.io/app/73A68501-2B5C-430B-83D3-CB135B88C4CD.png?v=2026061707">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="1200">
 <meta property="og:image:type" content="image/png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="出荷管理">
 <meta name="twitter:description" content="出荷場所・送り状貼り残し・注意事項確認">
-<meta name="twitter:image" content="https://wakimoko.github.io/app/73A68501-2B5C-430B-83D3-CB135B88C4CD.png?v=2026061706">
+<meta name="twitter:image" content="https://wakimoko.github.io/app/73A68501-2B5C-430B-83D3-CB135B88C4CD.png?v=2026061707">
 
 
 <style>
@@ -107,7 +107,7 @@ const firebaseConfig = {
   appId: "1:947921216753:web:777f7eaac0ada1adcbb550"
 };
 firebase.initializeApp(firebaseConfig);const db=firebase.database();
-const APP_URL="https://wakimoko.github.io/app/?v=2026061706";
+const APP_URL="https://wakimoko.github.io/app/?v=2026061707";
 const MAX_SHIP_PHOTOS=5;
 let weekStart=getMonday(new Date()),selectedDate=new Date(),baseDate=new Date(),calendarMonth=new Date(),editingNoticeId=null;
 let shipData={},notices={},metaData={},photoData={};let shipEditMode=false,todayEditMode=false,tempShipData={},tempTodayData={},noticePhotoData="",currentPhotoTarget="ship",currentPhotoKey="";
@@ -321,9 +321,13 @@ async function shareImage(type){
     if(navigator.canShare && navigator.canShare({files:[file]})){
       await navigator.share({
         files:[file],
-        title:"出荷管理",
-        text:text
+        title:"出荷管理"
       });
+
+      setTimeout(()=>{
+        lineShare(text);
+      },500);
+
     }else{
       const url=URL.createObjectURL(blob);
       const a=document.createElement("a");
@@ -331,7 +335,10 @@ async function shareImage(type){
       a.download=filename;
       a.click();
       URL.revokeObjectURL(url);
-      alert("画像を作成しました。LINEには「出荷管理」とURLを別で貼ってください。");
+      alert("画像を作成しました。次にURLをLINE共有します。");
+      setTimeout(()=>{
+        lineShare(text);
+      },500);
     }
   }catch(err){
     console.error(err);
