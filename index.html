@@ -11,15 +11,15 @@
 <meta property="og:description" content="出荷場所・送り状貼り残し・注意事項確認">
 <meta property="og:url" content="https://wakimoko.github.io/app/">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://wakimoko.github.io/app/73A68501-2B5C-430B-83D3-CB135B88C4CD.png?v=2026061704">
-<meta property="og:image:secure_url" content="https://wakimoko.github.io/app/73A68501-2B5C-430B-83D3-CB135B88C4CD.png?v=2026061704">
+<meta property="og:image" content="https://wakimoko.github.io/app/73A68501-2B5C-430B-83D3-CB135B88C4CD.png?v=2026061705">
+<meta property="og:image:secure_url" content="https://wakimoko.github.io/app/73A68501-2B5C-430B-83D3-CB135B88C4CD.png?v=2026061705">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="1200">
 <meta property="og:image:type" content="image/png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="出荷管理">
 <meta name="twitter:description" content="出荷場所・送り状貼り残し・注意事項確認">
-<meta name="twitter:image" content="https://wakimoko.github.io/app/73A68501-2B5C-430B-83D3-CB135B88C4CD.png?v=2026061704">
+<meta name="twitter:image" content="https://wakimoko.github.io/app/73A68501-2B5C-430B-83D3-CB135B88C4CD.png?v=2026061705">
 
 
 <style>
@@ -30,6 +30,54 @@ h1{font-size:32px;font-weight:900;margin:6px 0 16px}button{border:none;cursor:po
 
 .report-thumb-wrap{margin:8px 0 14px;padding-left:16px;display:flex;gap:8px;flex-wrap:wrap}
 .report-thumb{width:78px;height:78px;object-fit:cover;border-radius:10px;border:1px solid #e2d7ca;background:#fff}
+
+
+.share-capture{
+  position:fixed;
+  left:-9999px;
+  top:0;
+  width:390px;
+  background:#fff;
+  color:#111;
+  border-radius:20px;
+  padding:16px;
+  font-family:"Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",-apple-system,BlinkMacSystemFont,sans-serif;
+  line-height:1.7;
+  font-size:15px;
+  font-weight:800;
+  white-space:normal;
+}
+.share-capture-title{
+  font-size:20px;
+  font-weight:900;
+  margin-bottom:12px;
+}
+.share-section-title{
+  font-size:16px;
+  font-weight:900;
+  margin:8px 0;
+}
+.share-line{
+  white-space:pre-wrap;
+}
+.share-photo-wrap{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:8px 0 14px;
+}
+.share-photo{
+  width:92px;
+  height:92px;
+  object-fit:cover;
+  border-radius:12px;
+  border:1px solid #e2d7ca;
+  background:#fff;
+}
+.share-divider{
+  border-top:1px dashed #b8ab9e;
+  margin:14px 0;
+}
 
 </style>
 </head>
@@ -48,6 +96,7 @@ h1{font-size:32px;font-weight:900;margin:6px 0 16px}button{border:none;cursor:po
 <div class="photo-modal" id="photoModal"><button class="photo-close" onclick="closePhotoModal()">×</button><div class="photo-modal-card" id="photoModalBody"></div></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyAZhibxdRryhXbipz67L6QgBTRmnF9vFY4",
@@ -59,7 +108,7 @@ const firebaseConfig = {
   appId: "1:947921216753:web:777f7eaac0ada1adcbb550"
 };
 firebase.initializeApp(firebaseConfig);const db=firebase.database();
-const APP_URL="https://wakimoko.github.io/app/?v=2026061704";
+const APP_URL="https://wakimoko.github.io/app/?v=2026061705";
 const MAX_SHIP_PHOTOS=5;
 let weekStart=getMonday(new Date()),selectedDate=new Date(),baseDate=new Date(),calendarMonth=new Date(),editingNoticeId=null;
 let shipData={},notices={},metaData={},photoData={};let shipEditMode=false,todayEditMode=false,tempShipData={},tempTodayData={},noticePhotoData="",currentPhotoTarget="ship",currentPhotoKey="";
@@ -73,7 +122,7 @@ function shipPhotoKey(){return"shipPhotos_"+fullDateKey(selectedDate)}function g
 photoInput.onchange=async e=>{const files=[...(e.target.files||[])];if(!files.length)return;if(currentPhotoTarget==="notice"){noticePhotoData=await resizeImage(files[0],900,.7);const prev=document.getElementById("noticePhotoPreview");if(prev)prev.innerHTML=`<img src="${noticePhotoData}" class="notice-photo">`;photoInput.value="";return}let list=getShipPhotos();const remain=MAX_SHIP_PHOTOS-list.length;if(remain<=0){alert("写真は最大5枚までです");photoInput.value="";return}for(const file of files.slice(0,remain)){list.push(await resizeImage(file,900,.7))}try{await db.ref("photos/"+shipPhotoKey()).set(list);alert(`${list.length}枚保存しました`);if(files.length>remain)alert("最大5枚まで保存しました")}catch(err){console.error(err);alert("写真保存エラー\n"+err.message)}photoInput.value=""};
 function resizeImage(file,maxWidth=900,quality=.7){return new Promise(resolve=>{const reader=new FileReader();reader.onload=e=>{const img=new Image();img.onload=()=>{const canvas=document.createElement("canvas");const scale=Math.min(1,maxWidth/img.width);canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);resolve(canvas.toDataURL("image/jpeg",quality))};img.src=e.target.result};reader.readAsDataURL(file)})}
 function openShipPhotos(){const list=getShipPhotos();photoModalBody.innerHTML=list.length?list.map((src,i)=>`<div class="photo-item"><img src="${src}"><button class="photo-delete" onclick="deleteShipPhoto(${i})">写真削除</button></div>`).join(""):`<div class="empty-photo">写真はありません</div>`;photoModal.style.display="block"}function closePhotoModal(){photoModal.style.display="none"}function deleteShipPhoto(i){if(!confirm("この写真を削除しますか？"))return;const list=getShipPhotos();list.splice(i,1);db.ref("photos/"+shipPhotoKey()).set(list);openShipPhotos()}
-function controlArea(type,pageName){const last=getLastUpdate(type);let html=`<div class="meta">最終更新：${esc(last)}</div>`;if(type==="ship"){const count=getShipPhotos().length;html+=`<button class="photo-btn" onclick="openShipPhotos()">写真表示（${count}枚）</button><button class="photo-btn" onclick="showAttachMenu('ship','${shipPhotoKey()}')">写真を添付（最大5枚）</button>`}html+=`${type==="ship"&&!shipEditMode?`<button class="mode-btn" onclick="startShipEdit()">編集</button>`:""}${type==="ship"&&shipEditMode?`<button class="save-btn" onclick="saveShipEdit()">保存</button><button class="cancel-btn" onclick="cancelShipEdit()">キャンセル</button>`:""}${type==="today"&&!todayEditMode?`<button class="mode-btn" onclick="startTodayEdit()">編集</button>`:""}${type==="today"&&todayEditMode?`<button class="save-btn" onclick="saveTodayEdit()">保存</button><button class="cancel-btn" onclick="cancelTodayEdit()">キャンセル</button>`:""}`;if(type==="ship")html+=`<button class="line-btn" onclick="lineShare(getShipShareText())">出荷場所をLINE共有</button>`;if(type==="today")html+=`<button class="line-btn" onclick="lineShare(getTodayShareText())">送り状をLINE共有</button>`;return html}
+function controlArea(type,pageName){const last=getLastUpdate(type);let html=`<div class="meta">最終更新：${esc(last)}</div>`;if(type==="ship"){const count=getShipPhotos().length;html+=`<button class="photo-btn" onclick="openShipPhotos()">写真表示（${count}枚）</button><button class="photo-btn" onclick="showAttachMenu('ship','${shipPhotoKey()}')">写真を添付（最大5枚）</button>`}html+=`${type==="ship"&&!shipEditMode?`<button class="mode-btn" onclick="startShipEdit()">編集</button>`:""}${type==="ship"&&shipEditMode?`<button class="save-btn" onclick="saveShipEdit()">保存</button><button class="cancel-btn" onclick="cancelShipEdit()">キャンセル</button>`:""}${type==="today"&&!todayEditMode?`<button class="mode-btn" onclick="startTodayEdit()">編集</button>`:""}${type==="today"&&todayEditMode?`<button class="save-btn" onclick="saveTodayEdit()">保存</button><button class="cancel-btn" onclick="cancelTodayEdit()">キャンセル</button>`:""}`;if(type==="ship")html+=`<button class="line-btn" onclick="shareImage('ship')">出荷場所を画像で共有</button>`;if(type==="today")html+=`<button class="line-btn" onclick="shareImage('today')">貼り残しを画像で共有</button>`;return html}
 function placeRow(type,label){const status=getStatus(type,label,tempShipData),lockedClass=shipEditMode?"":"locked";return`<div class="place-row"><div class="place-name">${esc(label.split("_").pop())}</div><div class="place-status ${lockedClass}" data-type="${type}" data-name="${esc(label)}"><button class="${status==="あり"?"active":""}" onclick="togglePlace(this,'あり')">あり</button><button class="${status==="なし"?"active":""}" onclick="togglePlace(this,'なし')">なし</button></div></div>`}
 function shipGroup(title,items){return`<div><div class="group-title">${esc(title)}</div>${items.map(item=>placeRow("ship",title+"_"+item)).join("")}</div>`}
 function renderShip(){setActiveTab(shipBtn);scheduleArea.style.display="block";selectedDate=new Date(baseDate);weekStart=getMonday(selectedDate);renderDates();mainArea.innerHTML=`<div class="card">${shipGroup("佐川急便",["2F"])}<div class="divider"></div>${shipGroup("福山通運",["2F","梱包場","MJ倉庫"])}<div class="divider"></div>${shipGroup("フレックス来社",["2F","梱包場","MJ倉庫"])}${controlArea("ship","出荷場所")}</div>`}
@@ -187,7 +236,105 @@ function getReportHtml(){
   return html;
 }
 
-function renderReport(){setActiveTab(reportBtn);scheduleArea.style.display="block";selectedDate=new Date(baseDate);weekStart=getMonday(selectedDate);renderDates();mainArea.innerHTML=`<div class="card">${getReportHtml()}</div><button class="line-btn" onclick="lineShare(getReportText())">日報をLINE共有</button>`}
+function renderReport(){setActiveTab(reportBtn);scheduleArea.style.display="block";selectedDate=new Date(baseDate);weekStart=getMonday(selectedDate);renderDates();mainArea.innerHTML=`<div class="card">${getReportHtml()}</div><button class="line-btn" onclick="shareImage('report')">日報を画像で共有</button>`}
+
+function shareDividerHtml(){return `<div class="share-divider"></div>`}
+function sharePhotoHtml(list){
+  if(!list || !list.length)return "";
+  return `<div class="share-photo-wrap">${list.map(src=>`<img class="share-photo" src="${src}">`).join("")}</div>`;
+}
+function getTodayImageHtml(){
+  return `<div class="share-capture-title">${formatDate(selectedDate)}（${weekday(selectedDate)}）出荷</div>
+  <div class="share-line">【当日送り状貼り残し】
+　2F（家具）：${esc(getStatus("today","2F（家具）"))}
+　2F（テーブル）：${esc(getStatus("today","2F（テーブル）"))}
+　梱包場：${esc(getStatus("today","梱包場"))}
+　MJ倉庫：${esc(getStatus("today","MJ倉庫"))}</div>`;
+}
+function getShipImageHtml(){
+  const photos=getShipPhotos();
+  return `<div class="share-capture-title">出荷日：${formatDate(selectedDate)}（${weekday(selectedDate)}）</div>
+  <div class="share-line">【出荷場所】
+
+☆佐川急便
+　2F：${esc(getStatus("ship","佐川急便_2F"))}
+
+☆福山通運
+　2F：${esc(getStatus("ship","福山通運_2F"))}
+　梱包場：${esc(getStatus("ship","福山通運_梱包場"))}
+　MJ倉庫：${esc(getStatus("ship","福山通運_MJ倉庫"))}
+
+☆フレックス来社
+　2F：${esc(getStatus("ship","フレックス来社_2F"))}
+　梱包場：${esc(getStatus("ship","フレックス来社_梱包場"))}
+　MJ倉庫：${esc(getStatus("ship","フレックス来社_MJ倉庫"))}</div>
+  ${photos.length?`<div class="share-section-title">出荷場所写真</div>${sharePhotoHtml(photos)}`:""}`;
+}
+function getNoticeImageHtml(){
+  const list=getNoticeList();
+  let html=`<div class="share-line">【注意事項】
+`;
+  if(list.length===0){
+    html+=`　なし`;
+  }else{
+    list.forEach(item=>{
+      html+=`　${esc(item.title||"")}`;
+      if(item.body)html+=`\n　${esc(item.body)}`;
+      html+=`\n`;
+      if(item.photo)html+=`</div>${sharePhotoHtml([item.photo])}<div class="share-line">`;
+    });
+  }
+  html+=`</div>`;
+  return html;
+}
+function getReportImageHtml(){
+  return `<div class="share-capture-title">${formatDate(selectedDate)}（${weekday(selectedDate)}）出荷</div>
+  ${getTodayImageHtml().replace(/^<div class="share-capture-title">.*?<\/div>/,"")}
+  ${shareDividerHtml()}
+  ${getNoticeImageHtml()}
+  ${shareDividerHtml()}
+  ${getShipImageHtml().replace(/^<div class="share-capture-title">.*?<\/div>/,"")}
+  ${shareDividerHtml()}
+  <div class="share-line">出荷管理
+${esc(APP_URL)}</div>`;
+}
+async function shareImage(type){
+  try{
+    let html="";
+    let filename="report.png";
+    if(type==="today"){html=getTodayImageHtml();filename="harinokoshi.png"}
+    if(type==="ship"){html=getShipImageHtml();filename="shukka-basho.png"}
+    if(type==="report"){html=getReportImageHtml();filename="nippou.png"}
+
+    const el=document.createElement("div");
+    el.className="share-capture";
+    el.innerHTML=html;
+    document.body.appendChild(el);
+
+    await new Promise(resolve=>setTimeout(resolve,300));
+    const canvas=await html2canvas(el,{scale:2,backgroundColor:"#ffffff",useCORS:true});
+    document.body.removeChild(el);
+
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/png"));
+    const file=new File([blob],filename,{type:"image/png"});
+
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:"出荷管理"});
+    }else{
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url;
+      a.download=filename;
+      a.click();
+      URL.revokeObjectURL(url);
+      alert("画像を作成しました。保存された画像をLINEで共有してください。");
+    }
+  }catch(err){
+    console.error(err);
+    alert("画像共有エラー\n"+err.message);
+  }
+}
+
 function openCalendar(){calendarBg.style.display="block";calendarPopup.style.display="block";calendarMonth=new Date(selectedDate.getFullYear(),selectedDate.getMonth(),1);renderCalendar()}function closeCalendar(){calendarBg.style.display="none";calendarPopup.style.display="none"}function renderCalendar(){calendarGrid.innerHTML="";const y=calendarMonth.getFullYear(),m=calendarMonth.getMonth();calendarTitle.textContent=`${y}年 ${m+1}月`;const first=new Date(y,m,1).getDay(),last=new Date(y,m+1,0).getDate();for(let i=0;i<first;i++){const e=document.createElement("div");e.className="calendar-empty";calendarGrid.appendChild(e)}for(let day=1;day<=last;day++){const d=new Date(y,m,day),cell=document.createElement("div");cell.className="calendar-day";cell.textContent=day;if(sameDate(d,selectedDate))cell.classList.add("active");cell.onclick=()=>{selectedDate=new Date(d);baseDate=new Date(d);weekStart=getMonday(selectedDate);editingNoticeId=null;shipEditMode=false;todayEditMode=false;renderDates();refreshCurrentTab();closeCalendar()};calendarGrid.appendChild(cell)}}
 noticeBtn.onclick=renderNotice;shipBtn.onclick=renderShip;todayBtn.onclick=renderToday;reportBtn.onclick=renderReport;prevWeek.onclick=()=>{weekStart.setDate(weekStart.getDate()-7);selectedDate=new Date(weekStart);baseDate=new Date(selectedDate);editingNoticeId=null;renderDates();refreshCurrentTab()};nextWeek.onclick=()=>{weekStart.setDate(weekStart.getDate()+7);selectedDate=new Date(weekStart);baseDate=new Date(selectedDate);editingNoticeId=null;renderDates();refreshCurrentTab()};calendarBtn.onclick=openCalendar;calendarBg.onclick=closeCalendar;calendarClose.onclick=closeCalendar;calPrev.onclick=()=>{calendarMonth.setMonth(calendarMonth.getMonth()-1);renderCalendar()};calNext.onclick=()=>{calendarMonth.setMonth(calendarMonth.getMonth()+1);renderCalendar()};
 db.ref("shipData").on("value",s=>{shipData=s.val()||{};refreshCurrentTab()});db.ref("notices").on("value",s=>{notices=s.val()||{};refreshCurrentTab()});db.ref("meta").on("value",s=>{metaData=s.val()||{};refreshCurrentTab()});db.ref("photos").on("value",s=>{photoData=s.val()||{};refreshCurrentTab()});
